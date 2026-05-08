@@ -5,10 +5,10 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { sendOtp, verifyOtp, getMe } from "@/lib/api";
+import { sendOtp, verifyOtp } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { roleHomePath } from "@/lib/utils";
-import { AuthResponse } from "@/types";
+import { User } from "@/types";
 
 const phoneSchema = z.object({
   phone: z.string().min(10, "Enter a valid phone number"),
@@ -50,18 +50,17 @@ export default function LoginPage() {
     setError("");
     try {
       const res = await verifyOtp(phone, data.code);
-      const { access, refresh, user } = res.data as AuthResponse;
+      const { user } = res.data as { user: User };
 
       if (user.role === "user") {
         setStep("no-access");
         return;
       }
 
-      setAuth(user, { access, refresh });
+      setAuth(user);
 
-      // Set cookies for middleware
-      document.cookie = `access_token=${access}; path=/; max-age=3600`;
-      document.cookie = `user_role=${user.role}; path=/; max-age=3600`;
+      // user_role is non-sensitive; Next.js middleware reads it for routing
+      document.cookie = `user_role=${user.role}; path=/; max-age=${7 * 24 * 3600}`;
 
       router.replace(roleHomePath(user.role));
     } catch {

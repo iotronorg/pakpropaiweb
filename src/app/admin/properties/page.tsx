@@ -8,6 +8,7 @@ import {
 } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Pagination } from "@/components/ui/Pagination";
 import { formatPKR, formatDate } from "@/lib/utils";
 import { Property, User } from "@/types";
 
@@ -63,9 +64,12 @@ type PropertyForm = typeof BLANK_FORM;
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
+const PAGE_SIZE = 20;
+
 export default function PropertiesPage() {
   const qc = useQueryClient();
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
 
   // Modal state
   const [showAdd,   setShowAdd]   = useState(false);
@@ -82,11 +86,15 @@ export default function PropertiesPage() {
   // ── Queries ─────────────────────────────────────────────────────────────────
 
   const { data, isLoading } = useQuery({
-    queryKey: ["admin-properties", search],
-    queryFn:  () => getProperties(search ? { search } : undefined).then((r) => r.data),
+    queryKey: ["admin-properties", search, page],
+    queryFn:  () => getProperties({
+      ...(search ? { search } : {}),
+      page,
+    }).then((r) => r.data),
   });
 
   const properties: Property[] = data?.results ?? [];
+  const totalCount: number = data?.count ?? 0;
 
   // ── Mutations ────────────────────────────────────────────────────────────────
 
@@ -201,6 +209,7 @@ export default function PropertiesPage() {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
+        <>
         <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -289,6 +298,13 @@ export default function PropertiesPage() {
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          total={totalCount}
+          onPage={(p) => { setPage(p); window.scrollTo(0, 0); }}
+        />
+        </>
       )}
 
       {/* ── Add Modal ─────────────────────────────────────────────────────────── */}

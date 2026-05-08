@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth";
+import { logout } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -50,9 +51,13 @@ export function Sidebar() {
   const role = user?.role ?? "admin";
   const items = NAV_ITEMS[role] ?? [];
 
-  function handleLogout() {
+  async function handleLogout() {
+    try {
+      await logout();  // clears httpOnly access_token + refresh_token cookies server-side
+    } catch {
+      // proceed even if the request fails (token already expired)
+    }
     clearAuth();
-    document.cookie = "access_token=; Max-Age=0; path=/";
     document.cookie = "user_role=; Max-Age=0; path=/";
     router.replace("/login");
   }

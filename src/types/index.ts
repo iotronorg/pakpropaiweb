@@ -14,16 +14,6 @@ export interface User {
   is_filer: boolean;
 }
 
-export interface AuthTokens {
-  access: string;
-  refresh: string;
-}
-
-export interface AuthResponse {
-  access: string;
-  refresh: string;
-  user: User;
-}
 
 export interface Property {
   id: string;
