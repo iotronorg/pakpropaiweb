@@ -1,7 +1,7 @@
 # PakProp AI Web — Build Progress
 
-**Last updated:** 2026-05-08 (session 10)
-**Current phase:** Phase 3 — frontend complete + RBAC hardened + live system config
+**Last updated:** 2026-05-08 (session 11)
+**Current phase:** Phase 3 — frontend complete + RBAC hardened + live system config + admin user management
 
 ---
 
@@ -79,6 +79,14 @@
 | **Setup: Scraper toggle** | Toggle in search settings sub-section; disables Zameen/Graana/OLX scraper when off; DB-only results returned |
 | `getConfig` / `updateConfig` API calls | `src/lib/api.ts` — `GET /config/` and `PATCH /config/` |
 | `SystemConfig` type added | `src/types/index.ts` — full interface with sensitive, control, feature, and computed fields |
+| **Admin: User management redesign** | Sidebar now has 4 role-specific menus: Clients, Agents, Developers, Admins (replaces old Users + Agents) |
+| **Shared `UserManagementPage` component** | `src/components/admin/UserManagementPage.tsx` — role-parameterised table with add/edit/deactivate/delete/details; used by all 4 pages |
+| **Admin: Clients page** | `src/app/admin/clients/page.tsx` — manages `role=user` accounts |
+| **Admin: Agents page** (rewritten) | `src/app/admin/agents/page.tsx` — now manages `role=agent` user accounts (via shared component) |
+| **Admin: Developers page** | `src/app/admin/developers/page.tsx` — manages `role=developer` user accounts |
+| **Admin: Admins page** | `src/app/admin/admins/page.tsx` — manages `role=admin` user accounts |
+| `createUser` / `deleteUser` API calls added | `src/lib/api.ts` — `POST /auth/users/` and `DELETE /auth/users/<id>/` |
+| `User` type extended | `src/types/index.ts` — added `last_active`, `ntn`, `cnic`, `is_filer` fields |
 
 ---
 

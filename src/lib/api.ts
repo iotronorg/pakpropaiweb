@@ -52,9 +52,14 @@ export const verifyOtp = (phone: string, code: string) =>
 export const getMe = () => api.get("/auth/me/");
 
 // Users (admin)
-export const getUsers = () => api.get("/auth/users/");
+export const getUsers = (role?: string) =>
+  api.get("/auth/users/", { params: role ? { role } : undefined });
+export const createUser = (data: Record<string, unknown>) =>
+  api.post("/auth/users/", data);
 export const updateUser = (id: string, data: Record<string, unknown>) =>
   api.patch(`/auth/users/${id}/`, data);
+export const deleteUser = (id: string) =>
+  api.delete(`/auth/users/${id}/`);
 
 // Leads
 export const getLeads = () => api.get("/leads/");

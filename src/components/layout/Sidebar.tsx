@@ -13,14 +13,16 @@ interface NavItem {
 
 const NAV_ITEMS: Record<string, NavItem[]> = {
   admin: [
-    { label: "Overview", href: "/admin", icon: "⬛" },
-    { label: "System Setup", href: "/admin/setup", icon: "⚙️" },
-    { label: "Users", href: "/admin/users", icon: "👥" },
-    { label: "Agents", href: "/admin/agents", icon: "🏢" },
-    { label: "Properties", href: "/admin/properties", icon: "🏠" },
-    { label: "Verification", href: "/admin/verification", icon: "✅" },
-    { label: "Deal Locks", href: "/admin/deals", icon: "🔒" },
-    { label: "Fraud Monitor", href: "/admin/fraud", icon: "🚨" },
+    { label: "Overview",    href: "/admin",              icon: "⬛" },
+    { label: "System Setup",href: "/admin/setup",        icon: "⚙️" },
+    { label: "Clients",     href: "/admin/clients",      icon: "💬" },
+    { label: "Agents",      href: "/admin/agents",       icon: "🏢" },
+    { label: "Developers",  href: "/admin/developers",   icon: "🏗️" },
+    { label: "Admins",      href: "/admin/admins",       icon: "🔑" },
+    { label: "Properties",  href: "/admin/properties",   icon: "🏠" },
+    { label: "Verification",href: "/admin/verification", icon: "✅" },
+    { label: "Deal Locks",  href: "/admin/deals",        icon: "🔒" },
+    { label: "Fraud Monitor",href: "/admin/fraud",       icon: "🚨" },
   ],
   agent: [
     { label: "Overview", href: "/agent", icon: "⬛" },

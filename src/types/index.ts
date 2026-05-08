@@ -8,6 +8,10 @@ export interface User {
   role: Role;
   is_active: boolean;
   date_joined: string;
+  last_active: string | null;
+  ntn: string | null;
+  cnic: string | null;
+  is_filer: boolean;
 }
 
 export interface AuthTokens {
@@ -100,6 +104,7 @@ export interface AgentProfile {
   email: string;
   company_name: string;
   designation: string;
+  years_experience: number;
   bio: string;
   specializations: string[];
   cities: string[];
