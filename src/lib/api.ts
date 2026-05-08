@@ -75,9 +75,21 @@ export const linkDocumentToVerification = (scanId: number, verificationId: strin
 export const getProperties = (params?: Record<string, unknown>) =>
   api.get("/properties/", { params });
 
-export const getProperty = (id: number) => api.get(`/properties/${id}/`);
+export const getMyProperties = (params?: Record<string, unknown>) =>
+  api.get("/properties/mine/", { params });
 
-export const updateProperty = (id: number, data: Record<string, unknown>) =>
+export const requestVerification = (id: string) =>
+  api.post(`/properties/${id}/request_verification/`);
+
+export const rescoreProperty = (id: string) =>
+  api.post(`/properties/${id}/rescore/`);
+
+export const rescoreAllProperties = () =>
+  api.post("/properties/rescore-all/");
+
+export const getProperty = (id: string) => api.get(`/properties/${id}/`);
+
+export const updateProperty = (id: string, data: Record<string, unknown>) =>
   api.patch(`/properties/${id}/`, data);
 
 // Verification

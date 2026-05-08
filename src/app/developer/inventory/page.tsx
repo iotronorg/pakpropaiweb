@@ -56,18 +56,17 @@ export default function InventoryPage() {
               <div className="flex items-center justify-between mb-3">
                 <Badge label={p.property_type} variant="blue" />
                 <Badge
-                  label={p.is_verified ? "Verified" : "Pending"}
-                  variant={p.is_verified ? "green" : "yellow"}
+                  label={p.legal_status}
+                  variant={p.legal_status === "verified" ? "green" : p.legal_status === "disputed" ? "red" : "yellow"}
                 />
               </div>
               <h3 className="font-semibold text-gray-900">{p.title || `Unit #${p.id}`}</h3>
               <p className="text-sm text-gray-500 mt-1">{p.location}, {p.city}</p>
               <p className="mt-2 text-xl font-bold text-blue-700">
-                {p.price ? formatPKR(p.price) : "TBD"}
+                {p.price_pkr ? formatPKR(p.price_pkr) : "TBD"}
               </p>
               <div className="mt-3 flex flex-wrap gap-1 text-xs text-gray-400">
-                {p.size && <span>{p.size}</span>}
-                {p.bedrooms && <span>· {p.bedrooms} bed</span>}
+                {p.area_marla && <span>{p.area_marla} marla</span>}
                 {p.construction_status && (
                   <Badge
                     label={p.construction_status}

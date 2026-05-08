@@ -17,8 +17,8 @@ export default function DeveloperOverview() {
 
   const properties: Property[] = data?.results ?? [];
   const totalUnits = data?.count ?? 0;
-  const available = properties.filter((p) => p.listing_type === "sale").length;
-  const verified = properties.filter((p) => p.is_verified).length;
+  const available = properties.filter((p) => p.legal_status !== "disputed").length;
+  const verified = properties.filter((p) => p.legal_status === "verified").length;
 
   return (
     <div>

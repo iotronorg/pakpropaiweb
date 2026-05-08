@@ -22,23 +22,20 @@ export interface AuthResponse {
 }
 
 export interface Property {
-  id: number;
+  id: string;
   title: string;
   description: string;
-  price: number;
-  size: string;
-  location: string;
   city: string;
+  location: string;
+  area_marla: number | null;
+  price_pkr: number | null;
   property_type: string;
-  listing_type: string;
-  furnished_status: string;
-  construction_status: string;
-  bedrooms: number | null;
-  bathrooms: number | null;
-  is_verified: boolean;
-  risk_score: number | null;
+  construction_status: string | null;
+  furnished_status: string | null;
+  legal_status: "unverified" | "verified" | "disputed" | "pending";
+  ai_score: number | null;
+  risk_level: "low" | "medium" | "high" | null;
   created_at: string;
-  source: string;
 }
 
 export interface Lead {

@@ -16,8 +16,8 @@ export default function AdminOverview() {
 
   const properties: Property[] = propsData?.results ?? [];
   const total = propsData?.count ?? 0;
-  const verified = properties.filter((p) => p.is_verified).length;
-  const unverified = properties.filter((p) => !p.is_verified).length;
+  const verified = properties.filter((p) => p.legal_status === "verified").length;
+  const unverified = properties.filter((p) => p.legal_status !== "verified").length;
 
   return (
     <div>
@@ -49,8 +49,8 @@ export default function AdminOverview() {
                     <p className="text-xs text-gray-400">{p.city} · {formatDate(p.created_at)}</p>
                   </div>
                   <Badge
-                    label={p.is_verified ? "Verified" : "Unverified"}
-                    variant={p.is_verified ? "green" : "yellow"}
+                    label={p.legal_status}
+                    variant={p.legal_status === "verified" ? "green" : p.legal_status === "disputed" ? "red" : "yellow"}
                   />
                 </div>
               ))}

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, getProperties, updateProperty } from "@/lib/api";
+import { getProperties, updateProperty } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatPKR, formatDate } from "@/lib/utils";
@@ -18,7 +18,7 @@ export default function PropertiesPage() {
   });
 
   const verify = useMutation({
-    mutationFn: (id: number) => updateProperty(id, { is_verified: true }),
+    mutationFn: (id: string) => updateProperty(id, { legal_status: "verified" }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-properties"] }),
   });
 
@@ -50,7 +50,7 @@ export default function PropertiesPage() {
                 <th className="px-5 py-3">City</th>
                 <th className="px-5 py-3">Price</th>
                 <th className="px-5 py-3">Type</th>
-                <th className="px-5 py-3">Source</th>
+                <th className="px-5 py-3">AI Score</th>
                 <th className="px-5 py-3">Status</th>
                 <th className="px-5 py-3">Listed</th>
                 <th className="px-5 py-3"></th>
@@ -63,20 +63,22 @@ export default function PropertiesPage() {
                     {p.title || `Property #${p.id}`}
                   </td>
                   <td className="px-5 py-3 text-gray-600">{p.city}</td>
-                  <td className="px-5 py-3 text-gray-700">{p.price ? formatPKR(p.price) : "—"}</td>
+                  <td className="px-5 py-3 text-gray-700">{p.price_pkr ? formatPKR(p.price_pkr) : "—"}</td>
                   <td className="px-5 py-3">
                     <Badge label={p.property_type} />
                   </td>
-                  <td className="px-5 py-3 text-gray-500">{p.source || "Manual"}</td>
+                  <td className="px-5 py-3 text-gray-500">
+                    {p.ai_score !== null ? `${p.ai_score}/100` : "—"}
+                  </td>
                   <td className="px-5 py-3">
                     <Badge
-                      label={p.is_verified ? "Verified" : "Pending"}
-                      variant={p.is_verified ? "green" : "yellow"}
+                      label={p.legal_status}
+                      variant={p.legal_status === "verified" ? "green" : p.legal_status === "disputed" ? "red" : "yellow"}
                     />
                   </td>
                   <td className="px-5 py-3 text-gray-400">{formatDate(p.created_at)}</td>
                   <td className="px-5 py-3">
-                    {!p.is_verified && (
+                    {p.legal_status !== "verified" && (
                       <button
                         onClick={() => verify.mutate(p.id)}
                         disabled={verify.isPending}
