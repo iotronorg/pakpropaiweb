@@ -23,7 +23,7 @@ type OtpForm = z.infer<typeof otpSchema>;
 export default function LoginPage() {
   const router = useRouter();
   const { setAuth } = useAuthStore();
-  const [step, setStep] = useState<"phone" | "otp">("phone");
+  const [step, setStep] = useState<"phone" | "otp" | "no-access">("phone");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,6 +51,12 @@ export default function LoginPage() {
     try {
       const res = await verifyOtp(phone, data.code);
       const { access, refresh, user } = res.data as AuthResponse;
+
+      if (user.role === "user") {
+        setStep("no-access");
+        return;
+      }
+
       setAuth(user, { access, refresh });
 
       // Set cookies for middleware
@@ -78,7 +84,23 @@ export default function LoginPage() {
         </div>
 
         <div className="rounded-2xl bg-white p-8 shadow-sm border border-gray-100">
-          {step === "phone" ? (
+          {step === "no-access" ? (
+            <div className="text-center space-y-4">
+              <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mx-auto">
+                <span className="text-2xl">💬</span>
+              </div>
+              <h1 className="text-lg font-semibold text-gray-900">Use WhatsApp to continue</h1>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Your account uses PakProp AI via WhatsApp. The web dashboard is only available for agents, developers, and admins.
+              </p>
+              <button
+                onClick={() => { setStep("phone"); setError(""); }}
+                className="w-full rounded-lg border border-gray-200 py-2.5 text-sm text-gray-500 hover:bg-gray-50 transition-colors"
+              >
+                Sign in with a different number
+              </button>
+            </div>
+          ) : step === "phone" ? (
             <form onSubmit={phoneForm.handleSubmit(onSendOtp)} className="space-y-5">
               <div>
                 <h1 className="text-xl font-semibold text-gray-900">Sign in</h1>

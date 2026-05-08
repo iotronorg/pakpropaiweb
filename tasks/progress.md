@@ -1,7 +1,7 @@
 # PakProp AI Web — Build Progress
 
-**Last updated:** 2026-05-08 (session 7)
-**Current phase:** Phase 3 — all core dashboard pages built
+**Last updated:** 2026-05-08 (session 9)
+**Current phase:** Phase 3 — frontend complete + RBAC hardened
 
 ---
 
@@ -56,6 +56,21 @@
 | Admin: Properties — fixed stale field refs | `src/app/admin/properties/page.tsx` — `p.price` → `p.price_pkr`, verify action uses `legal_status`, Source column → AI Score |
 | Developer: Overview — fixed stale field refs | `src/app/developer/page.tsx` — `p.listing_type` / `p.is_verified` → `p.legal_status` |
 | Developer: Inventory — fixed stale field refs | `src/app/developer/inventory/page.tsx` — `p.price` → `p.price_pkr`, `p.size` → `p.area_marla`, `p.bedrooms` removed |
+| `AgentProfile` + `DocumentScan` types added | `src/types/index.ts` — full `AgentProfile` matching backend `AgentSerializer`; `DocumentScan` for OCR detail view |
+| Agent profile API calls added | `src/lib/api.ts` — `getAgentProfile`, `updateAgentProfile`, `getAgentsList`, `getDocumentScan` |
+| **Agent: My Profile page** | `src/app/agent/profile/page.tsx` — shows stats, bio, cities/areas/specializations tags, editable fields via `PATCH /agents/me/` |
+| Agent sidebar: My Profile link added | `src/components/layout/Sidebar.tsx` — 👤 My Profile nav item |
+| **Agent: Overview — real profile data** | `src/app/agent/page.tsx` — loads `GET /agents/me/` for name, stats, rating, cities; falls back gracefully |
+| Agent: Leads — Assigned Agent column | `src/app/agent/leads/page.tsx` — `assigned_agent_name` column added |
+| Admin: Properties — Rescore buttons | `src/app/admin/properties/page.tsx` — per-row Rescore + bulk Rescore All (purple) with confirmation banner |
+| Admin: Verification — Document scan modal | `src/app/admin/verification/page.tsx` — doc count is now a link that opens `ScanDetailModal` (OCR text, extracted fields, red flags, AI summary, confidence) |
+| **Payments: Return page** | `src/app/payments/return/page.tsx` — styled success/cancelled/unknown states; shows deal details (property, amount, gateway, ref); auto-redirect countdown |
+| **RBAC: client login blocked** | `src/app/login/page.tsx` — `role='user'` after OTP verify shows "Use WhatsApp" screen instead of storing tokens; prevents infinite redirect loop |
+| **RBAC: payment return public** | `src/middleware.ts` — `/payments/return` added to `PUBLIC_PATHS`; gateway redirects work without session cookie |
+| **Admin: Agents — real API data** | `src/app/admin/agents/page.tsx` — replaced placeholder with real `getAgentsList()`; per-row Verified/Active toggles via `PATCH /agents/{id}/` |
+| **Admin: Users — deactivate + change role** | `src/app/admin/users/page.tsx` — Deactivate/Activate button; inline "Change Role" expander with role pills → `updateUser(id, { role })` |
+| **Admin: Overview — three-section stats** | `src/app/admin/page.tsx` — Properties / Leads+Agents / Deal Locks sections with 4 stat cards each; 4 parallel queries replacing placeholder data |
+| `updateAgent` API call added | `src/lib/api.ts` — `updateAgent(id, data)` → `PATCH /agents/{id}/`; used by admin agents page toggles |
 
 ---
 
@@ -66,12 +81,7 @@
 | Admin Setup page is UI-only | Low | Config values need `.env` changes on the backend; no settings API built yet |
 | Cookie vs localStorage token hybrid | Low | Tokens in both localStorage (axios) and cookies (middleware) — consolidate to httpOnly cookies for production |
 | No pagination UI | Low | TanStack Query fetches first page only; add infinite scroll or pagination controls if counts grow |
-| Document scan detail view missing | Medium | Admin can see scan list but no drill-down to view full OCR text/extracted fields |
-| Admin Properties page has no rescore button | Medium | `rescoreProperty` / `rescoreAllProperties` are wired in `api.ts` but no UI trigger — add button to admin properties page |
-| Agent overview page — profile not loaded | Medium | Backend `GET /api/v1/agents/me/` is live; agent overview page still shows placeholder stats instead of real profile |
-| Lead tables missing `assigned_agent_name` column | Low | Field is in serializer; needs to be added to agent/admin lead table UI |
-| Payment return page is raw JSON | Low | `/payments/return/?status=success&deal_id=<uuid>` returns JSON — replace with a styled Next.js page |
-| No client-side deal lock initiation flow | Medium | `initiateDealLock` is in `api.ts` but no UI page for buyers to start a lock from the dashboard (WhatsApp is the primary path) |
+| No client-side deal lock initiation flow | Low | `initiateDealLock` is in `api.ts` but no UI page for buyers to start a lock (WhatsApp is the primary path) |
 | Fraud alert feed has no real-time push | Low | Currently polled at page load; add WebSocket or polling interval for live monitoring |
 
 ---

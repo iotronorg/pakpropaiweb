@@ -7,7 +7,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatPKR } from "@/lib/utils";
 
 interface Lead {
-  id: number;
+  id: string;
   phone: string;
   name: string | null;
   budget_min: number | null;
@@ -15,6 +15,7 @@ interface Lead {
   location_interest: string | null;
   intent_score: number | null;
   status: string;
+  assigned_agent_name: string | null;
   created_at: string;
 }
 
@@ -57,6 +58,7 @@ export default function AgentLeadsPage() {
                 <th className="px-6 py-3">Location Interest</th>
                 <th className="px-6 py-3">Budget</th>
                 <th className="px-6 py-3">Intent Score</th>
+                <th className="px-6 py-3">Assigned To</th>
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">Date</th>
               </tr>
@@ -81,6 +83,9 @@ export default function AgentLeadsPage() {
                         <span className="text-gray-300 text-xs">Unscored</span>
                       )}
                     </td>
+                    <td className="px-6 py-3 text-xs text-gray-500">
+                      {l.assigned_agent_name || <span className="text-gray-300">Unassigned</span>}
+                    </td>
                     <td className="px-6 py-3">
                       <Badge
                         label={l.status}
@@ -96,7 +101,7 @@ export default function AgentLeadsPage() {
                 ))}
               {leads.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
                     No leads yet — they appear here when buyers connect via WhatsApp
                   </td>
                 </tr>

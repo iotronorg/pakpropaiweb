@@ -91,6 +91,51 @@ export interface Agent {
   created_at: string;
 }
 
+export interface AgentProfile {
+  id: number;
+  name: string;
+  agent_type: string;
+  phone: string;
+  whatsapp_number: string;
+  email: string;
+  company_name: string;
+  designation: string;
+  bio: string;
+  specializations: string[];
+  cities: string[];
+  areas: string[];
+  primary_city: string;
+  is_verified: boolean;
+  is_active: boolean;
+  is_featured: boolean;
+  total_leads: number;
+  total_listings: number;
+  closed_deals: number;
+  rating: number | null;
+  user_phone: string | null;
+  user_email: string | null;
+  parent_organization: number | null;
+  parent_organization_name: string | null;
+  joined_at: string;
+  updated_at: string;
+}
+
+export interface DocumentScan {
+  id: number;
+  document_type: string;
+  document_name: string | null;
+  sender_phone: string;
+  extracted_fields: Record<string, unknown>;
+  red_flags: string[];
+  confidence: number | null;
+  raw_ocr: string;
+  whatsapp_summary: string;
+  scan_status: string;
+  property_id: string | null;
+  verification_id: string | null;
+  created_at: string;
+}
+
 export interface VerificationRequest {
   id: number;
   property_id: number | null;

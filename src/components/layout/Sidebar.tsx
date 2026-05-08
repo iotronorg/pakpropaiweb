@@ -26,6 +26,7 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Overview", href: "/agent", icon: "⬛" },
     { label: "My Leads", href: "/agent/leads", icon: "📋" },
     { label: "My Listings", href: "/agent/listings", icon: "🏠" },
+    { label: "My Profile", href: "/agent/profile", icon: "👤" },
   ],
   developer: [
     { label: "Overview", href: "/developer", icon: "⬛" },

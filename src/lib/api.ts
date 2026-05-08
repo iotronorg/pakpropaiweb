@@ -132,6 +132,23 @@ export const createCheckout = (dealId: string, gateway: "safepay" | "bsecure") =
 export const getPayments = () =>
   api.get("/payments/");
 
+// Agents
+export const getAgentProfile = () =>
+  api.get("/agents/me/");
+
+export const updateAgentProfile = (data: Record<string, unknown>) =>
+  api.patch("/agents/me/", data);
+
+export const getAgentsList = (params?: Record<string, unknown>) =>
+  api.get("/agents/", { params });
+
+export const updateAgent = (id: number, data: Record<string, unknown>) =>
+  api.patch(`/agents/${id}/`, data);
+
+// Document scans (detail)
+export const getDocumentScan = (id: number) =>
+  api.get(`/verification/documents/${id}/`);
+
 // Fraud monitoring
 export const getFraudStats = () =>
   api.get("/verification/fraud/stats/");

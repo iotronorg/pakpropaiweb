@@ -1,57 +1,83 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { getAgentProfile, getLeads } from "@/lib/api";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatPKR } from "@/lib/utils";
-import { useAuthStore } from "@/store/auth";
-
-interface Lead {
-  id: number;
-  phone: string;
-  name: string | null;
-  budget_max: number | null;
-  location_interest: string | null;
-  intent_score: number | null;
-  status: string;
-  created_at: string;
-}
+import { AgentProfile, Lead } from "@/types";
 
 export default function AgentOverview() {
-  const { user } = useAuthStore();
-
-  const { data: leadsData, isLoading } = useQuery({
-    queryKey: ["agent-leads"],
-    queryFn: () => api.get("/leads/").then((r) => r.data).catch(() => ({ results: [], count: 0 })),
+  const { data: profile, isLoading: profileLoading } = useQuery({
+    queryKey: ["agent-profile"],
+    queryFn: () => getAgentProfile().then((r) => r.data as AgentProfile),
   });
 
+  const { data: leadsData, isLoading: leadsLoading } = useQuery({
+    queryKey: ["agent-leads"],
+    queryFn: () => getLeads().then((r) => r.data).catch(() => ({ results: [], count: 0 })),
+  });
+
+  const isLoading = profileLoading || leadsLoading;
   const leads: Lead[] = leadsData?.results ?? [];
   const hotLeads = leads.filter((l) => (l.intent_score ?? 0) >= 7);
   const today = new Date().toDateString();
   const todayLeads = leads.filter((l) => new Date(l.created_at).toDateString() === today);
 
   return (
-    <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Agent Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">Welcome back, {user?.name || user?.phone}</p>
+    <div className="p-6 space-y-6">
+      {/* Header */}
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Agent Dashboard</h1>
+          {profile ? (
+            <p className="mt-1 text-sm text-gray-500">
+              Welcome back, {profile.name}
+              {profile.company_name ? ` · ${profile.company_name}` : ""}
+            </p>
+          ) : (
+            <p className="mt-1 text-sm text-gray-400">Loading profile…</p>
+          )}
+        </div>
+        {profile && (
+          <div className="flex items-center gap-2">
+            {profile.is_verified && <Badge label="Verified Agent" variant="green" />}
+            {profile.rating !== null && (
+              <span className="text-sm font-semibold text-gray-600">⭐ {profile.rating}/5</span>
+            )}
+          </div>
+        )}
       </div>
+
+      {/* Profile summary strip */}
+      {profile && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <StatsCard label="Total Leads" value={profile.total_leads} color="blue" />
+          <StatsCard label="Hot Leads (7d)" value={hotLeads.length} sub="Intent ≥ 7" color="green" />
+          <StatsCard label="Listings" value={profile.total_listings} color="yellow" />
+          <StatsCard label="Closed Deals" value={profile.closed_deals} color="blue" />
+        </div>
+      )}
 
       {isLoading ? (
         <LoadingSpinner />
       ) : (
         <>
-          <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 mb-8">
-            <StatsCard label="Total Leads" value={leadsData?.count ?? 0} color="blue" />
-            <StatsCard label="Hot Leads" value={hotLeads.length} sub="Intent score ≥ 7" color="green" />
-            <StatsCard label="Today's Leads" value={todayLeads.length} color="yellow" />
-          </div>
+          {/* Today's snapshot */}
+          {!profile && (
+            <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+              <StatsCard label="Total Leads" value={leadsData?.count ?? 0} color="blue" />
+              <StatsCard label="Hot Leads" value={hotLeads.length} sub="Intent score ≥ 7" color="green" />
+              <StatsCard label="Today's Leads" value={todayLeads.length} color="yellow" />
+            </div>
+          )}
 
+          {/* Recent leads table */}
           <div className="rounded-xl border border-gray-200 bg-white">
-            <div className="border-b border-gray-100 px-6 py-4">
+            <div className="border-b border-gray-100 px-6 py-4 flex items-center justify-between">
               <h2 className="font-semibold text-gray-800">Recent Leads</h2>
+              <span className="text-xs text-gray-400">{todayLeads.length} today</span>
             </div>
             <div className="divide-y divide-gray-50">
               {leads.slice(0, 8).map((l) => (
@@ -84,6 +110,20 @@ export default function AgentOverview() {
               )}
             </div>
           </div>
+
+          {/* Cities & areas covered */}
+          {profile && (profile.cities.length > 0 || profile.areas.length > 0) && (
+            <div className="rounded-xl border border-gray-200 bg-white px-6 py-4">
+              <h2 className="font-semibold text-gray-800 mb-3">Coverage</h2>
+              <div className="flex flex-wrap gap-1.5">
+                {[...profile.cities, ...profile.areas].map((c, i) => (
+                  <span key={i} className="text-xs bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full border border-blue-100">
+                    {c}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { api, getDocumentScans } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate } from "@/lib/utils";
+import { DocumentScan } from "@/types";
 
 interface Verification {
   id: string;
@@ -45,9 +46,117 @@ function SignalBar({ score }: { score: number | null }) {
   );
 }
 
+// ── Document Scan Detail Modal ────────────────────────────────────────────────
+
+function ScanDetailModal({ verificationId, onClose }: { verificationId: string; onClose: () => void }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ["doc-scans", verificationId],
+    queryFn: () => getDocumentScans({ verification: verificationId }).then((r) => r.data),
+  });
+
+  const scans: DocumentScan[] = data?.results ?? [];
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="bg-white rounded-2xl w-full max-w-2xl max-h-[85vh] flex flex-col shadow-xl">
+        <div className="flex items-center justify-between px-6 py-4 border-b">
+          <h2 className="font-semibold text-gray-900">Document Scans</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+
+        <div className="overflow-y-auto flex-1 p-4 space-y-4">
+          {isLoading && <div className="flex justify-center py-8"><LoadingSpinner /></div>}
+          {!isLoading && scans.length === 0 && (
+            <p className="text-center text-gray-400 py-8">No document scans linked to this verification.</p>
+          )}
+          {scans.map((scan) => (
+            <div key={scan.id} className="border rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-semibold text-gray-800 capitalize">
+                    {scan.document_type.replace(/_/g, " ")}
+                  </span>
+                  {scan.document_name && (
+                    <span className="text-xs text-gray-400">{scan.document_name}</span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  {scan.confidence !== null && (
+                    <span className="text-xs text-gray-500">
+                      Confidence: {Math.round(scan.confidence * 100)}%
+                    </span>
+                  )}
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    scan.scan_status === "completed" ? "bg-green-50 text-green-700"
+                    : scan.scan_status === "failed" ? "bg-red-50 text-red-700"
+                    : "bg-yellow-50 text-yellow-700"
+                  }`}>{scan.scan_status}</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-gray-400 font-mono">{scan.sender_phone} · {formatDate(scan.created_at)}</p>
+
+              {scan.red_flags.length > 0 && (
+                <div className="bg-red-50 border border-red-100 rounded-lg p-3">
+                  <p className="text-xs font-semibold text-red-700 mb-1">Red Flags</p>
+                  <ul className="space-y-0.5">
+                    {scan.red_flags.map((f, i) => (
+                      <li key={i} className="text-xs text-red-600 flex gap-1">
+                        <span>•</span>{f}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {Object.keys(scan.extracted_fields).length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 mb-1.5">Extracted Fields</p>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                    {Object.entries(scan.extracted_fields).map(([k, v]) => (
+                      <div key={k} className="flex gap-1">
+                        <span className="text-xs text-gray-400 capitalize">{k.replace(/_/g, " ")}:</span>
+                        <span className="text-xs text-gray-700 font-medium truncate">{String(v)}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {scan.whatsapp_summary && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 mb-1">AI Summary</p>
+                  <p className="text-xs text-gray-700 leading-relaxed">{scan.whatsapp_summary}</p>
+                </div>
+              )}
+
+              {scan.raw_ocr && (
+                <details className="group">
+                  <summary className="text-xs font-semibold text-gray-400 cursor-pointer hover:text-gray-600">
+                    Raw OCR text ▸
+                  </summary>
+                  <pre className="mt-2 text-xs text-gray-600 bg-gray-50 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap max-h-40 overflow-y-auto">
+                    {scan.raw_ocr}
+                  </pre>
+                </details>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────────────────
+
 export default function VerificationPage() {
   const queryClient = useQueryClient();
   const [reviewingId, setReviewingId] = useState<string | null>(null);
+  const [scanModalId, setScanModalId] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
 
   const { data, isLoading } = useQuery({
@@ -69,6 +178,10 @@ export default function VerificationPage() {
 
   return (
     <div>
+      {scanModalId && (
+        <ScanDetailModal verificationId={scanModalId} onClose={() => setScanModalId(null)} />
+      )}
+
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Verification Queue</h1>
         <p className="mt-1 text-sm text-gray-500">
@@ -117,10 +230,15 @@ export default function VerificationPage() {
                     <td className="px-6 py-3">
                       <SignalBar score={v.signal_score} />
                     </td>
-                    <td className="px-6 py-3 text-gray-600">
-                      {v.document_count}
+                    <td className="px-6 py-3">
+                      <button
+                        onClick={() => setScanModalId(v.id)}
+                        className="text-xs text-blue-600 hover:underline font-medium"
+                      >
+                        {v.document_count} {v.document_count === 1 ? "doc" : "docs"}
+                      </button>
                       {v.document_types.length > 0 && (
-                        <p className="text-xs text-gray-400">{v.document_types.join(", ")}</p>
+                        <p className="text-xs text-gray-400 mt-0.5">{v.document_types.join(", ")}</p>
                       )}
                     </td>
                     <td className="px-6 py-3">
