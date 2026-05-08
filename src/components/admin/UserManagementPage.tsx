@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getUsers, createUser, updateUser, deleteUser } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
@@ -117,8 +117,8 @@ export function UserManagementPage({ role, roleLabel, roleColor }: Props) {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {users.map((u) => (
-                <>
-                  <tr key={u.id} className="hover:bg-gray-50">
+                <React.Fragment key={u.id}>
+                  <tr className="hover:bg-gray-50">
                     <td className="px-6 py-3 font-mono text-gray-700">{u.phone}</td>
                     <td className="px-6 py-3 text-gray-800">{u.name || <span className="text-gray-300">—</span>}</td>
                     <td className="px-6 py-3 text-gray-500">{u.email || <span className="text-gray-300">—</span>}</td>
@@ -166,7 +166,7 @@ export function UserManagementPage({ role, roleLabel, roleColor }: Props) {
 
                   {/* Inline edit row */}
                   {editId === u.id && (
-                    <tr key={`${u.id}-edit`} className="bg-blue-50">
+                    <tr className="bg-blue-50">
                       <td colSpan={6} className="px-6 py-4">
                         <div className="flex flex-wrap gap-3 items-center">
                           <input
@@ -220,7 +220,7 @@ export function UserManagementPage({ role, roleLabel, roleColor }: Props) {
                       </td>
                     </tr>
                   )}
-                </>
+                </React.Fragment>
               ))}
               {users.length === 0 && (
                 <tr>

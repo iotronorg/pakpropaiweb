@@ -27,6 +27,8 @@ export interface AuthResponse {
 
 export interface Property {
   id: string;
+  owner: string | null;
+  owner_phone: string | null;
   title: string;
   description: string;
   city: string;
@@ -39,7 +41,10 @@ export interface Property {
   legal_status: "unverified" | "verified" | "disputed" | "pending";
   ai_score: number | null;
   risk_level: "low" | "medium" | "high" | null;
+  assigned_agent: number | null;
+  is_active: boolean;
   created_at: string;
+  updated_at: string;
 }
 
 export interface Lead {

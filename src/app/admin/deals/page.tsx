@@ -87,7 +87,7 @@ export default function AdminDealsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["deals", statusFilter],
-    queryFn:  () => getDealLocks(statusFilter ? { status: statusFilter } : {}),
+    queryFn:  () => getDealLocks(statusFilter ? { status: statusFilter } : {}).then(r => r.data),
   });
 
   const { data: paymentsData } = useQuery({
@@ -126,7 +126,7 @@ export default function AdminDealsPage() {
     }
   }
 
-  const deals: DealLock[] = data?.data ?? [];
+  const deals: DealLock[] = data?.results ?? [];
   const payments: Payment[] = paymentsData?.results ?? [];
 
   const tabs = [

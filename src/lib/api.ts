@@ -54,6 +54,9 @@ export const getMe = () => api.get("/auth/me/");
 // Users (admin)
 export const getUsers = (role?: string) =>
   api.get("/auth/users/", { params: role ? { role } : undefined });
+
+export const searchUsers = (query: string) =>
+  api.get("/auth/users/", { params: { search: query } });
 export const createUser = (data: Record<string, unknown>) =>
   api.post("/auth/users/", data);
 export const updateUser = (id: string, data: Record<string, unknown>) =>
@@ -94,8 +97,14 @@ export const rescoreAllProperties = () =>
 
 export const getProperty = (id: string) => api.get(`/properties/${id}/`);
 
+export const createProperty = (data: Record<string, unknown>) =>
+  api.post("/properties/", data);
+
 export const updateProperty = (id: string, data: Record<string, unknown>) =>
   api.patch(`/properties/${id}/`, data);
+
+export const deleteProperty = (id: string) =>
+  api.delete(`/properties/${id}/`);
 
 // Verification
 export const getFraudCheck = (params?: Record<string, unknown>) =>
@@ -147,8 +156,14 @@ export const updateAgentProfile = (data: Record<string, unknown>) =>
 export const getAgentsList = (params?: Record<string, unknown>) =>
   api.get("/agents/", { params });
 
+export const createAgent = (data: Record<string, unknown>) =>
+  api.post("/agents/", data);
+
 export const updateAgent = (id: number, data: Record<string, unknown>) =>
   api.patch(`/agents/${id}/`, data);
+
+export const deleteAgent = (id: number) =>
+  api.delete(`/agents/${id}/`);
 
 // Document scans (detail)
 export const getDocumentScan = (id: number) =>
