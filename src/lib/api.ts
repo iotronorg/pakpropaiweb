@@ -1,0 +1,89 @@
+import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
+
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+
+export const api = axios.create({
+  baseURL: BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
+
+api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("access_token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+  }
+  return config;
+});
+
+api.interceptors.response.use(
+  (res) => res,
+  async (error: AxiosError) => {
+    const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    if (error.response?.status === 401 && !original._retry) {
+      original._retry = true;
+      const refresh = localStorage.getItem("refresh_token");
+      if (refresh) {
+        try {
+          const { data } = await axios.post(`${BASE_URL}/auth/token/refresh/`, { refresh });
+          localStorage.setItem("access_token", data.access);
+          original.headers.Authorization = `Bearer ${data.access}`;
+          return api(original);
+        } catch {
+          localStorage.clear();
+          window.location.href = "/login";
+        }
+      } else {
+        window.location.href = "/login";
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Auth
+export const sendOtp = (phone: string) =>
+  api.post("/auth/otp/send/", { phone });
+
+export const verifyOtp = (phone: string, code: string) =>
+  api.post("/auth/otp/verify/", { phone, code });
+
+export const getMe = () => api.get("/auth/me/");
+
+// Users (admin)
+export const getUsers = () => api.get("/auth/users/");
+export const updateUser = (id: string, data: Record<string, unknown>) =>
+  api.patch(`/auth/users/${id}/`, data);
+
+// Leads
+export const getLeads = () => api.get("/leads/");
+export const updateLead = (id: string, data: Record<string, unknown>) =>
+  api.patch(`/leads/${id}/`, data);
+
+// Verification
+export const getVerificationQueue = (params?: Record<string, unknown>) =>
+  api.get("/verification/queue/", { params });
+export const reviewVerification = (id: string, data: { status: string; notes?: string }) =>
+  api.patch(`/verification/queue/${id}/`, data);
+export const getDocumentScans = (params?: Record<string, unknown>) =>
+  api.get("/verification/documents/", { params });
+export const linkDocumentToVerification = (scanId: number, verificationId: string) =>
+  api.post(`/verification/documents/${scanId}/link/${verificationId}/`);
+
+// Properties
+export const getProperties = (params?: Record<string, unknown>) =>
+  api.get("/properties/", { params });
+
+export const getProperty = (id: number) => api.get(`/properties/${id}/`);
+
+export const updateProperty = (id: number, data: Record<string, unknown>) =>
+  api.patch(`/properties/${id}/`, data);
+
+// Verification
+export const getFraudCheck = (params?: Record<string, unknown>) =>
+  api.get("/verification/fraud-check/", { params });
+
+// Audit
+export const downloadAudit = (id: number) =>
+  api.get(`/audit/download/${id}/`, { responseType: "blob" });
