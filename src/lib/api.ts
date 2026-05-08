@@ -107,8 +107,8 @@ export const deleteProperty = (id: string) =>
   api.delete(`/properties/${id}/`);
 
 // Verification
-export const getFraudCheck = (params?: Record<string, unknown>) =>
-  api.get("/verification/fraud-check/", { params });
+export const runFraudCheck = (query: string) =>
+  api.post("/verification/fraud-check/", { query });
 
 // Audit
 export const downloadAudit = (id: number) =>
