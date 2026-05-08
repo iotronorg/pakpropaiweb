@@ -1,7 +1,7 @@
 # PakProp AI Web — Build Progress
 
-**Last updated:** 2026-05-08 (session 9)
-**Current phase:** Phase 3 — frontend complete + RBAC hardened
+**Last updated:** 2026-05-08 (session 10)
+**Current phase:** Phase 3 — frontend complete + RBAC hardened + live system config
 
 ---
 
@@ -71,6 +71,14 @@
 | **Admin: Users — deactivate + change role** | `src/app/admin/users/page.tsx` — Deactivate/Activate button; inline "Change Role" expander with role pills → `updateUser(id, { role })` |
 | **Admin: Overview — three-section stats** | `src/app/admin/page.tsx` — Properties / Leads+Agents / Deal Locks sections with 4 stat cards each; 4 parallel queries replacing placeholder data |
 | `updateAgent` API call added | `src/lib/api.ts` — `updateAgent(id, data)` → `PATCH /agents/{id}/`; used by admin agents page toggles |
+| **Admin: System Setup — fully functional** | `src/app/admin/setup/page.tsx` — full rewrite; 4 live sections: WhatsApp API, AI Backend, Payment Gateway, WhatsApp Features |
+| **Setup: API keys with masking** | Sensitive fields show ✓ Configured / Not set badge; blank on save keeps existing value; new value overwrites |
+| **Setup: First-run warning banner** | Red banner lists every missing required key (`wa_access_token`, `wa_phone_number_id`, `wa_verify_token`, `gemini_api_key`); green banner when fully configured |
+| **Setup: Payment gateway selector** | Radio card group (Manual / Safepay / bSecure); gateway-specific credential fields expand inline; only the chosen gateway is active system-wide |
+| **Setup: WhatsApp feature toggles** | 10 toggle switches in 2-column grid; each toggle maps to a backend feature flag; disabled features hidden from greeting and unavailable to AI |
+| **Setup: Scraper toggle** | Toggle in search settings sub-section; disables Zameen/Graana/OLX scraper when off; DB-only results returned |
+| `getConfig` / `updateConfig` API calls | `src/lib/api.ts` — `GET /config/` and `PATCH /config/` |
+| `SystemConfig` type added | `src/types/index.ts` — full interface with sensitive, control, feature, and computed fields |
 
 ---
 
@@ -78,7 +86,6 @@
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Admin Setup page is UI-only | Low | Config values need `.env` changes on the backend; no settings API built yet |
 | Cookie vs localStorage token hybrid | Low | Tokens in both localStorage (axios) and cookies (middleware) — consolidate to httpOnly cookies for production |
 | No pagination UI | Low | TanStack Query fetches first page only; add infinite scroll or pagination controls if counts grow |
 | No client-side deal lock initiation flow | Low | `initiateDealLock` is in `api.ts` but no UI page for buyers to start a lock (WhatsApp is the primary path) |

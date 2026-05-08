@@ -167,3 +167,10 @@ export const addBlacklistToken = (data: { token: string; reason: string; ttl_day
 
 export const removeBlacklistToken = (id: number) =>
   api.delete(`/verification/fraud/blacklist/${id}/`);
+
+// ── System Config ──────────────────────────────────────────────────────────────
+export const getConfig = () =>
+  api.get("/config/").then((r) => r.data);
+
+export const updateConfig = (data: Record<string, string>) =>
+  api.patch("/config/", data).then((r) => r.data);

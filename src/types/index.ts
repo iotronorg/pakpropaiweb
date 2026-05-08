@@ -178,6 +178,43 @@ export interface Payment {
   created_at: string;
 }
 
+export interface SystemConfig {
+  // Non-sensitive (actual values returned)
+  wa_phone_number_id: string;
+  wa_verify_token: string;
+  wa_otp_template_name: string;
+  gemini_model: string;
+  ai_backend: string;
+  base_url: string;
+  safepay_environment: string;
+  bsecure_environment: string;
+  // Sensitive — backend returns "__configured__" if set, "" if not
+  wa_access_token: string;
+  wa_app_secret: string;
+  gemini_api_key: string;
+  safepay_merchant_key: string;
+  safepay_secret_key: string;
+  bsecure_client_id: string;
+  bsecure_client_secret: string;
+  // Payment control
+  active_payment_gateway: "safepay" | "bsecure" | "manual";
+  // Feature toggles ("true" | "false" strings)
+  feature_property_search: string;
+  feature_property_listing: string;
+  feature_tax_advice: string;
+  feature_loan_eligibility: string;
+  feature_scam_check: string;
+  feature_document_verification: string;
+  feature_property_audit: string;
+  feature_talk_to_agent: string;
+  feature_deal_lock: string;
+  feature_voice_messages: string;
+  scraper_search_enabled: string;
+  // Computed
+  setup_complete: boolean;
+  missing_required: string[];
+}
+
 export interface ApiError {
   detail?: string;
   message?: string;
