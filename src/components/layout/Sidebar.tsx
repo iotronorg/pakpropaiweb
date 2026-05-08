@@ -19,6 +19,8 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Agents", href: "/admin/agents", icon: "🏢" },
     { label: "Properties", href: "/admin/properties", icon: "🏠" },
     { label: "Verification", href: "/admin/verification", icon: "✅" },
+    { label: "Deal Locks", href: "/admin/deals", icon: "🔒" },
+    { label: "Fraud Monitor", href: "/admin/fraud", icon: "🚨" },
   ],
   agent: [
     { label: "Overview", href: "/agent", icon: "⬛" },

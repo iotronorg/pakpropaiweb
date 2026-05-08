@@ -1,7 +1,7 @@
 # PakProp AI Web — Build Progress
 
-**Last updated:** 2026-05-08 (session 5)
-**Current phase:** Phase 2 (dashboard MVP)
+**Last updated:** 2026-05-08 (session 7)
+**Current phase:** Phase 3 — all core dashboard pages built
 
 ---
 
@@ -29,6 +29,9 @@
 | Developer: Overview | `src/app/developer/page.tsx` |
 | Developer: Inventory (filterable by property type) | `src/app/developer/inventory/page.tsx` |
 | Developer: Lead Analytics (hot/warm/cold breakdown) | `src/app/developer/leads/page.tsx` |
+| **Admin: Deal Locks + Payments** (two-tab page) | `src/app/admin/deals/page.tsx` — Deal Locks tab: filter, confirm modal, 48h timer, cancel; Payments tab: full gateway table |
+| **Admin: Fraud Monitor** (stats, alerts, flagged users, blacklist) | `src/app/admin/fraud/page.tsx` — 8 stat cards, severity-coded alert feed, flagged users table, blacklist CRUD |
+| **Agent Listings: Lock badge** | `src/app/agent/listings/page.tsx` — 🔒 Locked badge on properties with active deal lock |
 | `.env.local` with backend URL | `.env.local` |
 | CORS fixed (backend) | `django-cors-headers` added to backend; `localhost:3000` allowed |
 | Input visibility fixed globally | `globals.css` — `color-scheme: light`, dark mode removed, base input color set |
@@ -43,6 +46,12 @@
 | `Property` type corrected | `src/types/index.ts` — now matches backend: `price_pkr`, `area_marla`, `legal_status`, `ai_score`, `risk_level`; removed stale `price`, `size`, `is_verified`, `bedrooms`, `listing_type`, `source` |
 | Agent: Listings — fully rebuilt | `src/app/agent/listings/page.tsx` — uses `GET /properties/mine/`, filter tabs (all/verified/pending/unverified/disputed), score bar, request verification button |
 | `getMyProperties` / `requestVerification` API calls added | `src/lib/api.ts` |
+| Deal lock API calls added | `src/lib/api.ts` — `getDealLocks`, `getMyDealLocks`, `getDealLock`, `initiateDealLock`, `confirmDealLock`, `cancelDealLock` |
+| Payment API calls added | `src/lib/api.ts` — `createCheckout`, `getPayments` |
+| Fraud monitoring API calls added | `src/lib/api.ts` — `getFraudStats`, `getFraudAlerts`, `getFlaggedUsers`, `getBlacklist`, `addBlacklistToken`, `removeBlacklistToken` |
+| `DealLock` + `DealLockStatus` types added | `src/types/index.ts` |
+| `Payment` type added | `src/types/index.ts` |
+| `Lead` type corrected | `src/types/index.ts` — `id` is `string` (UUID), added `intent`, `notes`, `assigned_agent_id`, `assigned_agent_name` |
 | Admin: Overview — fixed stale field refs | `src/app/admin/page.tsx` — `p.is_verified` → `p.legal_status` |
 | Admin: Properties — fixed stale field refs | `src/app/admin/properties/page.tsx` — `p.price` → `p.price_pkr`, verify action uses `legal_status`, Source column → AI Score |
 | Developer: Overview — fixed stale field refs | `src/app/developer/page.tsx` — `p.listing_type` / `p.is_verified` → `p.legal_status` |
@@ -52,16 +61,18 @@
 
 ## Known Gaps / Next Steps
 
-| Item | Notes |
-|------|-------|
-| ~~Backend `/leads/` endpoint missing~~ | ✅ Fixed — `GET /api/v1/leads/` and `PATCH /api/v1/leads/<id>/` now live |
-| ~~Backend user list endpoint missing~~ | ✅ Fixed — `GET /api/v1/auth/users/` now live (admin only) |
-| Admin Setup page is UI-only | Config values need to POST to a backend settings API or be set manually in `.env` |
-| Cookie vs localStorage hybrid | Tokens in both localStorage (for axios) and cookies (for middleware) — clean up to use httpOnly cookies if security is critical |
-| No pagination UI | TanStack Query fetches page 1 only — add pagination controls if counts grow |
-| ~~Agent listings page has no backend data~~ | ✅ Fixed — uses `GET /properties/mine/` with filter tabs and score bar |
-| Document scan detail view missing | Admin can see scan list but no drill-down to view full OCR text and extracted fields |
-| Admin Properties page has no rescore button | `rescoreProperty` / `rescoreAllProperties` are wired in `api.ts` but no UI trigger yet — add to admin properties page |
+| Item | Priority | Notes |
+|------|----------|-------|
+| Admin Setup page is UI-only | Low | Config values need `.env` changes on the backend; no settings API built yet |
+| Cookie vs localStorage token hybrid | Low | Tokens in both localStorage (axios) and cookies (middleware) — consolidate to httpOnly cookies for production |
+| No pagination UI | Low | TanStack Query fetches first page only; add infinite scroll or pagination controls if counts grow |
+| Document scan detail view missing | Medium | Admin can see scan list but no drill-down to view full OCR text/extracted fields |
+| Admin Properties page has no rescore button | Medium | `rescoreProperty` / `rescoreAllProperties` are wired in `api.ts` but no UI trigger — add button to admin properties page |
+| Agent overview page — profile not loaded | Medium | Backend `GET /api/v1/agents/me/` is live; agent overview page still shows placeholder stats instead of real profile |
+| Lead tables missing `assigned_agent_name` column | Low | Field is in serializer; needs to be added to agent/admin lead table UI |
+| Payment return page is raw JSON | Low | `/payments/return/?status=success&deal_id=<uuid>` returns JSON — replace with a styled Next.js page |
+| No client-side deal lock initiation flow | Medium | `initiateDealLock` is in `api.ts` but no UI page for buyers to start a lock from the dashboard (WhatsApp is the primary path) |
+| Fraud alert feed has no real-time push | Low | Currently polled at page load; add WebSocket or polling interval for live monitoring |
 
 ---
 

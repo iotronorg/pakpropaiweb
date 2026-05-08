@@ -39,7 +39,7 @@ export interface Property {
 }
 
 export interface Lead {
-  id: number;
+  id: string;
   phone: string;
   name: string | null;
   budget_min: number | null;
@@ -47,8 +47,36 @@ export interface Lead {
   location_interest: string | null;
   intent_score: number | null;
   status: string;
+  intent: string | null;
+  notes: string;
+  assigned_agent_id: string | null;
+  assigned_agent_name: string | null;
   created_at: string;
-  agent_id: number | null;
+}
+
+export type DealLockStatus = "initiated" | "locked" | "released" | "cancelled" | "disputed" | "expired";
+
+export interface DealLock {
+  id: string;
+  property: string;
+  property_title: string;
+  property_city: string;
+  buyer_phone: string;
+  seller_phone: string | null;
+  agent_name: string | null;
+  token_amount: number;
+  status: DealLockStatus;
+  payment_gateway: string;
+  payment_ref: string;
+  initiated_via: string;
+  buyer_confirmed: boolean;
+  seller_confirmed: boolean;
+  lock_started_at: string | null;
+  lock_expires_at: string | null;
+  hours_remaining: number | null;
+  admin_notes: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Agent {
@@ -90,6 +118,19 @@ export interface StatsOverview {
   active_agents: number;
   scam_checks_today: number;
   audits_generated: number;
+}
+
+export interface Payment {
+  id: string;
+  user: string;
+  amount_pkr: number;
+  purpose: string;
+  gateway: string;
+  status: "pending" | "completed" | "failed" | "refunded";
+  reference: string;
+  checkout_url: string;
+  deal_id: string | null;
+  created_at: string;
 }
 
 export interface ApiError {

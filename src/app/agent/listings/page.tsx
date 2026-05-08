@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyProperties, requestVerification } from "@/lib/api";
+import { getMyProperties, requestVerification, getDealLocks } from "@/lib/api";
+import { DealLock } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatPKR } from "@/lib/utils";
@@ -39,6 +40,12 @@ export default function AgentListingsPage() {
     queryKey: ["agent-listings"],
     queryFn: () => getMyProperties().then((r) => r.data),
   });
+
+  const { data: dealsData } = useQuery({
+    queryKey: ["active-deals"],
+    queryFn: () => getDealLocks({ status: "locked" }).then((r) => r.data as DealLock[]),
+  });
+  const lockedPropertyIds = new Set<string>((dealsData ?? []).map((d) => d.property));
 
   const verifyMutation = useMutation({
     mutationFn: (id: string) => requestVerification(id),
@@ -115,12 +122,19 @@ export default function AgentListingsPage() {
               className="rounded-xl border border-gray-200 bg-white p-5 flex flex-col gap-3"
             >
               {/* Header row */}
-              <div className="flex items-start justify-between gap-2">
+              <div className="flex items-start justify-between gap-2 flex-wrap">
                 <Badge label={p.property_type} />
-                <Badge
-                  label={p.legal_status}
-                  variant={LEGAL_COLOR[p.legal_status] ?? "gray"}
-                />
+                <div className="flex gap-1 items-center">
+                  {lockedPropertyIds.has(p.id) && (
+                    <span className="text-xs font-semibold bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+                      🔒 Locked
+                    </span>
+                  )}
+                  <Badge
+                    label={p.legal_status}
+                    variant={LEGAL_COLOR[p.legal_status] ?? "gray"}
+                  />
+                </div>
               </div>
 
               {/* Title + location */}

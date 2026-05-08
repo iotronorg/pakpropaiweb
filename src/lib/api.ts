@@ -99,3 +99,54 @@ export const getFraudCheck = (params?: Record<string, unknown>) =>
 // Audit
 export const downloadAudit = (id: number) =>
   api.get(`/audit/download/${id}/`, { responseType: "blob" });
+
+// Deal Locks
+export const getDealLocks = (params?: Record<string, unknown>) =>
+  api.get("/deals/", { params });
+
+export const getMyDealLocks = () =>
+  api.get("/deals/mine/");
+
+export const getDealLock = (id: string) =>
+  api.get(`/deals/lock/${id}/`);
+
+export const initiateDealLock = (data: {
+  property_id: string;
+  token_amount: number;
+  payment_gateway: string;
+}) => api.post("/deals/lock/", data);
+
+export const confirmDealLock = (id: string, data: {
+  payment_ref: string;
+  payment_gateway?: string;
+  admin_notes?: string;
+}) => api.patch(`/deals/lock/${id}/confirm/`, data);
+
+export const cancelDealLock = (id: string, reason?: string) =>
+  api.patch(`/deals/lock/${id}/cancel/`, { reason });
+
+// Payments
+export const createCheckout = (dealId: string, gateway: "safepay" | "bsecure") =>
+  api.post(`/payments/checkout/${dealId}/`, { gateway });
+
+export const getPayments = () =>
+  api.get("/payments/");
+
+// Fraud monitoring
+export const getFraudStats = () =>
+  api.get("/verification/fraud/stats/");
+
+export const getFraudAlerts = (limit = 50) =>
+  api.get("/verification/fraud/alerts/", { params: { limit } });
+
+export const getFlaggedUsers = () =>
+  api.get("/verification/fraud/users/");
+
+export const getBlacklist = () =>
+  api.get("/verification/fraud/blacklist/");
+
+export const addBlacklistToken = (data: { token: string; reason: string; ttl_days?: number }) =>
+  api.post("/verification/fraud/blacklist/", data);
+
+export const removeBlacklistToken = (id: number) =>
+  api.delete(`/verification/fraud/blacklist/${id}/`);
