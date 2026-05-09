@@ -37,6 +37,8 @@ export default function LoginPage() {
     try {
       await sendOtp(data.phone);
       setPhone(data.phone);
+      // Reset phone input field
+      phoneForm.reset();
       setStep("otp");
     } catch {
       setError("Could not send OTP. Check the phone number.");
@@ -51,7 +53,8 @@ export default function LoginPage() {
     try {
       const res = await verifyOtp(phone, data.code);
       const { user } = res.data as { user: User };
-
+       // Reset OTP input field
+      otpForm.reset();
       if (user.role === "user") {
         setStep("no-access");
         return;
@@ -165,7 +168,7 @@ export default function LoginPage() {
 
               <button
                 type="button"
-                onClick={() => { setStep("phone"); setError(""); }}
+                onClick={() => { setStep("phone"); setError(""); phoneForm.reset(); otpForm.reset();}}
                 className="w-full text-sm text-gray-500 hover:text-gray-700"
               >
                 Use a different number
