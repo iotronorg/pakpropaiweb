@@ -15,6 +15,14 @@ export interface User {
 }
 
 
+export interface PropertyImage {
+  id: string;
+  image: string;
+  caption: string;
+  order: number;
+  created_at: string;
+}
+
 export interface Property {
   id: string;
   owner: string | null;
@@ -33,6 +41,9 @@ export interface Property {
   risk_level: "low" | "medium" | "high" | null;
   assigned_agent: number | null;
   is_active: boolean;
+  installment_available: boolean;
+  primary_image: string | null;
+  images: PropertyImage[];
   created_at: string;
   updated_at: string;
 }
@@ -48,9 +59,40 @@ export interface Lead {
   status: string;
   intent: string | null;
   notes: string;
-  assigned_agent_id: string | null;
+  assigned_agent_id: number | null;
   assigned_agent_name: string | null;
   created_at: string;
+}
+
+export interface ConversationMessage {
+  id: string;
+  direction: "inbound" | "outbound";
+  channel: "whatsapp" | "dashboard";
+  body: string;
+  sender_phone: string | null;
+  sender_name: string | null;
+  wa_message_id: string;
+  created_at: string;
+}
+
+export type AppointmentStatus = "scheduled" | "confirmed" | "completed" | "cancelled" | "rescheduled";
+
+export interface Appointment {
+  id: string;
+  lead: string;
+  lead_phone: string;
+  property: string | null;
+  property_title: string | null;
+  agent: number | null;
+  agent_name: string | null;
+  scheduled_at: string;
+  duration_minutes: number;
+  status: AppointmentStatus;
+  notes: string;
+  reminder_sent_at: string | null;
+  created_by: number | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export type DealLockStatus = "initiated" | "locked" | "released" | "cancelled" | "disputed" | "expired";
@@ -137,10 +179,13 @@ export interface DocumentScan {
 }
 
 export interface VerificationRequest {
-  id: number;
-  property_id: number | null;
+  id: string;
+  property_id: string | null;
   document_type: string;
-  status: string;
+  status: "pending" | "approved" | "rejected" | "needs_info";
+  signal_score: number | null;
+  fraud_flags: string[];
+  notes: string;
   risk_level: string | null;
   summary: string | null;
   created_at: string;
@@ -213,6 +258,29 @@ export interface SystemConfig {
   // Computed
   setup_complete: boolean;
   missing_required: string[];
+}
+
+export type ReportType = "property_analysis" | "tax_advisory" | "loan_eligibility" | "fraud_check";
+export type ReportStatus = "pending" | "generating" | "ready" | "failed";
+
+export interface Report {
+  id: string;
+  report_type: ReportType;
+  status: ReportStatus;
+  file_url: string | null;
+  created_at: string;
+  ready_at: string | null;
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  channel: "whatsapp" | "sms" | "email";
+  message: string;
+  status: "pending" | "sent" | "failed" | "delivered";
+  is_read: boolean;
+  created_at: string;
+  sent_at: string | null;
 }
 
 export interface ApiError {

@@ -1,103 +1,171 @@
 # PakProp AI Web — Build Progress
 
-**Last updated:** 2026-05-08 (session 11)
-**Current phase:** Phase 3 — frontend complete + RBAC hardened + live system config + admin user management
+**Last updated:** 2026-05-09 (session 24 — analytics charts + audit log page)
+**Current phase:** Phase 6 in progress (analytics charts done; deployment prep remains)
+**Frontend completion score:** 83% (analytics charts, audit log, and sidebar nav complete; deployment + pagination remain)
 
 ---
 
 ## Completed ✅
 
+### Foundation
+
 | Feature | File(s) |
 |---------|---------|
 | Next.js 15 scaffold (TypeScript, Tailwind, App Router) | `package.json`, `src/` |
-| API client with JWT auto-refresh | `src/lib/api.ts` |
+| API client with JWT auto-refresh interceptor | `src/lib/api.ts` |
 | Zustand auth store (persist to localStorage + cookies) | `src/store/auth.ts` |
-| Role-based middleware (admin/agent/developer routes) | `src/middleware.ts` |
-| Login page — OTP flow (send + verify + JWT + role redirect) | `src/app/login/page.tsx` — fixed response shape mismatch (`access/refresh` flat, not nested `tokens`) |
-| Shared sidebar with role-aware nav | `src/components/layout/Sidebar.tsx` |
-| Dashboard shell layout | `src/components/layout/DashboardLayout.tsx` |
-| StatsCard, Badge, LoadingSpinner UI components | `src/components/ui/` |
-| Admin: Overview (property stats + recent listings) | `src/app/admin/page.tsx` |
-| Admin: System Setup (WhatsApp, AI, DB config panels) | `src/app/admin/setup/page.tsx` |
-| Admin: Users | `src/app/admin/users/page.tsx` |
-| Admin: Agents | `src/app/admin/agents/page.tsx` |
-| Admin: Properties (moderation + one-click verify) | `src/app/admin/properties/page.tsx` |
-| Admin: Verification queue | `src/app/admin/verification/page.tsx` |
-| Agent: Overview (lead stats) | `src/app/agent/page.tsx` |
-| Agent: Leads (sorted by intent score + bar chart) | `src/app/agent/leads/page.tsx` |
-| Agent: Listings (card grid) | `src/app/agent/listings/page.tsx` |
-| Developer: Overview | `src/app/developer/page.tsx` |
-| Developer: Inventory (filterable by property type) | `src/app/developer/inventory/page.tsx` |
-| Developer: Lead Analytics (hot/warm/cold breakdown) | `src/app/developer/leads/page.tsx` |
-| **Admin: Deal Locks + Payments** (two-tab page) | `src/app/admin/deals/page.tsx` — Deal Locks tab: filter, confirm modal, 48h timer, cancel; Payments tab: full gateway table |
-| **Admin: Fraud Monitor** (stats, alerts, flagged users, blacklist) | `src/app/admin/fraud/page.tsx` — 8 stat cards, severity-coded alert feed, flagged users table, blacklist CRUD |
-| **Agent Listings: Lock badge** | `src/app/agent/listings/page.tsx` — 🔒 Locked badge on properties with active deal lock |
+| Role-based middleware (admin/agent/developer/public routes) | `src/middleware.ts` |
+| Login page — OTP flow (send → verify → JWT → role redirect) | `src/app/login/page.tsx` |
+| Client role (`role=user`) blocked at login — WhatsApp redirect shown | `src/app/login/page.tsx` |
+| Payment return page added to PUBLIC_PATHS (no session needed) | `src/middleware.ts` |
 | `.env.local` with backend URL | `.env.local` |
-| CORS fixed (backend) | `django-cors-headers` added to backend; `localhost:3000` allowed |
-| Input visibility fixed globally | `globals.css` — `color-scheme: light`, dark mode removed, base input color set |
-| `getUsers` / `updateUser` API calls | `src/lib/api.ts` — consume new `/auth/users/` backend endpoint |
-| `getLeads` / `updateLead` API calls | `src/lib/api.ts` — consume new `/leads/` backend endpoint |
-| Admin: Users — now fetches full user list | `src/app/admin/users/page.tsx` — switched from `/auth/me/` placeholder to real `/auth/users/` |
-| `User` type corrected | `src/types/index.ts` — `id` is `string` (UUID), `name` nullable, `email` added |
-| `AuthResponse` type corrected | `src/types/index.ts` — flat `access/refresh` fields, not nested `tokens` |
-| Admin: Verification queue — fully rebuilt | `src/app/admin/verification/page.tsx` — signal score bar, doc count, red flags, inline Approve/Reject/Dispute with notes |
-| Verification API calls added | `src/lib/api.ts` — `getVerificationQueue`, `reviewVerification`, `getDocumentScans`, `linkDocumentToVerification` |
-| Property rescore API calls added | `src/lib/api.ts` — `rescoreProperty`, `rescoreAllProperties` — wired to new backend endpoints |
-| `Property` type corrected | `src/types/index.ts` — now matches backend: `price_pkr`, `area_marla`, `legal_status`, `ai_score`, `risk_level`; removed stale `price`, `size`, `is_verified`, `bedrooms`, `listing_type`, `source` |
-| Agent: Listings — fully rebuilt | `src/app/agent/listings/page.tsx` — uses `GET /properties/mine/`, filter tabs (all/verified/pending/unverified/disputed), score bar, request verification button |
-| `getMyProperties` / `requestVerification` API calls added | `src/lib/api.ts` |
-| Deal lock API calls added | `src/lib/api.ts` — `getDealLocks`, `getMyDealLocks`, `getDealLock`, `initiateDealLock`, `confirmDealLock`, `cancelDealLock` |
-| Payment API calls added | `src/lib/api.ts` — `createCheckout`, `getPayments` |
-| Fraud monitoring API calls added | `src/lib/api.ts` — `getFraudStats`, `getFraudAlerts`, `getFlaggedUsers`, `getBlacklist`, `addBlacklistToken`, `removeBlacklistToken` |
-| `DealLock` + `DealLockStatus` types added | `src/types/index.ts` |
-| `Payment` type added | `src/types/index.ts` |
-| `Lead` type corrected | `src/types/index.ts` — `id` is `string` (UUID), added `intent`, `notes`, `assigned_agent_id`, `assigned_agent_name` |
-| Admin: Overview — fixed stale field refs | `src/app/admin/page.tsx` — `p.is_verified` → `p.legal_status` |
-| Admin: Properties — fixed stale field refs | `src/app/admin/properties/page.tsx` — `p.price` → `p.price_pkr`, verify action uses `legal_status`, Source column → AI Score |
-| Developer: Overview — fixed stale field refs | `src/app/developer/page.tsx` — `p.listing_type` / `p.is_verified` → `p.legal_status` |
-| Developer: Inventory — fixed stale field refs | `src/app/developer/inventory/page.tsx` — `p.price` → `p.price_pkr`, `p.size` → `p.area_marla`, `p.bedrooms` removed |
-| `AgentProfile` + `DocumentScan` types added | `src/types/index.ts` — full `AgentProfile` matching backend `AgentSerializer`; `DocumentScan` for OCR detail view |
-| Agent profile API calls added | `src/lib/api.ts` — `getAgentProfile`, `updateAgentProfile`, `getAgentsList`, `getDocumentScan` |
-| **Agent: My Profile page** | `src/app/agent/profile/page.tsx` — shows stats, bio, cities/areas/specializations tags, editable fields via `PATCH /agents/me/` |
-| Agent sidebar: My Profile link added | `src/components/layout/Sidebar.tsx` — 👤 My Profile nav item |
-| **Agent: Overview — real profile data** | `src/app/agent/page.tsx` — loads `GET /agents/me/` for name, stats, rating, cities; falls back gracefully |
-| Agent: Leads — Assigned Agent column | `src/app/agent/leads/page.tsx` — `assigned_agent_name` column added |
-| Admin: Properties — Rescore buttons | `src/app/admin/properties/page.tsx` — per-row Rescore + bulk Rescore All (purple) with confirmation banner |
-| Admin: Verification — Document scan modal | `src/app/admin/verification/page.tsx` — doc count is now a link that opens `ScanDetailModal` (OCR text, extracted fields, red flags, AI summary, confidence) |
-| **Payments: Return page** | `src/app/payments/return/page.tsx` — styled success/cancelled/unknown states; shows deal details (property, amount, gateway, ref); auto-redirect countdown |
-| **RBAC: client login blocked** | `src/app/login/page.tsx` — `role='user'` after OTP verify shows "Use WhatsApp" screen instead of storing tokens; prevents infinite redirect loop |
-| **RBAC: payment return public** | `src/middleware.ts` — `/payments/return` added to `PUBLIC_PATHS`; gateway redirects work without session cookie |
-| **Admin: Agents — real API data** | `src/app/admin/agents/page.tsx` — replaced placeholder with real `getAgentsList()`; per-row Verified/Active toggles via `PATCH /agents/{id}/` |
-| **Admin: Users — deactivate + change role** | `src/app/admin/users/page.tsx` — Deactivate/Activate button; inline "Change Role" expander with role pills → `updateUser(id, { role })` |
-| **Admin: Overview — three-section stats** | `src/app/admin/page.tsx` — Properties / Leads+Agents / Deal Locks sections with 4 stat cards each; 4 parallel queries replacing placeholder data |
-| `updateAgent` API call added | `src/lib/api.ts` — `updateAgent(id, data)` → `PATCH /agents/{id}/`; used by admin agents page toggles |
-| **Admin: System Setup — fully functional** | `src/app/admin/setup/page.tsx` — full rewrite; 4 live sections: WhatsApp API, AI Backend, Payment Gateway, WhatsApp Features |
-| **Setup: API keys with masking** | Sensitive fields show ✓ Configured / Not set badge; blank on save keeps existing value; new value overwrites |
-| **Setup: First-run warning banner** | Red banner lists every missing required key (`wa_access_token`, `wa_phone_number_id`, `wa_verify_token`, `gemini_api_key`); green banner when fully configured |
-| **Setup: Payment gateway selector** | Radio card group (Manual / Safepay / bSecure); gateway-specific credential fields expand inline; only the chosen gateway is active system-wide |
-| **Setup: WhatsApp feature toggles** | 10 toggle switches in 2-column grid; each toggle maps to a backend feature flag; disabled features hidden from greeting and unavailable to AI |
-| **Setup: Scraper toggle** | Toggle in search settings sub-section; disables Zameen/Graana/OLX scraper when off; DB-only results returned |
-| `getConfig` / `updateConfig` API calls | `src/lib/api.ts` — `GET /config/` and `PATCH /config/` |
-| `SystemConfig` type added | `src/types/index.ts` — full interface with sensitive, control, feature, and computed fields |
-| **Admin: User management redesign** | Sidebar now has 4 role-specific menus: Clients, Agents, Developers, Admins (replaces old Users + Agents) |
-| **Shared `UserManagementPage` component** | `src/components/admin/UserManagementPage.tsx` — role-parameterised table with add/edit/deactivate/delete/details; used by all 4 pages |
-| **Admin: Clients page** | `src/app/admin/clients/page.tsx` — manages `role=user` accounts |
-| **Admin: Agents page** (rewritten) | `src/app/admin/agents/page.tsx` — now manages `role=agent` user accounts (via shared component) |
-| **Admin: Developers page** | `src/app/admin/developers/page.tsx` — manages `role=developer` user accounts |
-| **Admin: Admins page** | `src/app/admin/admins/page.tsx` — manages `role=admin` user accounts |
-| `createUser` / `deleteUser` API calls added | `src/lib/api.ts` — `POST /auth/users/` and `DELETE /auth/users/<id>/` |
-| `User` type extended | `src/types/index.ts` — added `last_active`, `ntn`, `cnic`, `is_filer` fields |
+| Input visibility fixed globally (dark mode removed) | `src/globals.css` |
+
+### Shared Components
+
+| Component | File(s) |
+|-----------|---------|
+| `Sidebar` — role-aware nav, logout, role badge | `src/components/layout/Sidebar.tsx` |
+| `DashboardLayout` — sidebar + top header bar | `src/components/layout/DashboardLayout.tsx` |
+| `NotificationBell` — bell icon, unread badge, dropdown inbox, mark-all-read, 30s poll | `src/components/ui/NotificationBell.tsx` |
+| `StatsCard`, `Badge`, `LoadingSpinner`, `Pagination` | `src/components/ui/` |
+| `UserManagementPage` — shared role-parameterised admin user table | `src/components/admin/UserManagementPage.tsx` |
+
+### API Client (`src/lib/api.ts`) — 40+ named functions
+
+All calls use named wrapper functions. No raw `api.get/post` in pages.
+
+| Group | Functions |
+|-------|-----------|
+| Auth | `sendOtp`, `verifyOtp`, `getMe`, `logout` |
+| Users | `getUsers`, `getUser`, `searchUsers`, `createUser`, `updateUser`, `deleteUser` |
+| Leads | `getLeads`, `getLead`, `updateLead`, `suggestAgentsForLead`, `assignAgentToLead`, `autoAssignLead`, `getLeadConversations`, `sendLeadMessage` |
+| Appointments | `getAppointments`, `getAppointment`, `createAppointment`, `updateAppointment`, `confirmAppointment`, `rescheduleAppointment`, `cancelAppointment`, `completeAppointment` |
+| Properties | `getProperties`, `getMyProperties`, `getProperty`, `createProperty`, `updateProperty`, `deleteProperty`, `requestVerification`, `rescoreProperty`, `rescoreAllProperties`, `uploadPropertyImages`, `deletePropertyImage` |
+| Agents | `getAgentProfile`, `updateAgentProfile`, `getAgentsList`, `createAgent`, `updateAgent`, `deleteAgent` |
+| Team | `getTeam`, `addTeamMember`, `removeTeamMember` |
+| Deal Locks | `getDealLocks`, `getMyDealLocks`, `getDealLock`, `initiateDealLock`, `confirmDealLock`, `cancelDealLock` |
+| Payments | `createCheckout`, `getPayments` |
+| Verification | `getVerificationQueue`, `reviewVerification`, `getDocumentScans`, `getDocumentScan`, `linkDocumentToVerification`, `runFraudCheck` |
+| Fraud | `getFraudStats`, `getFraudAlerts`, `getFlaggedUsers`, `getBlacklist`, `addBlacklistToken`, `removeBlacklistToken` |
+| Reports | `generateReport`, `getReport`, `downloadReport`, `getMyReports`, `getLeadReport`, `getAgentReport`, `getPropertyReport` |
+| Notifications | `getNotifications`, `markNotificationsRead` |
+| Audit | `downloadAudit` |
+| Config | `getConfig`, `updateConfig` |
+
+### Types (`src/types/index.ts`) — fully aligned with backend serializers
+
+| Type | Notes |
+|------|-------|
+| `User`, `Role` | UUID id, nullable name, `ntn`/`cnic`/`is_filer` |
+| `Property` | Includes `primary_image`, `images: PropertyImage[]`, `installment_available` |
+| `PropertyImage` | UUID id, image URL, caption, order |
+| `Lead` | `intent_score` (alias of `score`), correct nullable fields |
+| `ConversationMessage` | `sender_phone`, `sender_name` (matches serializer output) |
+| `Appointment` + `AppointmentStatus` | All fields including `reminder_sent_at`, `created_by` |
+| `DealLock` + `DealLockStatus` | Full escrow model shape |
+| `Agent`, `AgentProfile` | Full profile with stats |
+| `DocumentScan`, `VerificationRequest` | UUID id, `signal_score`, `fraud_flags` |
+| `Report` + `ReportType` + `ReportStatus` | Async report lifecycle |
+| `Notification` | `title`, `is_read`, full status enum |
+| `Payment`, `SystemConfig`, `AuditReport`, `StatsOverview`, `ApiError` | Complete |
 
 ---
 
-## Known Gaps / Next Steps
+### Admin Dashboard
+
+| Page | Route | Features |
+|------|-------|---------|
+| Overview | `/admin` | 12 stat cards (properties / leads+agents / deal locks), 4 parallel queries |
+| System Setup | `/admin/setup` | WhatsApp API, AI Backend, Payment Gateway, Feature Toggles — all live; sensitive key masking; first-run banner |
+| Clients | `/admin/clients` | CRUD via `UserManagementPage` (add/edit/deactivate/delete/details) |
+| Agents | `/admin/agents` | Full CRUD: add agent (5 sections), edit, verify/activate toggles, copy Agent ID, details modal |
+| Developers | `/admin/developers` | CRUD via `UserManagementPage` |
+| Admins | `/admin/admins` | CRUD via `UserManagementPage` |
+| Properties | `/admin/properties` | Add/Edit/Delete/Verify/Rescore + image upload section in detail modal |
+| Leads | `/admin/leads` | Full table: search + status filter, auto-assign, CRM chat panel (send WhatsApp) |
+| Appointments | `/admin/appointments` | Table with confirm/cancel/complete actions, status filter |
+| Verification | `/admin/verification` | Signal score bar, doc scans modal, Approve/Reject/Dispute with notes |
+| Deal Locks + Payments | `/admin/deals` | Two-tab page: deal locks (confirm/cancel/timer) + payments table |
+| Fraud Monitor | `/admin/fraud` | 8 stat cards, severity-coded alert feed, flagged users, blacklist CRUD |
+| Reports | `/admin/reports` | Lead funnel + property inventory with **weekly/monthly bar charts** (period toggle), agent performance table |
+| Audit Log | `/admin/audit` | Table of all AI property audits — risk score, investment grade, liquidity bar, PDF download |
+
+### Agent Dashboard
+
+| Page | Route | Features |
+|------|-------|---------|
+| Overview | `/agent` | Profile stats, lead counts, recent leads |
+| My Leads | `/agent/leads` | Intent score bars, all columns, **CRM chat panel** (full thread + send WhatsApp) |
+| Appointments | `/agent/appointments` | Upcoming/past split, confirm + mark-complete actions |
+| My Listings | `/agent/listings` | Card grid, filter tabs, verification request, **photo upload per card**, primary image thumbnail |
+| My Profile | `/agent/profile` | Read/edit profile via `PATCH /agents/me/` |
+
+### Developer Dashboard
+
+| Page | Route | Features |
+|------|-------|---------|
+| Overview | `/developer` | Summary stats |
+| Inventory | `/developer/inventory` | Properties filterable by type |
+| Lead Analytics | `/developer/leads` | Hot/warm/cold breakdown, full leads table |
+| My Team | `/developer/team` | Team table, add-agent dropdown, remove member |
+| Reports | `/developer/reports` | Report generator (4 types + input params) + history table with PDF download + **weekly/monthly trend charts** |
+
+### Other Pages
+
+| Page | Route | Notes |
+|------|-------|-------|
+| Login | `/login` | OTP flow, client role blocked |
+| Payment Return | `/payments/return` | Success/cancelled/unknown states, auto-redirect countdown |
+
+---
+
+## Navigation (Sidebar)
+
+| Role | Nav Items |
+|------|-----------|
+| Admin | Overview, System Setup, Clients, Leads, Appointments, Agents, Developers, Admins, Properties, Verification, Deal Locks, Fraud Monitor, Reports, Audit Log |
+| Agent | Overview, My Leads, Appointments, My Listings, My Profile |
+| Developer | Overview, Inventory, Lead Analytics, My Team, Reports |
+
+---
+
+## Phase 6 — Remaining Work
+
+### High priority
+
+| Item | Notes |
+|------|-------|
+| Production CORS + CSP hardening | Restrict origins to production domain only |
+| Deployment to Render | `NEXT_PUBLIC_API_URL` → Render backend URL |
+
+### Medium priority
+
+| Item | Notes |
+|------|-------|
+| Pagination UI on large tables | `Pagination` component exists — wire into admin/leads, admin/properties, admin/agents |
+| Agent profile edit form | Currently read-only; add editable fields for bio, cities, specializations |
+| Verification request button per listing | Already in `/agent/listings` — verify URL path is correct (`/request-verification/` with hyphen) |
+
+### Low priority / post-launch
+
+| Item | Notes |
+|------|-------|
+| Real-time fraud alert feed | Currently loads on page visit; add polling interval or WebSocket |
+| Cookie-only token storage | Tokens in both localStorage + cookies; consolidate to httpOnly cookies for production security |
+| Offline / error boundary UI | Graceful fallback if backend unreachable |
+
+---
+
+## Known Gaps
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Cookie vs localStorage token hybrid | Low | Tokens in both localStorage (axios) and cookies (middleware) — consolidate to httpOnly cookies for production |
-| No pagination UI | Low | TanStack Query fetches first page only; add infinite scroll or pagination controls if counts grow |
-| No client-side deal lock initiation flow | Low | `initiateDealLock` is in `api.ts` but no UI page for buyers to start a lock (WhatsApp is the primary path) |
-| Fraud alert feed has no real-time push | Low | Currently polled at page load; add WebSocket or polling interval for live monitoring |
+| Pagination missing on most tables | Medium | Component exists; just needs wiring into admin/leads, admin/properties, admin/agents |
+| Agent profile page is read-only | Medium | Edit form not yet built |
+| Notification delivery requires WhatsApp 24h window | Medium | Dashboard bell shows unread correctly; WhatsApp message may fail silently for inactive clients |
+| Production deployment not done | High | CORS, CSP, Render deploy, env vars still to configure |
 
 ---
 

@@ -1,26 +1,16 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/api";
+import { getLeads } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate, formatPKR } from "@/lib/utils";
-
-interface Lead {
-  id: number;
-  phone: string;
-  name: string | null;
-  budget_max: number | null;
-  location_interest: string | null;
-  intent_score: number | null;
-  status: string;
-  created_at: string;
-}
+import type { Lead } from "@/types";
 
 export default function DeveloperLeadsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["dev-leads"],
-    queryFn: () => api.get("/leads/").then((r) => r.data).catch(() => ({ results: [], count: 0 })),
+    queryFn: () => getLeads().then((r) => r.data).catch(() => ({ results: [], count: 0 })),
   });
 
   const leads: Lead[] = data?.results ?? [];

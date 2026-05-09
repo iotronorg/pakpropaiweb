@@ -1,13 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyProperties, requestVerification, getDealLocks } from "@/lib/api";
-import { DealLock } from "@/types";
+import { getMyProperties, requestVerification, getDealLocks, uploadPropertyImages, deletePropertyImage } from "@/lib/api";
+import type { DealLock, Property } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatPKR } from "@/lib/utils";
-import { Property } from "@/types";
 
 const LEGAL_COLOR: Record<string, "green" | "yellow" | "red" | "gray"> = {
   verified:   "green",
@@ -32,9 +31,49 @@ function ScoreBar({ score }: { score: number | null }) {
   );
 }
 
+function PropertyImageUploader({ propertyId }: { propertyId: string }) {
+  const qc = useQueryClient();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const uploadMutation = useMutation({
+    mutationFn: (files: File[]) => uploadPropertyImages(propertyId, files),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["agent-listings"] }),
+  });
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length > 0) uploadMutation.mutate(files);
+    e.target.value = "";
+  }
+
+  return (
+    <div>
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+        className="hidden"
+        onChange={handleChange}
+      />
+      <button
+        onClick={() => fileRef.current?.click()}
+        disabled={uploadMutation.isPending}
+        className="text-xs text-blue-600 hover:underline disabled:opacity-50"
+      >
+        {uploadMutation.isPending ? "Uploading..." : "+ Add Photos"}
+      </button>
+      {uploadMutation.isError && (
+        <p className="text-xs text-red-500 mt-0.5">Upload failed</p>
+      )}
+    </div>
+  );
+}
+
 export default function AgentListingsPage() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<Filter>("all");
+  const [expandedImages, setExpandedImages] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["agent-listings"],
@@ -177,9 +216,27 @@ export default function AgentListingsPage() {
                 )}
               </div>
 
+              {/* Images */}
+              {p.primary_image && (
+                <div className="rounded-lg overflow-hidden bg-gray-100 h-32">
+                  <img
+                    src={p.primary_image}
+                    alt={p.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+
               {/* Footer */}
               <div className="flex items-center justify-between pt-1 border-t border-gray-50">
-                <p className="text-xs text-gray-400">{formatDate(p.created_at)}</p>
+                <div className="flex items-center gap-3">
+                  <p className="text-xs text-gray-400">{formatDate(p.created_at)}</p>
+                  <span className="text-gray-300">·</span>
+                  <PropertyImageUploader propertyId={p.id} />
+                  {(p.images?.length ?? 0) > 0 && (
+                    <span className="text-xs text-gray-400">{p.images.length} photo{p.images.length !== 1 ? "s" : ""}</span>
+                  )}
+                </div>
                 {p.legal_status === "unverified" && (
                   <button
                     onClick={() => verifyMutation.mutate(p.id)}

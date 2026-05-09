@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getProperties, createProperty, updateProperty, deleteProperty,
   rescoreProperty, rescoreAllProperties, searchUsers,
+  uploadPropertyImages, deletePropertyImage,
 } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -61,6 +62,74 @@ const BLANK_FORM = {
 };
 
 type PropertyForm = typeof BLANK_FORM;
+
+// ── Property Images Section ───────────────────────────────────────────────────
+
+function PropertyImagesSection({ propertyId, images }: {
+  propertyId: string;
+  images: { id: string; image: string; caption: string }[];
+}) {
+  const qc = useQueryClient();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const uploadMutation = useMutation({
+    mutationFn: (files: File[]) => uploadPropertyImages(propertyId, files),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-properties"] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (imageId: string) => deletePropertyImage(propertyId, imageId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin-properties"] }),
+  });
+
+  return (
+    <div className="mt-3">
+      <div className="flex items-center justify-between mb-2">
+        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+          Photos ({images.length})
+        </p>
+        <div>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            multiple
+            className="hidden"
+            onChange={(e) => {
+              const files = Array.from(e.target.files ?? []);
+              if (files.length > 0) uploadMutation.mutate(files);
+              e.target.value = "";
+            }}
+          />
+          <button
+            onClick={() => fileRef.current?.click()}
+            disabled={uploadMutation.isPending}
+            className="text-xs text-blue-600 hover:underline disabled:opacity-50"
+          >
+            {uploadMutation.isPending ? "Uploading..." : "+ Upload Photos"}
+          </button>
+        </div>
+      </div>
+      {images.length > 0 ? (
+        <div className="grid grid-cols-3 gap-2">
+          {images.map((img) => (
+            <div key={img.id} className="relative group rounded-lg overflow-hidden bg-gray-100 h-24">
+              <img src={img.image} alt={img.caption || ""} className="w-full h-full object-cover" />
+              <button
+                onClick={() => deleteMutation.mutate(img.id)}
+                className="absolute top-1 right-1 hidden group-hover:flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-gray-400 italic">No photos yet</p>
+      )}
+    </div>
+  );
+}
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 
@@ -368,6 +437,7 @@ export default function PropertiesPage() {
             </DetailRow>
             <DetailRow label="Listed"      value={formatDate(detailProp.created_at)} />
             <DetailRow label="Updated"     value={formatDate(detailProp.updated_at)} />
+            <PropertyImagesSection propertyId={detailProp.id} images={detailProp.images ?? []} />
           </div>
         </Modal>
       )}

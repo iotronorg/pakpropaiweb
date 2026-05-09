@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, getDocumentScans } from "@/lib/api";
+import { getVerificationQueue, reviewVerification, getDocumentScans } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate } from "@/lib/utils";
@@ -161,12 +161,12 @@ export default function VerificationPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-verifications"],
-    queryFn: () => api.get("/verification/queue/").then((r) => r.data),
+    queryFn: () => getVerificationQueue().then((r) => r.data),
   });
 
   const reviewMutation = useMutation({
     mutationFn: ({ id, status, notes }: { id: string; status: string; notes: string }) =>
-      api.patch(`/verification/queue/${id}/`, { status, notes }),
+      reviewVerification(id, { status, notes }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-verifications"] });
       setReviewingId(null);
