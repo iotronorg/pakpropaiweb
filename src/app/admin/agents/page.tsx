@@ -5,8 +5,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getAgentsList, createAgent, updateAgent, deleteAgent } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Pagination } from "@/components/ui/Pagination";
 import { formatDate } from "@/lib/utils";
 import { AgentProfile } from "@/types";
+
+const PAGE_SIZE = 20;
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -126,15 +129,16 @@ export default function AgentsPage() {
   const [editForm,   setEditForm]   = useState<AgentForm>(BLANK_FORM);
   const [formError,  setFormError]  = useState("");
   const [copiedId,   setCopiedId]   = useState<number | null>(null);
+  const [page,       setPage]       = useState(1);
 
   const { data, isLoading } = useQuery({
-    queryKey,
-    queryFn: () => getAgentsList().then((r) => r.data),
+    queryKey: [...queryKey, page],
+    queryFn: () => getAgentsList({ page }).then((r) => r.data),
   });
 
-  const agents: AgentProfile[] = data?.results ?? data ?? [];
+  const agents: AgentProfile[] = data?.results ?? [];
 
-  const invalidate = () => qc.invalidateQueries({ queryKey });
+  const invalidate = () => qc.invalidateQueries({ queryKey, exact: false });
 
   const addMutation = useMutation({
     mutationFn: (f: AgentForm) => createAgent(formToPayload(f)),
@@ -175,7 +179,7 @@ export default function AgentsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Agents</h1>
           <p className="mt-1 text-sm text-gray-500">
-            {isLoading ? "Loading…" : `${agents.length} agent${agents.length !== 1 ? "s" : ""}`}
+            {isLoading ? "Loading…" : `${data?.count ?? agents.length} agent${(data?.count ?? agents.length) !== 1 ? "s" : ""}`}
             {" · "}create, verify, manage and assign agents to properties
           </p>
         </div>
@@ -312,6 +316,14 @@ export default function AgentsPage() {
               )}
             </tbody>
           </table>
+          <div className="px-5 pb-4">
+            <Pagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              total={data?.count ?? 0}
+              onPage={setPage}
+            />
+          </div>
         </div>
       )}
 

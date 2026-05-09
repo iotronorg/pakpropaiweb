@@ -5,8 +5,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getLeads, autoAssignLead, getLeadConversations, sendLeadMessage } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Pagination } from "@/components/ui/Pagination";
 import { formatDate, formatPKR } from "@/lib/utils";
 import type { Lead, ConversationMessage } from "@/types";
+
+const PAGE_SIZE = 20;
 
 function ConversationPanel({ lead, onClose }: { lead: Lead; onClose: () => void }) {
   const qc = useQueryClient();
@@ -99,14 +102,19 @@ export default function AdminLeadsPage() {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [page, setPage] = useState(1);
   const [openLead, setOpenLead] = useState<Lead | null>(null);
 
+  function handleSearch(v: string) { setSearch(v); setPage(1); }
+  function handleStatus(v: string) { setStatusFilter(v); setPage(1); }
+
   const { data, isLoading } = useQuery({
-    queryKey: ["admin-leads", search, statusFilter],
+    queryKey: ["admin-leads", search, statusFilter, page],
     queryFn: () =>
       getLeads({
         ...(search ? { search } : {}),
         ...(statusFilter ? { status: statusFilter } : {}),
+        page,
       }).then((r) => r.data),
   });
 
@@ -135,12 +143,12 @@ export default function AdminLeadsPage() {
           type="text"
           placeholder="Search by phone or name..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
           className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
         />
         <select
           value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+          onChange={(e) => handleStatus(e.target.value)}
           className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Statuses</option>
@@ -153,7 +161,7 @@ export default function AdminLeadsPage() {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+        <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto p-0">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
@@ -234,6 +242,14 @@ export default function AdminLeadsPage() {
               )}
             </tbody>
           </table>
+          <div className="px-6 pb-4">
+            <Pagination
+              page={page}
+              pageSize={PAGE_SIZE}
+              total={data?.count ?? 0}
+              onPage={setPage}
+            />
+          </div>
         </div>
       )}
 

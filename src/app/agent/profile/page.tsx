@@ -8,6 +8,61 @@ import { Badge } from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils";
 import { AgentProfile } from "@/types";
 
+const SPECIALIZATION_OPTIONS = [
+  { value: "residential_buy",  label: "Residential — Buy/Sell" },
+  { value: "residential_rent", label: "Residential — Rent/Lease" },
+  { value: "commercial",       label: "Commercial" },
+  { value: "plots",            label: "Plots & Land" },
+  { value: "new_projects",     label: "New Projects / Off-plan" },
+  { value: "luxury",           label: "Luxury / High-end" },
+  { value: "industrial",       label: "Industrial / Warehouse" },
+];
+
+type ProfileForm = {
+  name: string;
+  email: string;
+  company_name: string;
+  designation: string;
+  bio: string;
+  primary_city: string;
+  cities: string;
+  areas: string;
+  specializations: string[];
+  years_experience: string;
+};
+
+function profileToForm(p: AgentProfile): ProfileForm {
+  return {
+    name:             p.name ?? "",
+    email:            p.email ?? "",
+    company_name:     p.company_name ?? "",
+    designation:      p.designation ?? "",
+    bio:              p.bio ?? "",
+    primary_city:     p.primary_city ?? "",
+    cities:           (p.cities ?? []).join(", "),
+    areas:            (p.areas  ?? []).join(", "),
+    specializations:  p.specializations ?? [],
+    years_experience: p.years_experience ? String(p.years_experience) : "",
+  };
+}
+
+function formToPayload(f: ProfileForm): Record<string, unknown> {
+  return {
+    name:             f.name,
+    email:            f.email            || undefined,
+    company_name:     f.company_name     || undefined,
+    designation:      f.designation      || undefined,
+    bio:              f.bio              || undefined,
+    primary_city:     f.primary_city     || undefined,
+    cities:  f.cities ? f.cities.split(",").map((s) => s.trim()).filter(Boolean) : [],
+    areas:   f.areas  ? f.areas.split(",").map((s)  => s.trim()).filter(Boolean) : [],
+    specializations:  f.specializations,
+    years_experience: f.years_experience ? Number(f.years_experience) : undefined,
+  };
+}
+
+const inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
@@ -33,7 +88,11 @@ function TagList({ items }: { items: string[] }) {
 export default function AgentProfilePage() {
   const qc = useQueryClient();
   const [editing, setEditing] = useState(false);
-  const [form, setForm] = useState<Partial<AgentProfile>>({});
+  const [form, setForm] = useState<ProfileForm>({
+    name: "", email: "", company_name: "", designation: "",
+    bio: "", primary_city: "", cities: "", areas: "",
+    specializations: [], years_experience: "",
+  });
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["agent-profile"],
@@ -41,25 +100,26 @@ export default function AgentProfilePage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (updates: Partial<AgentProfile>) => updateAgentProfile(updates as Record<string, unknown>),
+    mutationFn: (f: ProfileForm) => updateAgentProfile(formToPayload(f)),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["agent-profile"] });
       setEditing(false);
-      setForm({});
     },
   });
 
   function startEdit() {
     if (!data) return;
-    setForm({
-      name: data.name,
-      email: data.email,
-      company_name: data.company_name,
-      designation: data.designation,
-      bio: data.bio,
-      primary_city: data.primary_city,
-    });
+    setForm(profileToForm(data));
     setEditing(true);
+  }
+
+  function toggleSpec(value: string) {
+    setForm((f) => ({
+      ...f,
+      specializations: f.specializations.includes(value)
+        ? f.specializations.filter((s) => s !== value)
+        : [...f.specializations, value],
+    }));
   }
 
   if (isLoading) return <div className="flex justify-center py-20"><LoadingSpinner /></div>;
@@ -74,7 +134,7 @@ export default function AgentProfilePage() {
   const p = data;
 
   return (
-    <div className="p-6 space-y-6 max-w-4xl">
+    <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
@@ -101,10 +161,10 @@ export default function AgentProfilePage() {
       {/* Stats row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Total Leads", value: p.total_leads },
-          { label: "Total Listings", value: p.total_listings },
-          { label: "Closed Deals", value: p.closed_deals },
-          { label: "Rating", value: p.rating !== null ? `${p.rating}/5` : "—" },
+          { label: "Total Leads",   value: p.total_leads },
+          { label: "Total Listings",value: p.total_listings },
+          { label: "Closed Deals",  value: p.closed_deals },
+          { label: "Rating",        value: p.rating !== null ? `${p.rating}/5` : "—" },
         ].map((s) => (
           <div key={s.label} className="bg-white rounded-xl border p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">{s.label}</p>
@@ -115,47 +175,100 @@ export default function AgentProfilePage() {
 
       {/* Edit form */}
       {editing ? (
-        <div className="bg-white rounded-xl border p-6 space-y-4">
-          <h2 className="font-semibold mb-2">Edit Profile</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {(
-              [
-                { key: "name", label: "Full Name" },
-                { key: "email", label: "Email" },
-                { key: "company_name", label: "Company Name" },
-                { key: "designation", label: "Designation" },
-                { key: "primary_city", label: "Primary City" },
-              ] as { key: keyof AgentProfile; label: string }[]
-            ).map(({ key, label }) => (
-              <div key={key}>
-                <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
-                <input
-                  className="w-full border rounded-lg px-3 py-2 text-sm"
-                  value={(form[key] as string) ?? ""}
-                  onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
-                />
-              </div>
-            ))}
-          </div>
+        <div className="bg-white rounded-xl border p-6 space-y-5">
+          <h2 className="font-semibold text-gray-800">Edit Profile</h2>
+
+          {/* Basic info */}
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Bio</label>
-            <textarea
-              className="w-full border rounded-lg px-3 py-2 text-sm h-24 resize-none"
-              value={(form.bio as string) ?? ""}
-              onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))}
-            />
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Basic Info</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Full Name</label>
+                <input className={inputCls} value={form.name}
+                  onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                <input type="email" className={inputCls} value={form.email}
+                  onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Company Name</label>
+                <input className={inputCls} value={form.company_name}
+                  onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Designation</label>
+                <input className={inputCls} value={form.designation}
+                  onChange={(e) => setForm((f) => ({ ...f, designation: e.target.value }))} />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Years of Experience</label>
+                <input type="number" min="0" className={inputCls} value={form.years_experience}
+                  onChange={(e) => setForm((f) => ({ ...f, years_experience: e.target.value }))} />
+              </div>
+            </div>
+            <div className="mt-4">
+              <label className="block text-xs font-medium text-gray-600 mb-1">Bio</label>
+              <textarea rows={3} className={`${inputCls} resize-none`} value={form.bio}
+                onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} />
+            </div>
           </div>
-          <div className="flex gap-3">
+
+          {/* Coverage */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Geographic Coverage</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">Primary City</label>
+                <input className={inputCls} value={form.primary_city}
+                  onChange={(e) => setForm((f) => ({ ...f, primary_city: e.target.value }))}
+                  placeholder="e.g. Lahore" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">All Cities (comma-separated)</label>
+                <input className={inputCls} value={form.cities}
+                  onChange={(e) => setForm((f) => ({ ...f, cities: e.target.value }))}
+                  placeholder="Lahore, Islamabad, Rawalpindi" />
+              </div>
+              <div className="sm:col-span-2">
+                <label className="block text-xs font-medium text-gray-600 mb-1">Areas / Societies (comma-separated)</label>
+                <input className={inputCls} value={form.areas}
+                  onChange={(e) => setForm((f) => ({ ...f, areas: e.target.value }))}
+                  placeholder="DHA Phase 5, Bahria Town, F-7" />
+              </div>
+            </div>
+          </div>
+
+          {/* Specializations */}
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Specializations</p>
+            <div className="grid grid-cols-2 gap-2">
+              {SPECIALIZATION_OPTIONS.map((s) => (
+                <label key={s.value} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    className="rounded border-gray-300 accent-blue-600"
+                    checked={form.specializations.includes(s.value)}
+                    onChange={() => toggleSpec(s.value)}
+                  />
+                  {s.label}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-2 border-t border-gray-100">
             <button
               onClick={() => updateMutation.mutate(form)}
               disabled={updateMutation.isPending}
-              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               {updateMutation.isPending ? "Saving…" : "Save Changes"}
             </button>
             <button
-              onClick={() => { setEditing(false); setForm({}); }}
-              className="px-4 py-2 text-sm border rounded-lg text-gray-600 hover:bg-gray-50"
+              onClick={() => setEditing(false)}
+              className="px-4 py-2 text-sm border rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
             >
               Cancel
             </button>
@@ -175,6 +288,7 @@ export default function AgentProfilePage() {
             <Field label="Company" value={p.company_name} />
             <Field label="Designation" value={p.designation} />
             <Field label="Agent Type" value={p.agent_type} />
+            <Field label="Experience" value={p.years_experience ? `${p.years_experience} yrs` : null} />
             <Field label="Member Since" value={formatDate(p.joined_at)} />
           </div>
 
@@ -188,15 +302,17 @@ export default function AgentProfilePage() {
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-2 border-t">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Cities</p>
-              <TagList items={p.cities} />
+              <TagList items={p.cities ?? []} />
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Areas</p>
-              <TagList items={p.areas} />
+              <TagList items={p.areas ?? []} />
             </div>
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Specializations</p>
-              <TagList items={p.specializations} />
+              <TagList items={(p.specializations ?? []).map(
+                (s) => SPECIALIZATION_OPTIONS.find((o) => o.value === s)?.label ?? s
+              )} />
             </div>
           </div>
 

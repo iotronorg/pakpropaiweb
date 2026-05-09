@@ -1,8 +1,8 @@
 # PakProp AI Web — Build Progress
 
-**Last updated:** 2026-05-09 (session 24 — analytics charts + audit log page)
-**Current phase:** Phase 6 in progress (analytics charts done; deployment prep remains)
-**Frontend completion score:** 83% (analytics charts, audit log, and sidebar nav complete; deployment + pagination remain)
+**Last updated:** 2026-05-09 (session 26 — appointment create modals, duplicate leads page, model validators, lead_name in appointments)
+**Current phase:** Phase 6 in progress (all features complete; production hardening + deployment remain)
+**Frontend completion score:** 93% (all pages functional; only deployment prep + production hardening remain)
 
 ---
 
@@ -80,12 +80,12 @@ All calls use named wrapper functions. No raw `api.get/post` in pages.
 | Overview | `/admin` | 12 stat cards (properties / leads+agents / deal locks), 4 parallel queries |
 | System Setup | `/admin/setup` | WhatsApp API, AI Backend, Payment Gateway, Feature Toggles — all live; sensitive key masking; first-run banner |
 | Clients | `/admin/clients` | CRUD via `UserManagementPage` (add/edit/deactivate/delete/details) |
-| Agents | `/admin/agents` | Full CRUD: add agent (5 sections), edit, verify/activate toggles, copy Agent ID, details modal |
+| Agents | `/admin/agents` | Full CRUD: add agent (5 sections), edit, verify/activate toggles, copy Agent ID, details modal, **paginated** |
 | Developers | `/admin/developers` | CRUD via `UserManagementPage` |
 | Admins | `/admin/admins` | CRUD via `UserManagementPage` |
 | Properties | `/admin/properties` | Add/Edit/Delete/Verify/Rescore + image upload section in detail modal |
-| Leads | `/admin/leads` | Full table: search + status filter, auto-assign, CRM chat panel (send WhatsApp) |
-| Appointments | `/admin/appointments` | Table with confirm/cancel/complete actions, status filter |
+| Leads | `/admin/leads` | Full table: search + status filter, auto-assign, CRM chat panel (send WhatsApp), **paginated** |
+| Appointments | `/admin/appointments` | Table with confirm/cancel/complete actions, status filter, **+ Book Appointment modal** (LeadPicker, property, agent, datetime, duration, notes) |
 | Verification | `/admin/verification` | Signal score bar, doc scans modal, Approve/Reject/Dispute with notes |
 | Deal Locks + Payments | `/admin/deals` | Two-tab page: deal locks (confirm/cancel/timer) + payments table |
 | Fraud Monitor | `/admin/fraud` | 8 stat cards, severity-coded alert feed, flagged users, blacklist CRUD |
@@ -98,9 +98,10 @@ All calls use named wrapper functions. No raw `api.get/post` in pages.
 |------|-------|---------|
 | Overview | `/agent` | Profile stats, lead counts, recent leads |
 | My Leads | `/agent/leads` | Intent score bars, all columns, **CRM chat panel** (full thread + send WhatsApp) |
-| Appointments | `/agent/appointments` | Upcoming/past split, confirm + mark-complete actions |
+| Appointments | `/agent/appointments` | Upcoming/past split, confirm + mark-complete actions, **+ Book Appointment modal** (LeadPicker, property, datetime, duration; agent auto-filled from profile) |
+| Duplicate Leads | `/admin/leads/duplicates` | Groups of leads sharing same normalized phone — amber highlight, raw phone + status + intent + date |
 | My Listings | `/agent/listings` | Card grid, filter tabs, verification request, **photo upload per card**, primary image thumbnail |
-| My Profile | `/agent/profile` | Read/edit profile via `PATCH /agents/me/` |
+| My Profile | `/agent/profile` | Full edit: name, email, company, designation, experience, bio, **cities, areas, specializations (checkboxes)** |
 
 ### Developer Dashboard
 
@@ -144,8 +145,6 @@ All calls use named wrapper functions. No raw `api.get/post` in pages.
 
 | Item | Notes |
 |------|-------|
-| Pagination UI on large tables | `Pagination` component exists — wire into admin/leads, admin/properties, admin/agents |
-| Agent profile edit form | Currently read-only; add editable fields for bio, cities, specializations |
 | Verification request button per listing | Already in `/agent/listings` — verify URL path is correct (`/request-verification/` with hyphen) |
 
 ### Low priority / post-launch
@@ -162,8 +161,6 @@ All calls use named wrapper functions. No raw `api.get/post` in pages.
 
 | Item | Priority | Notes |
 |------|----------|-------|
-| Pagination missing on most tables | Medium | Component exists; just needs wiring into admin/leads, admin/properties, admin/agents |
-| Agent profile page is read-only | Medium | Edit form not yet built |
 | Notification delivery requires WhatsApp 24h window | Medium | Dashboard bell shows unread correctly; WhatsApp message may fail silently for inactive clients |
 | Production deployment not done | High | CORS, CSP, Render deploy, env vars still to configure |
 

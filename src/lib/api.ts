@@ -79,6 +79,9 @@ export const getLeadConversations = (id: string) =>
 export const sendLeadMessage = (id: string, body: string) =>
   api.post(`/leads/${id}/send-message/`, { body });
 
+export const getDuplicateLeads = () =>
+  api.get("/leads/duplicates/");
+
 // ── Appointments ──────────────────────────────────────────────────────────────
 export const getAppointments = (params?: Record<string, unknown>) =>
   api.get("/leads/appointments/", { params });

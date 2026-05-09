@@ -81,6 +81,7 @@ export interface Appointment {
   id: string;
   lead: string;
   lead_phone: string;
+  lead_name: string | null;
   property: string | null;
   property_title: string | null;
   agent: number | null;
