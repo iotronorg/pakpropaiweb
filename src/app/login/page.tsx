@@ -55,7 +55,7 @@ export default function LoginPage() {
       const { user } = res.data as { user: User };
        // Reset OTP input field
       otpForm.reset();
-      if (user.role === "user") {
+      if (user.role === "client") {
         setStep("no-access");
         return;
       }

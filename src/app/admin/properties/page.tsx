@@ -67,7 +67,7 @@ type PropertyForm = typeof BLANK_FORM;
 
 function PropertyImagesSection({ propertyId, images }: {
   propertyId: string;
-  images: { id: string; image: string; caption: string }[];
+  images: { id: string; url: string; caption: string }[];
 }) {
   const qc = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -114,7 +114,7 @@ function PropertyImagesSection({ propertyId, images }: {
         <div className="grid grid-cols-3 gap-2">
           {images.map((img) => (
             <div key={img.id} className="relative group rounded-lg overflow-hidden bg-gray-100 h-24">
-              <img src={img.image} alt={img.caption || ""} className="w-full h-full object-cover" />
+              <img src={img.url} alt={img.caption || ""} className="w-full h-full object-cover" />
               <button
                 onClick={() => deleteMutation.mutate(img.id)}
                 className="absolute top-1 right-1 hidden group-hover:flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs"
@@ -225,7 +225,7 @@ export default function PropertiesPage() {
       assigned_agent:      p.assigned_agent != null ? String(p.assigned_agent) : "",
       owner:               p.owner ?? "",
       owner_display:       p.owner_phone
-        ? { id: p.owner ?? "", phone: p.owner_phone, name: null, role: "user", is_active: true, date_joined: "", last_active: null, ntn: null, cnic: null, is_filer: false } as User
+        ? { id: p.owner ?? "", phone: p.owner_phone, name: null, role: "client", is_active: true, date_joined: "", last_active: null, ntn: null, cnic: null, is_filer: false } as User
         : null,
     });
     setFormError("");

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 import { getLeads, getLeadConversations, sendLeadMessage } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -184,12 +185,20 @@ export default function AgentLeadsPage() {
                     </td>
                     <td className="px-6 py-3 text-gray-400">{formatDate(l.created_at)}</td>
                     <td className="px-6 py-3">
-                      <button
-                        onClick={() => setOpenLead(l)}
-                        className="text-xs text-blue-600 hover:underline font-medium"
-                      >
-                        Chat
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/agent/leads/${l.id}`}
+                          className="text-xs text-gray-600 hover:underline font-medium"
+                        >
+                          View
+                        </Link>
+                        <button
+                          onClick={() => setOpenLead(l)}
+                          className="text-xs text-blue-600 hover:underline font-medium"
+                        >
+                          Chat
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

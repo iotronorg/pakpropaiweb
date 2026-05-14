@@ -224,6 +224,12 @@ export default function AgentAppointmentsPage() {
     queryFn: () => getAppointments().then((r) => r.data),
   });
 
+  const { data: upcomingData } = useQuery({
+    queryKey: ["agent-appointments-upcoming"],
+    queryFn: () => getAppointments({ upcoming: "true" }).then((r) => r.data),
+    refetchInterval: 60_000,
+  });
+
   const confirmMutation = useMutation({
     mutationFn: (id: string) => confirmAppointment(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["agent-appointments"] }),
@@ -236,8 +242,10 @@ export default function AgentAppointmentsPage() {
 
   const appointments: Appointment[] = data?.results ?? data ?? [];
 
-  const upcoming = appointments.filter((a) => ["scheduled", "confirmed"].includes(a.status));
-  const past     = appointments.filter((a) => ["completed", "cancelled", "rescheduled"].includes(a.status));
+  const upcoming = (upcomingData?.results ?? upcomingData ?? appointments.filter(
+    (a) => ["scheduled", "confirmed"].includes(a.status)
+  )) as Appointment[];
+  const past = appointments.filter((a) => ["completed", "cancelled", "rescheduled"].includes(a.status));
 
   return (
     <div>

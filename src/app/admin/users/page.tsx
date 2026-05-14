@@ -12,15 +12,15 @@ const ROLE_COLORS: Record<string, "blue" | "green" | "yellow" | "gray"> = {
   admin:     "blue",
   agent:     "green",
   developer: "yellow",
-  user:      "gray",
+  client:    "gray",
 };
 
-const ALL_ROLES: Role[] = ["user", "agent", "developer", "admin"];
+const ALL_ROLES: Role[] = ["client", "agent", "developer", "admin"];
 
 export default function UsersPage() {
   const qc = useQueryClient();
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [roleEdit, setRoleEdit]   = useState<Role>("user");
+  const [roleEdit, setRoleEdit]   = useState<Role>("client");
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-users"],

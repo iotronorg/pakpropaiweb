@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAgentProfile, updateAgentProfile } from "@/lib/api";
+import { getAgentProfile, updateAgentProfile, updateAgentAvailability } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils";
 import { AgentProfile } from "@/types";
+import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 
 const SPECIALIZATION_OPTIONS = [
   { value: "residential_buy",  label: "Residential — Buy/Sell" },
@@ -107,6 +108,11 @@ export default function AgentProfilePage() {
     },
   });
 
+  const availabilityMutation = useMutation({
+    mutationFn: (s: "available" | "busy" | "offline") => updateAgentAvailability(s),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["agent-profile"] }),
+  });
+
   function startEdit() {
     if (!data) return;
     setForm(profileToForm(data));
@@ -146,6 +152,28 @@ export default function AgentProfilePage() {
             {p.is_verified && <Badge label="Verified" variant="green" />}
             {p.is_featured && <Badge label="Featured" variant="blue" />}
             {!p.is_active && <Badge label="Inactive" variant="gray" />}
+          </div>
+          {/* Availability toggle */}
+          <div className="flex items-center gap-2 mt-3">
+            <span className="text-xs text-gray-500 font-medium">Availability:</span>
+            {(["available", "busy", "offline"] as const).map((s) => {
+              const active = (p.availability_status ?? "available") === s;
+              const colors: Record<string, string> = {
+                available: active ? "bg-emerald-600 text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+                busy:      active ? "bg-amber-500 text-white"   : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+                offline:   active ? "bg-gray-600 text-white"    : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+              };
+              return (
+                <button
+                  key={s}
+                  disabled={availabilityMutation.isPending}
+                  onClick={() => availabilityMutation.mutate(s)}
+                  className={`px-3 py-1 rounded-full text-xs font-medium transition-colors capitalize ${colors[s]}`}
+                >
+                  {s}
+                </button>
+              );
+            })}
           </div>
         </div>
         {!editing && (
@@ -321,6 +349,8 @@ export default function AgentProfilePage() {
           )}
         </div>
       )}
+
+      <NotificationPreferencesPanel />
     </div>
   );
 }

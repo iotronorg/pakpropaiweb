@@ -72,79 +72,73 @@ function ScanDetailModal({ verificationId, onClose }: { verificationId: string; 
           {!isLoading && scans.length === 0 && (
             <p className="text-center text-gray-400 py-8">No document scans linked to this verification.</p>
           )}
-          {scans.map((scan) => (
-            <div key={scan.id} className="border rounded-xl p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+          {scans.map((scan) => {
+            const extractedFields: [string, string][] = [
+              ["Owner", scan.owner_name],
+              ["CNIC", scan.cnic_number],
+              ["Address", scan.property_address],
+              ["Area", scan.area],
+              ["Authority", scan.authority],
+            ].filter(([, v]) => v) as [string, string][];
+
+            return (
+              <div key={scan.id} className="border rounded-xl p-4 space-y-3">
+                <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-800 capitalize">
                     {scan.document_type.replace(/_/g, " ")}
                   </span>
-                  {scan.document_name && (
-                    <span className="text-xs text-gray-400">{scan.document_name}</span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  {scan.confidence !== null && (
-                    <span className="text-xs text-gray-500">
-                      Confidence: {Math.round(scan.confidence * 100)}%
-                    </span>
-                  )}
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                    scan.scan_status === "completed" ? "bg-green-50 text-green-700"
-                    : scan.scan_status === "failed" ? "bg-red-50 text-red-700"
-                    : "bg-yellow-50 text-yellow-700"
-                  }`}>{scan.scan_status}</span>
-                </div>
-              </div>
-
-              <p className="text-xs text-gray-400 font-mono">{scan.sender_phone} · {formatDate(scan.created_at)}</p>
-
-              {scan.red_flags.length > 0 && (
-                <div className="bg-red-50 border border-red-100 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-red-700 mb-1">Red Flags</p>
-                  <ul className="space-y-0.5">
-                    {scan.red_flags.map((f, i) => (
-                      <li key={i} className="text-xs text-red-600 flex gap-1">
-                        <span>•</span>{f}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {Object.keys(scan.extracted_fields).length > 0 && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-500 mb-1.5">Extracted Fields</p>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-1">
-                    {Object.entries(scan.extracted_fields).map(([k, v]) => (
-                      <div key={k} className="flex gap-1">
-                        <span className="text-xs text-gray-400 capitalize">{k.replace(/_/g, " ")}:</span>
-                        <span className="text-xs text-gray-700 font-medium truncate">{String(v)}</span>
-                      </div>
-                    ))}
+                  <div className="flex items-center gap-2">
+                    {scan.confidence !== null && (
+                      <span className="text-xs text-gray-500">
+                        Confidence: {Math.round((scan.confidence ?? 0) * 100)}%
+                      </span>
+                    )}
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                      scan.status === "completed" ? "bg-green-50 text-green-700"
+                      : scan.status === "failed" ? "bg-red-50 text-red-700"
+                      : "bg-yellow-50 text-yellow-700"
+                    }`}>{scan.status}</span>
                   </div>
                 </div>
-              )}
 
-              {scan.whatsapp_summary && (
-                <div>
-                  <p className="text-xs font-semibold text-gray-500 mb-1">AI Summary</p>
-                  <p className="text-xs text-gray-700 leading-relaxed">{scan.whatsapp_summary}</p>
-                </div>
-              )}
+                <p className="text-xs text-gray-400 font-mono">{scan.submitter_phone} · {formatDate(scan.created_at)}</p>
 
-              {scan.raw_ocr && (
-                <details className="group">
-                  <summary className="text-xs font-semibold text-gray-400 cursor-pointer hover:text-gray-600">
-                    Raw OCR text ▸
-                  </summary>
-                  <pre className="mt-2 text-xs text-gray-600 bg-gray-50 rounded-lg p-3 overflow-x-auto whitespace-pre-wrap max-h-40 overflow-y-auto">
-                    {scan.raw_ocr}
-                  </pre>
-                </details>
-              )}
-            </div>
-          ))}
+                {scan.red_flags.length > 0 && (
+                  <div className="bg-red-50 border border-red-100 rounded-lg p-3">
+                    <p className="text-xs font-semibold text-red-700 mb-1">Red Flags ({scan.red_flag_count})</p>
+                    <ul className="space-y-0.5">
+                      {scan.red_flags.map((f, i) => (
+                        <li key={i} className="text-xs text-red-600 flex gap-1">
+                          <span>•</span>{f}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {extractedFields.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 mb-1.5">Extracted Fields</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                      {extractedFields.map(([k, v]) => (
+                        <div key={k} className="flex gap-1">
+                          <span className="text-xs text-gray-400">{k}:</span>
+                          <span className="text-xs text-gray-700 font-medium truncate">{v}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {scan.whatsapp_summary && (
+                  <div>
+                    <p className="text-xs font-semibold text-gray-500 mb-1">AI Summary</p>
+                    <p className="text-xs text-gray-700 leading-relaxed">{scan.whatsapp_summary}</p>
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

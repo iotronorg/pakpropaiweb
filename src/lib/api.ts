@@ -2,10 +2,27 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
 
+const MUTATING = new Set(["post", "put", "patch", "delete"]);
+
+function getCookie(name: string): string | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(new RegExp(`(?:^|;\\s*)${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
 export const api = axios.create({
   baseURL: BASE_URL,
   headers: { "Content-Type": "application/json" },
   withCredentials: true,
+});
+
+// Attach CSRF token to every state-mutating request
+api.interceptors.request.use((config) => {
+  if (MUTATING.has((config.method ?? "").toLowerCase())) {
+    const token = getCookie("csrftoken");
+    if (token) config.headers["X-CSRFToken"] = token;
+  }
+  return config;
 });
 
 api.interceptors.response.use(
@@ -82,6 +99,15 @@ export const sendLeadMessage = (id: string, body: string) =>
 export const getDuplicateLeads = () =>
   api.get("/leads/duplicates/");
 
+export const summarizeLead = (id: string) =>
+  api.post(`/leads/${id}/summarize/`);
+
+export const suggestReplies = (id: string) =>
+  api.post(`/leads/${id}/suggest-replies/`);
+
+export const mergeLeads = (primary_id: string, secondary_id: string) =>
+  api.post("/leads/merge/", { primary_id, secondary_id });
+
 // ── Appointments ──────────────────────────────────────────────────────────────
 export const getAppointments = (params?: Record<string, unknown>) =>
   api.get("/leads/appointments/", { params });
@@ -146,7 +172,7 @@ export const deleteProperty = (id: string) =>
   api.delete(`/properties/${id}/`);
 
 export const requestVerification = (id: string) =>
-  api.post(`/properties/${id}/request-verification/`);
+  api.post(`/properties/${id}/request_verification/`);
 
 export const rescoreProperty = (id: string) =>
   api.post(`/properties/${id}/rescore/`);
@@ -171,6 +197,10 @@ export const getAudits = () =>
 
 export const downloadAudit = (id: number) =>
   api.get(`/audit/download/${id}/`, { responseType: "blob" });
+
+// System audit log (admin-only)
+export const getAuditLog = (params?: Record<string, unknown>) =>
+  api.get("/audit-log/", { params });
 
 // ── Deal Locks ────────────────────────────────────────────────────────────────
 export const getDealLocks = (params?: Record<string, unknown>) =>
@@ -210,6 +240,12 @@ export const getAgentProfile = () =>
 
 export const updateAgentProfile = (data: Record<string, unknown>) =>
   api.patch("/agents/me/", data);
+
+export const updateAgentAvailability = (status: "available" | "busy" | "offline") =>
+  api.patch("/agents/me/availability/", { availability_status: status });
+
+export const getAvailableAgents = (city?: string) =>
+  api.get("/agents/available/", { params: city ? { city } : {} });
 
 export const getAgentsList = (params?: Record<string, unknown>) =>
   api.get("/agents/", { params });
@@ -280,6 +316,9 @@ export const downloadReport = (id: string) =>
 export const getMyReports = () =>
   api.get("/reports/mine/");
 
+export const getAgentPersonalReport = (params?: { period?: "weekly" | "monthly" }) =>
+  api.get("/reports/my-stats/", { params });
+
 export const getLeadReport = (params?: { period?: "weekly" | "monthly" }) =>
   api.get("/reports/leads/", { params });
 
@@ -289,12 +328,39 @@ export const getAgentReport = () =>
 export const getPropertyReport = (params?: { period?: "weekly" | "monthly" }) =>
   api.get("/reports/properties/", { params });
 
+export const getRevenueReport = (params?: { period?: "weekly" | "monthly" }) =>
+  api.get("/reports/revenue/", { params });
+
+export const getBotReport = (params?: { period?: "weekly" | "monthly" }) =>
+  api.get("/reports/bot/", { params });
+
 // ── Notifications ─────────────────────────────────────────────────────────────
 export const getNotifications = (params?: Record<string, unknown>) =>
   api.get("/notifications/", { params });
 
 export const markNotificationsRead = (ids?: string[]) =>
   api.post("/notifications/mark-read/", ids ? { ids } : {});
+
+// ── Notification Preferences ──────────────────────────────────────────────────
+export const getNotificationPreferences = () =>
+  api.get("/auth/me/notification-preferences/");
+
+export const updateNotificationPreferences = (data: Record<string, boolean>) =>
+  api.patch("/auth/me/notification-preferences/", data);
+
+// ── Property Compare & Market Trends ──────────────────────────────────────────
+export const compareProperties = (ids: string[]) =>
+  api.get("/properties/compare/", { params: { ids: ids.join(",") } });
+
+export const getMarketTrends = (params?: { city?: string; period?: "monthly" | "weekly" }) =>
+  api.get("/properties/market-trends/", { params });
+
+// ── Bulk Operations ────────────────────────────────────────────────────────────
+export const bulkAssignLeads = (lead_ids: string[], agent_id: number) =>
+  api.post("/leads/bulk-assign/", { lead_ids, agent_id });
+
+export const bulkRejectVerifications = (verification_ids: string[], notes?: string) =>
+  api.post("/verification/bulk-reject/", { verification_ids, notes });
 
 // ── System Config ─────────────────────────────────────────────────────────────
 export const getConfig = () =>

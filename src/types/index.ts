@@ -1,4 +1,4 @@
-export type Role = "admin" | "agent" | "developer" | "user";
+export type Role = "admin" | "agent" | "developer" | "client";
 
 export interface User {
   id: string;
@@ -17,7 +17,7 @@ export interface User {
 
 export interface PropertyImage {
   id: string;
-  image: string;
+  url: string;
   caption: string;
   order: number;
   created_at: string;
@@ -151,6 +151,7 @@ export interface AgentProfile {
   is_verified: boolean;
   is_active: boolean;
   is_featured: boolean;
+  availability_status: 'available' | 'busy' | 'offline';
   registration_status: 'pending' | 'approved' | 'rejected';
   rejection_reason: string;
   total_leads: number;
@@ -167,30 +168,37 @@ export interface AgentProfile {
 
 export interface DocumentScan {
   id: number;
+  submitter_phone: string;
   document_type: string;
-  document_name: string | null;
-  sender_phone: string;
-  extracted_fields: Record<string, unknown>;
-  red_flags: string[];
+  owner_name: string | null;
+  cnic_number: string | null;
+  property_address: string | null;
+  area: string | null;
+  authority: string | null;
   confidence: number | null;
-  raw_ocr: string;
+  status: string;
+  red_flag_count: number;
+  red_flags: string[];
   whatsapp_summary: string;
-  scan_status: string;
-  property_id: string | null;
-  verification_id: string | null;
+  verification: number | null;
   created_at: string;
 }
 
 export interface VerificationRequest {
   id: string;
-  property_id: string | null;
-  document_type: string;
   status: "pending" | "approved" | "rejected" | "needs_info";
   signal_score: number | null;
+  property_id: string | null;
+  property_title: string | null;
+  property_city: string | null;
+  requester_phone: string | null;
+  reviewer_phone: string | null;
+  document_count: number;
+  total_red_flags: number;
+  document_types: string[];
   fraud_flags: string[];
   notes: string;
-  risk_level: string | null;
-  summary: string | null;
+  verified_at: string | null;
   created_at: string;
 }
 
@@ -284,6 +292,32 @@ export interface Notification {
   is_read: boolean;
   created_at: string;
   sent_at: string | null;
+}
+
+export interface UserNotificationPreference {
+  whatsapp_enabled: boolean;
+  sms_enabled: boolean;
+  email_enabled: boolean;
+  lead_updates: boolean;
+  appointment_reminders: boolean;
+  deal_updates: boolean;
+  report_ready: boolean;
+  marketing: boolean;
+  updated_at: string;
+}
+
+export interface MarketTrend {
+  period: string;
+  avg_price_pkr: number | null;
+  listing_count: number;
+}
+
+export interface LeadScoreHistory {
+  id: number;
+  old_score: number;
+  new_score: number;
+  reason: string;
+  created_at: string;
 }
 
 export interface ApiError {
