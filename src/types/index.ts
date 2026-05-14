@@ -151,6 +151,8 @@ export interface AgentProfile {
   is_verified: boolean;
   is_active: boolean;
   is_featured: boolean;
+  registration_status: 'pending' | 'approved' | 'rejected';
+  rejection_reason: string;
   total_leads: number;
   total_listings: number;
   closed_deals: number;

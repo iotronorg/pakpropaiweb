@@ -223,6 +223,18 @@ export const updateAgent = (id: number, data: Record<string, unknown>) =>
 export const deleteAgent = (id: number) =>
   api.delete(`/agents/${id}/`);
 
+export const getPendingAgents = () =>
+  api.get("/agents/", { params: { status: "pending" } });
+
+export const registerAgent = (data: Record<string, unknown>) =>
+  api.post("/agents/register/", data, { headers: { Authorization: undefined } });
+
+export const approveAgent = (id: number) =>
+  api.post(`/agents/${id}/approve/`);
+
+export const rejectAgent = (id: number, rejection_reason: string) =>
+  api.post(`/agents/${id}/reject/`, { rejection_reason });
+
 // ── Agent Team (developer) ────────────────────────────────────────────────────
 export const getTeam = () =>
   api.get("/agents/team/");

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getAgentsList, createAgent, updateAgent, deleteAgent } from "@/lib/api";
+import { getAgentsList, createAgent, updateAgent, deleteAgent, getPendingAgents, approveAgent, rejectAgent } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
@@ -121,6 +121,7 @@ export default function AgentsPage() {
   const qc = useQueryClient();
   const queryKey = ["admin-agents"];
 
+  const [tab,        setTab]        = useState<"all" | "pending">("all");
   const [showAdd,    setShowAdd]    = useState(false);
   const [editAgent,  setEditAgent]  = useState<AgentProfile | null>(null);
   const [detailAgent,setDetailAgent]= useState<AgentProfile | null>(null);
@@ -130,13 +131,33 @@ export default function AgentsPage() {
   const [formError,  setFormError]  = useState("");
   const [copiedId,   setCopiedId]   = useState<number | null>(null);
   const [page,       setPage]       = useState(1);
+  const [rejectId,   setRejectId]   = useState<number | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: [...queryKey, page],
     queryFn: () => getAgentsList({ page }).then((r) => r.data),
   });
 
+  const { data: pendingData, isLoading: pendingLoading } = useQuery({
+    queryKey: ["admin-agents-pending"],
+    queryFn: () => getPendingAgents().then((r) => r.data),
+  });
+
   const agents: AgentProfile[] = data?.results ?? [];
+  const pendingAgents: AgentProfile[] = pendingData?.results ?? pendingData ?? [];
+
+  const invalidatePending = () => qc.invalidateQueries({ queryKey: ["admin-agents-pending"] });
+
+  const approveMutation = useMutation({
+    mutationFn: (id: number) => approveAgent(id),
+    onSuccess: () => { invalidatePending(); invalidate(); },
+  });
+
+  const rejectMutation = useMutation({
+    mutationFn: ({ id, reason }: { id: number; reason: string }) => rejectAgent(id, reason),
+    onSuccess: () => { invalidatePending(); setRejectId(null); setRejectReason(""); },
+  });
 
   const invalidate = () => qc.invalidateQueries({ queryKey, exact: false });
 
@@ -190,6 +211,143 @@ export default function AgentsPage() {
           + Add Agent
         </button>
       </div>
+
+      {/* Tabs */}
+      <div className="mb-5 flex gap-1 border-b border-gray-200">
+        {(["all", "pending"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
+              tab === t
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-gray-500 hover:text-gray-700"
+            }`}
+          >
+            {t === "all" ? "All Agents" : (
+              <span className="flex items-center gap-2">
+                Pending Approval
+                {pendingAgents.length > 0 && (
+                  <span className="rounded-full bg-amber-500 px-1.5 py-0.5 text-xs font-bold text-white leading-none">
+                    {pendingAgents.length}
+                  </span>
+                )}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Pending Approval Tab ─────────────────────────────────────────────── */}
+      {tab === "pending" && (
+        <div>
+          {pendingLoading ? (
+            <LoadingSpinner />
+          ) : pendingAgents.length === 0 ? (
+            <div className="rounded-xl border border-gray-200 bg-white px-6 py-16 text-center text-gray-400">
+              <p className="font-medium">No pending applications</p>
+              <p className="text-sm mt-1">New agent registrations will appear here for review.</p>
+            </div>
+          ) : (
+            <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                    <th className="px-5 py-3">Name</th>
+                    <th className="px-5 py-3">Phone</th>
+                    <th className="px-5 py-3">Type</th>
+                    <th className="px-5 py-3">Organization</th>
+                    <th className="px-5 py-3">City</th>
+                    <th className="px-5 py-3">Specializations</th>
+                    <th className="px-5 py-3">Applied</th>
+                    <th className="px-5 py-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-50">
+                  {pendingAgents.map((a) => (
+                    <tr key={a.id} className="hover:bg-amber-50/40">
+                      <td className="px-5 py-3">
+                        <p className="font-medium text-gray-900">{a.name}</p>
+                        {a.email && <p className="text-xs text-gray-400">{a.email}</p>}
+                      </td>
+                      <td className="px-5 py-3 font-mono text-gray-700">{a.phone}</td>
+                      <td className="px-5 py-3 text-gray-500 text-xs capitalize">
+                        {AGENT_TYPES.find((t) => t.value === a.agent_type)?.label ?? a.agent_type}
+                      </td>
+                      <td className="px-5 py-3 text-gray-500 text-xs">
+                        {a.parent_organization_name ?? <span className="text-gray-300">Independent</span>}
+                      </td>
+                      <td className="px-5 py-3 text-gray-600">{a.primary_city || "—"}</td>
+                      <td className="px-5 py-3 text-gray-400 text-xs">
+                        {a.specializations?.slice(0, 2).map((s) => SPEC_LABEL[s] ?? s).join(", ") || "—"}
+                      </td>
+                      <td className="px-5 py-3 text-gray-400 text-xs">{formatDate(a.joined_at)}</td>
+                      <td className="px-5 py-3">
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => setDetailAgent(a)}
+                            className="text-xs px-2.5 py-1 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 font-medium"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={() => approveMutation.mutate(a.id)}
+                            disabled={approveMutation.isPending}
+                            className="text-xs px-2.5 py-1 rounded-md border border-green-200 text-green-700 hover:bg-green-50 font-medium disabled:opacity-50"
+                          >
+                            Approve
+                          </button>
+                          <button
+                            onClick={() => { setRejectId(a.id); setRejectReason(""); }}
+                            className="text-xs px-2.5 py-1 rounded-md border border-red-200 text-red-600 hover:bg-red-50 font-medium"
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {/* Reject modal */}
+          {rejectId !== null && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+              <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">Reject Application</h3>
+                <p className="text-sm text-gray-500 mb-4">This reason will be sent to the agent via notification.</p>
+                <textarea
+                  rows={3}
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="e.g. Incomplete license details. Please reapply with valid REAP registration number."
+                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                />
+                <div className="mt-4 flex justify-end gap-3">
+                  <button
+                    onClick={() => setRejectId(null)}
+                    className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-500 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={() => rejectId && rejectMutation.mutate({ id: rejectId, reason: rejectReason })}
+                    disabled={!rejectReason.trim() || rejectMutation.isPending}
+                    className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
+                  >
+                    {rejectMutation.isPending ? "Rejecting…" : "Confirm Reject"}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── All Agents Tab ─────────────────────────────────────────────────────── */}
+      {tab === "all" && <>
 
       {/* ID usage hint */}
       <div className="mb-4 rounded-lg bg-blue-50 border border-blue-100 px-4 py-2.5 text-sm text-blue-700">
@@ -326,6 +484,8 @@ export default function AgentsPage() {
           </div>
         </div>
       )}
+
+      </> /* end tab === "all" */}
 
       {/* ── Add Modal ─────────────────────────────────────────────────────────── */}
       {showAdd && (
