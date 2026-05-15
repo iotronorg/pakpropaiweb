@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
 import { getAudits, downloadAudit } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
+import { SlidersHorizontal } from "lucide-react";
 
 interface AuditRecord {
   id: number;
@@ -59,11 +61,20 @@ export default function AdminAuditPage() {
 
   return (
     <div>
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Property Audit Log</h1>
-        <p className="mt-1 text-sm text-gray-500">
-          AI-generated property audits — risk scores, investment grades, and PDF reports
-        </p>
+      <div className="mb-8 flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Property Audit Log</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            AI-generated property audits — risk scores, investment grades, and PDF reports
+          </p>
+        </div>
+        <Link
+          href="/admin/audit/benchmarks"
+          className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          <SlidersHorizontal size={14} />
+          Market Benchmarks
+        </Link>
       </div>
 
       {isLoading ? (

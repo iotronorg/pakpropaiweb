@@ -11,7 +11,7 @@ import {
   ClipboardList, AlertTriangle, Calendar, Building2, Building,
   ShieldCheck, Home, GitCompare, BadgeCheck, Lock, AlertOctagon,
   FileBarChart, FileText, FolderOpen, Bell, Settings2, Users, User,
-  LogOut, ChevronRight,
+  LogOut, ChevronRight, SlidersHorizontal,
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
@@ -42,8 +42,9 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Deal Locks",    href: "/admin/deals",              icon: Lock },
     { label: "Fraud Monitor", href: "/admin/fraud",              icon: AlertOctagon },
     { label: "Reports",       href: "/admin/reports",            icon: FileBarChart },
-    { label: "Audit Log",     href: "/admin/audit",              icon: FileText },
-    { label: "System Log",    href: "/admin/audit-log",          icon: FolderOpen },
+    { label: "Audit Log",     href: "/admin/audit",              icon: FileText, exact: true },
+    { label: "Benchmarks",   href: "/admin/audit/benchmarks",   icon: SlidersHorizontal },
+    { label: "System Log",   href: "/admin/audit-log",          icon: FolderOpen },
     { label: "Notifications", href: "/admin/notifications",      icon: Bell },
     { label: "Settings",      href: "/admin/settings",           icon: Settings2 },
   ],

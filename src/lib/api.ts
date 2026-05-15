@@ -198,6 +198,19 @@ export const getAudits = () =>
 export const downloadAudit = (id: number) =>
   api.get(`/audit/download/${id}/`, { responseType: "blob" });
 
+// ── Audit Benchmarks ──────────────────────────────────────────────────────────
+export const getBenchmarks = (city?: string) =>
+  api.get("/audit/benchmarks/", { params: city ? { city } : {} });
+
+export const createBenchmark = (data: Record<string, unknown>) =>
+  api.post("/audit/benchmarks/", data);
+
+export const updateBenchmark = (id: number, data: Record<string, unknown>) =>
+  api.patch(`/audit/benchmarks/${id}/`, data);
+
+export const deleteBenchmark = (id: number) =>
+  api.delete(`/audit/benchmarks/${id}/`);
+
 // System audit log (admin-only)
 export const getAuditLog = (params?: Record<string, unknown>) =>
   api.get("/audit-log/", { params });
