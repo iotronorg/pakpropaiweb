@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getProperties, createProperty, updateProperty, deleteProperty,
-  uploadPropertyImages, requestVerification,
+  uploadPropertyImages, deletePropertyImage, requestVerification,
 } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -167,37 +167,75 @@ function PropertyFormModal({
   );
 }
 
-function PropertyImageUploader({ propertyId }: { propertyId: string }) {
+function PropertyImagesSection({
+  propertyId,
+  images,
+}: {
+  propertyId: string;
+  images: { id: string; url: string; caption: string }[];
+}) {
   const qc = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  const [expanded, setExpanded] = useState(false);
 
   const uploadMutation = useMutation({
     mutationFn: (files: File[]) => uploadPropertyImages(propertyId, files),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["dev-inventory"] }),
   });
 
+  const deleteMutation = useMutation({
+    mutationFn: (imageId: string) => deletePropertyImage(propertyId, imageId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["dev-inventory"] }),
+  });
+
   return (
-    <>
-      <input
-        ref={fileRef}
-        type="file"
-        accept="image/jpeg,image/png,image/webp"
-        multiple
-        className="hidden"
-        onChange={(e) => {
-          const files = Array.from(e.target.files ?? []);
-          if (files.length > 0) uploadMutation.mutate(files);
-          e.target.value = "";
-        }}
-      />
-      <button
-        onClick={() => fileRef.current?.click()}
-        disabled={uploadMutation.isPending}
-        className="text-xs text-blue-600 hover:underline disabled:opacity-50"
-      >
-        {uploadMutation.isPending ? "Uploading…" : "+ Photos"}
-      </button>
-    </>
+    <div>
+      <div className="flex items-center gap-3">
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            const files = Array.from(e.target.files ?? []);
+            if (files.length > 0) uploadMutation.mutate(files);
+            e.target.value = "";
+          }}
+        />
+        <button
+          onClick={() => fileRef.current?.click()}
+          disabled={uploadMutation.isPending}
+          className="text-xs text-blue-600 hover:underline disabled:opacity-50"
+        >
+          {uploadMutation.isPending ? "Uploading…" : "+ Photos"}
+        </button>
+        {images.length > 0 && (
+          <button
+            onClick={() => setExpanded((v) => !v)}
+            className="text-xs text-gray-400 hover:text-gray-600"
+          >
+            {images.length} photo{images.length !== 1 ? "s" : ""} {expanded ? "▲" : "▼"}
+          </button>
+        )}
+      </div>
+      {expanded && images.length > 0 && (
+        <div className="mt-2 grid grid-cols-3 gap-1.5">
+          {images.map((img) => (
+            <div key={img.id} className="relative group rounded-md overflow-hidden bg-gray-100 h-20">
+              <img src={img.url} alt={img.caption || ""} className="w-full h-full object-cover" />
+              <button
+                onClick={() => deleteMutation.mutate(img.id)}
+                disabled={deleteMutation.isPending}
+                className="absolute top-0.5 right-0.5 hidden group-hover:flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs font-bold"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -300,6 +338,9 @@ export default function InventoryPage() {
 
               <div>
                 <h3 className="font-semibold text-gray-900">{p.title || `Unit #${p.id}`}</h3>
+                {p.ref_no && (
+                  <p className="text-xs font-mono text-gray-400 mt-0.5">{p.ref_no}</p>
+                )}
                 <p className="text-sm text-gray-500 mt-0.5">{p.location}, {p.city}</p>
               </div>
 
@@ -327,6 +368,9 @@ export default function InventoryPage() {
 
               <p className="text-xs text-gray-400">{formatDate(p.created_at)}</p>
 
+              {/* Image gallery */}
+              <PropertyImagesSection propertyId={p.id} images={p.images ?? []} />
+
               {/* Action bar */}
               <div className="flex flex-wrap gap-2 pt-1 border-t border-gray-50">
                 <button
@@ -335,7 +379,6 @@ export default function InventoryPage() {
                 >
                   Edit
                 </button>
-                <PropertyImageUploader propertyId={p.id} />
                 {p.legal_status === "unverified" && (
                   <button
                     onClick={() => verifyMutation.mutate(p.id)}

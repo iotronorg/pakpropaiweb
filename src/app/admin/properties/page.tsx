@@ -310,6 +310,7 @@ export default function PropertiesPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th className="px-5 py-3">Ref No</th>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">City</th>
                 <th className="px-5 py-3">Price</th>
@@ -323,6 +324,9 @@ export default function PropertiesPage() {
             <tbody className="divide-y divide-gray-50">
               {properties.map((p) => (
                 <tr key={p.id} className="hover:bg-gray-50">
+                  <td className="px-5 py-3 font-mono text-xs text-gray-500 whitespace-nowrap">
+                    {p.ref_no || "—"}
+                  </td>
                   <td className="px-5 py-3 font-medium text-gray-900 max-w-[200px] truncate">
                     {p.title || `Property #${p.id.slice(0, 8)}`}
                   </td>
@@ -386,7 +390,7 @@ export default function PropertiesPage() {
               ))}
               {properties.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-5 py-10 text-center text-gray-400">
+                  <td colSpan={9} className="px-5 py-10 text-center text-gray-400">
                     No properties found
                   </td>
                 </tr>
@@ -437,6 +441,7 @@ export default function PropertiesPage() {
       {detailProp && (
         <Modal title="Property Details" onClose={() => setDetailProp(null)}>
           <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
+            <DetailRow label="Ref No"      value={detailProp.ref_no} mono />
             <DetailRow label="Title"       value={detailProp.title} />
             <DetailRow label="Description" value={detailProp.description} />
             <DetailRow label="City"        value={detailProp.city} />

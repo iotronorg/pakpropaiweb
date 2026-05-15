@@ -10,6 +10,7 @@ import { Property } from "@/types";
 const MAX_COMPARE = 4;
 
 const ROWS: { label: string; key: keyof Property; format?: (v: unknown) => string }[] = [
+  { label: "Ref No",         key: "ref_no" },
   { label: "City",           key: "city" },
   { label: "Location",       key: "location" },
   { label: "Type",           key: "property_type" },
@@ -88,6 +89,7 @@ export default function PropertyComparePage() {
                   }`}
                 >
                   <p className="font-medium truncate">{p.title}</p>
+                  <p className="text-xs font-mono text-gray-400">{p.ref_no}</p>
                   <p className="text-xs text-gray-500">{p.city} · {p.property_type}</p>
                 </button>
               );
@@ -110,6 +112,7 @@ export default function PropertyComparePage() {
                   {compareData.map((p) => (
                     <th key={p.id} className="text-left px-4 py-3 font-semibold text-gray-900">
                       <span className="block truncate max-w-44">{p.title}</span>
+                      <span className="block text-xs font-mono font-normal text-gray-400">{p.ref_no}</span>
                       <span className="text-xs font-normal text-gray-500">{p.city}</span>
                     </th>
                   ))}

@@ -25,6 +25,7 @@ export interface PropertyImage {
 
 export interface Property {
   id: string;
+  ref_no: string;
   owner: string | null;
   owner_phone: string | null;
   title: string;
