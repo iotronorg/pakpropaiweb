@@ -11,12 +11,21 @@ const ROLE_PATHS: Record<string, string> = {
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  const token = req.cookies.get("access_token")?.value;
+  const role = req.cookies.get("user_role")?.value;
+
+  // Authenticated users on "/" → send to their dashboard
+  if (pathname === "/" && token && role) {
+    const allowedBase = ROLE_PATHS[role];
+    if (allowedBase) return NextResponse.redirect(new URL(allowedBase, req.url));
+  }
+
+  // "/" is public — show landing page for unauthenticated visitors
+  if (pathname === "/") return NextResponse.next();
+
   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
-
-  const token = req.cookies.get("access_token")?.value;
-  const role = req.cookies.get("user_role")?.value;
 
   if (!token || !role) {
     return NextResponse.redirect(new URL("/login", req.url));
@@ -25,10 +34,6 @@ export function middleware(req: NextRequest) {
   const allowedBase = ROLE_PATHS[role];
   if (!allowedBase) {
     return NextResponse.redirect(new URL("/login", req.url));
-  }
-
-  if (pathname === "/") {
-    return NextResponse.redirect(new URL(allowedBase, req.url));
   }
 
   if (!pathname.startsWith(allowedBase)) {

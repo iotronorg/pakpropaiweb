@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -9,6 +10,7 @@ import { sendOtp, verifyOtp } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { roleHomePath } from "@/lib/utils";
 import { User } from "@/types";
+import { ArrowLeft } from "lucide-react";
 
 const phoneSchema = z.object({
   phone: z.string().min(10, "Enter a valid phone number"),
@@ -74,8 +76,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm">
+        {/* Back to home */}
+        <Link
+          href="/"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors mb-6 group"
+        >
+          <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform duration-150" />
+          Back to home
+        </Link>
+
         {/* Header */}
         <div className="mb-8 text-center">
           <div className="mb-3 flex items-center justify-center gap-2">

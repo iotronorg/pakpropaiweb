@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getDealLock } from "@/lib/api";
@@ -9,7 +9,7 @@ import { formatPKR, roleHomePath } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
 import { DealLock } from "@/types";
 
-export default function PaymentReturnPage() {
+function PaymentReturnContent() {
   const params = useSearchParams();
   const router = useRouter();
   const { user } = useAuthStore();
@@ -40,7 +40,7 @@ export default function PaymentReturnPage() {
       });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isLoading, router]);
+  }, [isLoading, router, user?.role]);
 
   if (isLoading) {
     return (
@@ -53,7 +53,6 @@ export default function PaymentReturnPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-lg max-w-md w-full p-8 text-center">
-        {/* Icon */}
         <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
           isSuccess ? "bg-green-100" : "bg-red-100"
         }`}>
@@ -62,7 +61,6 @@ export default function PaymentReturnPage() {
           </span>
         </div>
 
-        {/* Title */}
         <h1 className={`text-2xl font-bold mb-2 ${
           isSuccess ? "text-green-700" : "text-red-700"
         }`}>
@@ -73,7 +71,6 @@ export default function PaymentReturnPage() {
             : "Payment Status Unknown"}
         </h1>
 
-        {/* Deal details */}
         {deal && (
           <div className="bg-gray-50 rounded-xl p-4 my-5 text-left space-y-2">
             <div className="flex justify-between text-sm">
@@ -101,7 +98,6 @@ export default function PaymentReturnPage() {
           </div>
         )}
 
-        {/* Message */}
         <p className="text-sm text-gray-600 mb-6">
           {isSuccess
             ? "Your token payment has been received. The deal lock is now active. Both parties will be notified via WhatsApp."
@@ -110,14 +106,13 @@ export default function PaymentReturnPage() {
             : "We could not confirm your payment status. Please contact support if you were charged."}
         </p>
 
-        {/* Redirect notice */}
         <p className="text-xs text-gray-400 mb-4">
           Redirecting to dashboard in {countdown}s…
         </p>
 
         <button
           onClick={() => router.replace(roleHomePath(user?.role ?? "agent"))}
-          className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors ${
+          className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
             isSuccess
               ? "bg-green-600 text-white hover:bg-green-700"
               : "bg-gray-800 text-white hover:bg-gray-900"
@@ -127,5 +122,17 @@ export default function PaymentReturnPage() {
         </button>
       </div>
     </div>
+  );
+}
+
+export default function PaymentReturnPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <LoadingSpinner />
+      </div>
+    }>
+      <PaymentReturnContent />
+    </Suspense>
   );
 }
