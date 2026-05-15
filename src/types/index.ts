@@ -42,6 +42,7 @@ export interface Property {
   assigned_agent: number | null;
   is_active: boolean;
   installment_available: boolean;
+  ai_analysis: Record<string, unknown> | null;
   primary_image: string | null;
   images: PropertyImage[];
   created_at: string;
@@ -59,6 +60,8 @@ export interface Lead {
   status: string;
   intent: string | null;
   notes: string;
+  source: "whatsapp" | "web" | "manual" | null;
+  intent_signals: Record<string, unknown> | null;
   assigned_agent_id: number | null;
   assigned_agent_name: string | null;
   created_at: string;

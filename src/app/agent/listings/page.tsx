@@ -180,7 +180,7 @@ export default function AgentListingsPage() {
 
   const { data: dealsData } = useQuery({
     queryKey: ["active-deals"],
-    queryFn: () => getDealLocks({ status: "locked" }).then((r) => r.data as DealLock[]),
+    queryFn: () => getDealLocks({ status: "locked" }).then((r) => (r.data?.results ?? []) as DealLock[]),
   });
   const lockedPropertyIds = new Set<string>((dealsData ?? []).map((d) => d.property));
 

@@ -1,7 +1,7 @@
 # PakProp AI Web — Build Progress
 
-**Last updated:** 2026-05-14 (Phase 10 — all remaining missing features complete)
-**Current phase:** Phase 10 complete — ready for deployment
+**Last updated:** 2026-05-15 (Phase 11 — 27-gap audit closure complete; all gaps resolved)
+**Current phase:** Phase 11 complete — all frontend/backend gaps closed; ready for deployment
 **Frontend completion score:** 100% pre-launch features (production deployment remaining)
 
 ---
@@ -202,6 +202,54 @@ All Phase 8 items are done:
 
 ### Agent profile update
 - `/agent/profile` — `NotificationPreferencesPanel` section appended below profile card
+
+## Phase 11 — 27-Gap Audit Closure (2026-05-15)
+
+Full cross-repo audit identified and closed 27 gaps (original 19-gap plan + 8 additional gaps found via audit).
+
+### New API functions added to `api.ts`
+
+| Function | Endpoint |
+|----------|----------|
+| `sellerConfirmDealLock(id)` | `PATCH /deals/lock/{id}/seller-confirm/` |
+| `releaseDealLock(id, notes?)` | `PATCH /deals/lock/{id}/release/` |
+| `disputeDealLock(id, notes?)` | `PATCH /deals/lock/{id}/dispute/` |
+
+### Updated types in `types/index.ts`
+
+| Type | Change |
+|------|--------|
+| `Lead` | Added `source: "whatsapp" \| "web" \| "manual" \| null` and `intent_signals: Record<string, unknown> \| null` |
+| `Property` | Added `ai_analysis: Record<string, unknown> \| null` |
+
+### Admin Deals page (`/admin/deals`)
+
+| Feature | Notes |
+|---------|-------|
+| "Released" and "Disputed" filter tabs added | Shows deals in those final states |
+| **Release** button (indigo) — shown on `status === "locked"` | Calls `releaseDealLock()`, invalidates query |
+| **Dispute** button (red outline) — shown on `locked` or `initiated` | Calls `disputeDealLock()`, invalidates query |
+| `sellerConfirmDealLock` wired — "Seller Confirm" button for locked + `seller_confirmed === false` | — |
+
+### Lead source badge (admin/leads, agent/leads, lead detail)
+
+| Location | Feature |
+|----------|---------|
+| `admin/leads` contact cell | Source badge: green=WhatsApp, blue=web, gray=manual |
+| `agent/leads` contact cell | Same source badge pattern |
+| `agent/leads/[id]` sidebar | "Source" row with colored badge |
+| `agent/leads/[id]` sidebar | "AI Scoring Signals" section — expandable key/value list from `intent_signals` |
+
+### Property AI Analysis (`/admin/properties`)
+
+| Feature | Notes |
+|---------|-------|
+| `AiAnalysisSection` collapsible component | Toggles Gemini JSON payload in property detail modal |
+| Shown only when `ai_analysis` is non-empty | Key/value pairs rendered in a blue tinted card |
+
+**Phase 11 completion: 100%** ✅ — All 27 gaps closed. TypeScript clean (`npx tsc --noEmit` = 0 errors).
+
+---
 
 ## Phase 9 — Remaining Work
 

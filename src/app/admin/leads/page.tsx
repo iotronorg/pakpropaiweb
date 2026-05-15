@@ -299,6 +299,15 @@ export default function AdminLeadsPage() {
                     <td className="px-6 py-3">
                       <p className="font-medium text-gray-900">{l.name || "Unknown"}</p>
                       <p className="text-xs text-gray-400 font-mono">{l.phone}</p>
+                      {l.source && (
+                        <span className={`inline-block mt-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+                          l.source === "whatsapp" ? "bg-green-50 text-green-700"
+                          : l.source === "web"    ? "bg-blue-50 text-blue-700"
+                          : "bg-gray-100 text-gray-500"
+                        }`}>
+                          {l.source}
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-3">
                       {l.intent_score !== null ? (

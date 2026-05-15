@@ -362,11 +362,37 @@ export default function LeadDetailPage() {
                 <span className="text-xs font-medium text-gray-700">{lead.assigned_agent_name ?? "—"}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-xs text-gray-500">Source</span>
+                <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
+                  lead.source === "whatsapp" ? "bg-green-50 text-green-700"
+                  : lead.source === "web"    ? "bg-blue-50 text-blue-700"
+                  : lead.source === "manual" ? "bg-gray-100 text-gray-500"
+                  : "bg-gray-50 text-gray-400"
+                }`}>
+                  {lead.source ?? "—"}
+                </span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-xs text-gray-500">Created</span>
                 <span className="text-xs text-gray-400">{formatDate(lead.created_at)}</span>
               </div>
             </div>
           </Section>
+
+          {lead.intent_signals && Object.keys(lead.intent_signals).length > 0 && (
+            <Section title="AI Scoring Signals">
+              <div className="space-y-1.5">
+                {Object.entries(lead.intent_signals).map(([key, val]) => (
+                  <div key={key} className="flex justify-between items-center">
+                    <span className="text-xs text-gray-500 capitalize">{key.replace(/_/g, " ")}</span>
+                    <span className="text-xs font-medium text-gray-700">
+                      {typeof val === "number" ? val : String(val)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Section>
+          )}
 
           <Section title="Notes">
             {notesEditing ? (

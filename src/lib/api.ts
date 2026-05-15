@@ -362,9 +362,15 @@ export const bulkAssignLeads = (lead_ids: string[], agent_id: number) =>
 export const bulkRejectVerifications = (verification_ids: string[], notes?: string) =>
   api.post("/verification/bulk-reject/", { verification_ids, notes });
 
-// ── Deal Lock — seller confirm ────────────────────────────────────────────────
+// ── Deal Lock — seller confirm / release / dispute ────────────────────────────
 export const sellerConfirmDealLock = (id: string, token?: string) =>
   api.patch(`/deals/lock/${id}/seller-confirm/`, token ? { token } : {});
+
+export const releaseDealLock = (id: string, adminNotes?: string) =>
+  api.patch(`/deals/lock/${id}/release/`, adminNotes ? { admin_notes: adminNotes } : {});
+
+export const disputeDealLock = (id: string, adminNotes?: string) =>
+  api.patch(`/deals/lock/${id}/dispute/`, adminNotes ? { admin_notes: adminNotes } : {});
 
 // ── Lead Activities & Score History ──────────────────────────────────────────
 export const getLeadActivities = (id: string) =>

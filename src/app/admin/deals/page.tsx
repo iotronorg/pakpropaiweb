@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDealLocks, confirmDealLock, cancelDealLock, createCheckout, getPayments, sellerConfirmDealLock } from "@/lib/api";
+import { getDealLocks, confirmDealLock, cancelDealLock, createCheckout, getPayments, sellerConfirmDealLock, releaseDealLock, disputeDealLock } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatPKR } from "@/lib/utils";
 import { DealLock, DealLockStatus, Payment } from "@/types";
@@ -118,6 +118,16 @@ export default function AdminDealsPage() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["deals"] }),
   });
 
+  const releaseMutation = useMutation({
+    mutationFn: (id: string) => releaseDealLock(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["deals"] }),
+  });
+
+  const disputeMutation = useMutation({
+    mutationFn: (id: string) => disputeDealLock(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["deals"] }),
+  });
+
   async function handlePayOnline(dealId: string) {
     setCheckoutLoading(dealId);
     try {
@@ -138,6 +148,8 @@ export default function AdminDealsPage() {
     { label: "All",       value: "" },
     { label: "Pending",   value: "initiated" },
     { label: "Active",    value: "locked" },
+    { label: "Released",  value: "released" },
+    { label: "Disputed",  value: "disputed" },
     { label: "Expired",   value: "expired" },
     { label: "Cancelled", value: "cancelled" },
   ];
@@ -305,6 +317,26 @@ export default function AdminDealsPage() {
                     className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                   >
                     {sellerConfirmMutation.isPending ? "…" : "Seller Confirm"}
+                  </button>
+                )}
+                {deal.status === "locked" && (
+                  <button
+                    onClick={() => releaseMutation.mutate(deal.id)}
+                    disabled={releaseMutation.isPending}
+                    className="px-3 py-1.5 text-xs bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                    title="Mark deal as successfully completed"
+                  >
+                    {releaseMutation.isPending ? "…" : "Release"}
+                  </button>
+                )}
+                {(deal.status === "locked" || deal.status === "initiated") && (
+                  <button
+                    onClick={() => disputeMutation.mutate(deal.id)}
+                    disabled={disputeMutation.isPending}
+                    className="px-3 py-1.5 text-xs bg-red-100 text-red-700 border border-red-200 rounded-lg hover:bg-red-200 disabled:opacity-50"
+                    title="Flag this deal as disputed"
+                  >
+                    {disputeMutation.isPending ? "…" : "Dispute"}
                   </button>
                 )}
                 {(deal.status === "initiated" || deal.status === "locked") && (

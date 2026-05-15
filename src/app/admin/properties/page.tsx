@@ -65,6 +65,33 @@ type PropertyForm = typeof BLANK_FORM;
 
 // ── Property Images Section ───────────────────────────────────────────────────
 
+function AiAnalysisSection({ analysis }: { analysis: Record<string, unknown> }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="col-span-2 border border-blue-100 rounded-lg bg-blue-50/40 overflow-hidden">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between px-4 py-2.5 text-left"
+      >
+        <span className="text-xs font-semibold text-blue-800">AI Analysis (Gemini)</span>
+        <span className="text-blue-400 text-xs">{open ? "▲" : "▼"}</span>
+      </button>
+      {open && (
+        <div className="px-4 pb-3 space-y-1.5 border-t border-blue-100">
+          {Object.entries(analysis).map(([key, val]) => (
+            <div key={key} className="flex justify-between items-start gap-4">
+              <span className="text-xs text-blue-700 font-medium capitalize flex-shrink-0">{key.replace(/_/g, " ")}</span>
+              <span className="text-xs text-gray-700 text-right">
+                {typeof val === "object" ? JSON.stringify(val) : String(val ?? "—")}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PropertyImagesSection({ propertyId, images }: {
   propertyId: string;
   images: { id: string; url: string; caption: string }[];
@@ -437,6 +464,9 @@ export default function PropertiesPage() {
             </DetailRow>
             <DetailRow label="Listed"      value={formatDate(detailProp.created_at)} />
             <DetailRow label="Updated"     value={formatDate(detailProp.updated_at)} />
+            {detailProp.ai_analysis && Object.keys(detailProp.ai_analysis).length > 0 && (
+              <AiAnalysisSection analysis={detailProp.ai_analysis} />
+            )}
             <PropertyImagesSection propertyId={detailProp.id} images={detailProp.images ?? []} />
           </div>
         </Modal>
