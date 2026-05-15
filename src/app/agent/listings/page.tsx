@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyProperties, requestVerification, getDealLocks, uploadPropertyImages, deletePropertyImage } from "@/lib/api";
+import { getMyProperties, requestVerification, getDealLocks, uploadPropertyImages, deletePropertyImage, initiateDealLock } from "@/lib/api";
 import type { DealLock, Property } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -70,10 +70,108 @@ function PropertyImageUploader({ propertyId }: { propertyId: string }) {
   );
 }
 
+const GATEWAYS = [
+  { value: "manual",    label: "Manual Payment" },
+  { value: "safepay",   label: "Safepay" },
+  { value: "jazzcash",  label: "JazzCash" },
+  { value: "easypaisa", label: "EasyPaisa" },
+];
+
+function DealLockInitiateModal({
+  propertyId,
+  propertyTitle,
+  onClose,
+  onSuccess,
+}: {
+  propertyId: string;
+  propertyTitle: string;
+  onClose: () => void;
+  onSuccess: () => void;
+}) {
+  const [tokenAmount, setTokenAmount] = useState(25000);
+  const [gateway, setGateway] = useState("manual");
+  const [error, setError] = useState("");
+
+  const initiateMutation = useMutation({
+    mutationFn: () =>
+      initiateDealLock({ property_id: propertyId, token_amount: tokenAmount, payment_gateway: gateway }),
+    onSuccess: () => { onSuccess(); onClose(); },
+    onError: (e: unknown) => {
+      const d = (e as { response?: { data?: Record<string, unknown> } })?.response?.data;
+      const first = d ? Object.values(d)[0] : null;
+      setError(Array.isArray(first) ? String(first[0]) : "Failed to initiate deal lock.");
+    },
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-md rounded-xl bg-white shadow-xl">
+        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+          <h3 className="font-semibold text-gray-900">Lock Deal</h3>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          <div className="rounded-lg bg-blue-50 border border-blue-100 px-4 py-3 text-sm text-blue-800">
+            <p className="font-semibold mb-1">{propertyTitle}</p>
+            <p className="text-xs text-blue-600">
+              Locking this deal gives the buyer 48 hours of exclusivity. Both parties will be notified via WhatsApp.
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">
+              Token Amount (PKR) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="number"
+              min={25000}
+              max={100000}
+              step={5000}
+              value={tokenAmount}
+              onChange={(e) => setTokenAmount(Number(e.target.value))}
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+            <p className="text-xs text-gray-400 mt-1">PKR 25,000 – 100,000</p>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-gray-600 mb-1">Payment Gateway</label>
+            <select
+              value={gateway}
+              onChange={(e) => setGateway(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {GATEWAYS.map((g) => (
+                <option key={g.value} value={g.value}>{g.label}</option>
+              ))}
+            </select>
+          </div>
+
+          {error && (
+            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+          )}
+
+          <div className="flex justify-end gap-3 pt-1 border-t border-gray-100">
+            <button onClick={onClose} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+            <button
+              onClick={() => initiateMutation.mutate()}
+              disabled={initiateMutation.isPending || tokenAmount < 25000 || tokenAmount > 100000}
+              className="rounded-lg bg-orange-600 px-5 py-2 text-sm font-semibold text-white hover:bg-orange-700 disabled:opacity-50"
+            >
+              {initiateMutation.isPending ? "Initiating…" : "Lock Deal"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AgentListingsPage() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<Filter>("all");
   const [expandedImages, setExpandedImages] = useState<string | null>(null);
+  const [lockModalProperty, setLockModalProperty] = useState<Property | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["agent-listings"],
@@ -249,10 +347,27 @@ export default function AgentListingsPage() {
                 {p.legal_status === "pending" && (
                   <span className="text-xs text-yellow-600 font-medium">Verification pending</span>
                 )}
+                {!lockedPropertyIds.has(p.id) && p.legal_status === "verified" && (
+                  <button
+                    onClick={() => setLockModalProperty(p)}
+                    className="rounded-md bg-orange-600 px-3 py-1 text-xs font-semibold text-white hover:bg-orange-700 transition-colors"
+                  >
+                    Lock Deal
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {lockModalProperty && (
+        <DealLockInitiateModal
+          propertyId={lockModalProperty.id}
+          propertyTitle={lockModalProperty.title || `Property #${lockModalProperty.id}`}
+          onClose={() => setLockModalProperty(null)}
+          onSuccess={() => qc.invalidateQueries({ queryKey: ["active-deals"] })}
+        />
       )}
     </div>
   );

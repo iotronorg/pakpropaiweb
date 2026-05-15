@@ -1,12 +1,12 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getAgentProfile, getLeads } from "@/lib/api";
+import { getAgentProfile, getLeads, getMyDealLocks } from "@/lib/api";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatPKR } from "@/lib/utils";
-import { AgentProfile, Lead } from "@/types";
+import { AgentProfile, Lead, DealLock } from "@/types";
 
 export default function AgentOverview() {
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -19,8 +19,14 @@ export default function AgentOverview() {
     queryFn: () => getLeads().then((r) => r.data).catch(() => ({ results: [], count: 0 })),
   });
 
+  const { data: dealsData } = useQuery({
+    queryKey: ["my-deal-locks"],
+    queryFn: () => getMyDealLocks().then((r) => r.data),
+  });
+
   const isLoading = profileLoading || leadsLoading;
   const leads: Lead[] = leadsData?.results ?? [];
+  const myDeals: DealLock[] = dealsData?.results ?? dealsData ?? [];
   const hotLeads = leads.filter((l) => (l.intent_score ?? 0) >= 7);
   const today = new Date().toDateString();
   const todayLeads = leads.filter((l) => new Date(l.created_at).toDateString() === today);
@@ -110,6 +116,40 @@ export default function AgentOverview() {
               )}
             </div>
           </div>
+
+          {/* My deal locks */}
+          {myDeals.length > 0 && (
+            <div className="rounded-xl border border-gray-200 bg-white">
+              <div className="border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+                <h2 className="font-semibold text-gray-800">My Deal Locks</h2>
+                <span className="text-xs text-gray-400">{myDeals.length} active</span>
+              </div>
+              <div className="divide-y divide-gray-50">
+                {myDeals.map((d) => (
+                  <div key={d.id} className="flex items-center justify-between px-6 py-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium text-gray-900 truncate">{d.property_title}</p>
+                      <p className="text-xs text-gray-400">{d.property_city} · PKR {formatPKR(d.token_amount)}</p>
+                    </div>
+                    <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+                      {d.status === "locked" && d.hours_remaining !== null && (
+                        <span className={`text-xs font-bold ${d.hours_remaining < 6 ? "text-red-600" : "text-green-600"}`}>
+                          {d.hours_remaining.toFixed(1)}h left
+                        </span>
+                      )}
+                      <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                        d.status === "locked"    ? "bg-green-100 text-green-700"
+                        : d.status === "initiated" ? "bg-yellow-100 text-yellow-700"
+                        : "bg-gray-100 text-gray-500"
+                      }`}>
+                        {d.status}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Cities & areas covered */}
           {profile && (profile.cities.length > 0 || profile.areas.length > 0) && (

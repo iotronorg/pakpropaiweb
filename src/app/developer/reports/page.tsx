@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getMyReports, generateReport, getLeadReport, getPropertyReport } from "@/lib/api";
+import { getMyReports, generateReport, getLeadReport, getPropertyReport, downloadReport } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils";
@@ -76,6 +76,16 @@ function PeriodToggle({ value, onChange }: { value: Period; onChange: (p: Period
       ))}
     </div>
   );
+}
+
+async function handleDownload(id: string, reportType: string) {
+  const res = await downloadReport(id);
+  const url = URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `PakProp_Report_${reportType}_${id}.pdf`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export default function DeveloperReportsPage() {
@@ -279,15 +289,13 @@ export default function DeveloperReportsPage() {
                         {r.ready_at ? formatDate(r.ready_at) : "—"}
                       </td>
                       <td className="px-6 py-3">
-                        {r.status === "ready" && r.file_url ? (
-                          <a
-                            href={r.file_url}
-                            target="_blank"
-                            rel="noreferrer"
+                        {r.status === "ready" ? (
+                          <button
+                            onClick={() => handleDownload(r.id, r.report_type)}
                             className="text-xs text-blue-600 hover:underline"
                           >
                             Download PDF
-                          </a>
+                          </button>
                         ) : (
                           <span className="text-gray-300 text-xs">—</span>
                         )}

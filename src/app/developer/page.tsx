@@ -1,30 +1,56 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getProperties } from "@/lib/api";
+import { getProperties, getLeads, getTeam } from "@/lib/api";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useAuthStore } from "@/store/auth";
-import { Property } from "@/types";
+import { Property, Lead } from "@/types";
+
+interface TeamMember {
+  id: number;
+  name: string;
+  availability_status: string;
+}
 
 export default function DeveloperOverview() {
   const { user } = useAuthStore();
 
-  const { data, isLoading } = useQuery({
+  const { data: propData, isLoading: propLoading } = useQuery({
     queryKey: ["dev-properties"],
     queryFn: () => getProperties().then((r) => r.data),
   });
 
-  const properties: Property[] = data?.results ?? [];
-  const totalUnits = data?.count ?? 0;
-  const available = properties.filter((p) => p.legal_status !== "disputed").length;
-  const verified = properties.filter((p) => p.legal_status === "verified").length;
+  const { data: leadsData, isLoading: leadsLoading } = useQuery({
+    queryKey: ["dev-leads-overview"],
+    queryFn: () => getLeads().then((r) => r.data).catch(() => ({ results: [], count: 0 })),
+  });
+
+  const { data: teamData, isLoading: teamLoading } = useQuery({
+    queryKey: ["dev-team"],
+    queryFn: () => getTeam().then((r) => r.data).catch(() => []),
+  });
+
+  const isLoading = propLoading || leadsLoading || teamLoading;
+
+  const properties: Property[] = propData?.results ?? [];
+  const leads: Lead[] = leadsData?.results ?? [];
+  const team: TeamMember[] = teamData?.results ?? teamData ?? [];
+
+  const totalUnits = propData?.count ?? 0;
+  const verifiedUnits = properties.filter((p) => p.legal_status === "verified").length;
+  const totalLeads = leadsData?.count ?? leads.length;
+  const hotLeads = leads.filter((l) => (l.intent_score ?? 0) >= 7).length;
+  const teamMembers = team.length;
+  const activeAgents = team.filter((m) => m.availability_status === "available").length;
 
   return (
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-900">Developer Dashboard</h1>
-        <p className="mt-1 text-sm text-gray-500">Project inventory and lead performance for {user?.name || user?.phone}</p>
+        <p className="mt-1 text-sm text-gray-500">
+          Project inventory and lead performance for {user?.name || user?.phone}
+        </p>
       </div>
 
       {isLoading ? (
@@ -33,15 +59,11 @@ export default function DeveloperOverview() {
         <>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 mb-8">
             <StatsCard label="Total Inventory" value={totalUnits} color="blue" />
-            <StatsCard label="For Sale" value={available} color="green" />
-            <StatsCard label="Verified Units" value={verified} color="gray" />
-          </div>
-
-          <div className="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center">
-            <p className="text-gray-500 font-medium">Lead analytics coming soon</p>
-            <p className="mt-1 text-sm text-gray-400">
-              Lead scoring and conversion data will appear here once buyers engage via WhatsApp
-            </p>
+            <StatsCard label="Verified Units" value={verifiedUnits} sub="Legal status confirmed" color="green" />
+            <StatsCard label="Total Leads" value={totalLeads} color="yellow" />
+            <StatsCard label="Hot Leads" value={hotLeads} sub="Intent score ≥ 7" color="green" />
+            <StatsCard label="Team Members" value={teamMembers} color="blue" />
+            <StatsCard label="Active Agents" value={activeAgents} sub="Available right now" color="green" />
           </div>
         </>
       )}

@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getVerificationQueue, reviewVerification, getDocumentScans } from "@/lib/api";
+import {
+  getVerificationQueue, reviewVerification, getDocumentScans,
+  bulkRejectVerifications, linkDocumentToVerification,
+} from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate } from "@/lib/utils";
@@ -48,13 +51,36 @@ function SignalBar({ score }: { score: number | null }) {
 
 // ── Document Scan Detail Modal ────────────────────────────────────────────────
 
-function ScanDetailModal({ verificationId, onClose }: { verificationId: string; onClose: () => void }) {
+function ScanDetailModal({
+  verificationId,
+  propertyId,
+  onClose,
+}: {
+  verificationId: string;
+  propertyId: string;
+  onClose: () => void;
+}) {
+  const qc = useQueryClient();
+  const [linkingId, setLinkingId] = useState<number | null>(null);
+
   const { data, isLoading } = useQuery({
-    queryKey: ["doc-scans", verificationId],
-    queryFn: () => getDocumentScans({ verification: verificationId }).then((r) => r.data),
+    queryKey: ["doc-scans", verificationId, propertyId],
+    queryFn: () =>
+      getDocumentScans({ property: propertyId }).then((r) => r.data),
   });
 
-  const scans: DocumentScan[] = data?.results ?? [];
+  const linkMutation = useMutation({
+    mutationFn: ({ scanId, verifId }: { scanId: number; verifId: string }) =>
+      linkDocumentToVerification(scanId, verifId),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["doc-scans"] });
+      qc.invalidateQueries({ queryKey: ["admin-verifications"] });
+      setLinkingId(null);
+    },
+  });
+
+  const scans: (DocumentScan & { verification?: string | null })[] =
+    data?.results ?? [];
 
   return (
     <div
@@ -70,9 +96,12 @@ function ScanDetailModal({ verificationId, onClose }: { verificationId: string; 
         <div className="overflow-y-auto flex-1 p-4 space-y-4">
           {isLoading && <div className="flex justify-center py-8"><LoadingSpinner /></div>}
           {!isLoading && scans.length === 0 && (
-            <p className="text-center text-gray-400 py-8">No document scans linked to this verification.</p>
+            <p className="text-center text-gray-400 py-8">No document scans for this property.</p>
           )}
           {scans.map((scan) => {
+            const isLinkedHere = scan.verification === verificationId;
+            const isUnlinked = !scan.verification;
+
             const extractedFields: [string, string][] = [
               ["Owner", scan.owner_name],
               ["CNIC", scan.cnic_number],
@@ -82,12 +111,29 @@ function ScanDetailModal({ verificationId, onClose }: { verificationId: string; 
             ].filter(([, v]) => v) as [string, string][];
 
             return (
-              <div key={scan.id} className="border rounded-xl p-4 space-y-3">
+              <div
+                key={scan.id}
+                className={`border rounded-xl p-4 space-y-3 ${
+                  isLinkedHere ? "border-blue-200 bg-blue-50/30"
+                  : isUnlinked ? "border-dashed border-gray-300"
+                  : "opacity-60"
+                }`}
+              >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-gray-800 capitalize">
                     {scan.document_type.replace(/_/g, " ")}
                   </span>
                   <div className="flex items-center gap-2">
+                    {isLinkedHere && (
+                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full font-medium">
+                        Linked
+                      </span>
+                    )}
+                    {isUnlinked && (
+                      <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">
+                        Unlinked
+                      </span>
+                    )}
                     {scan.confidence !== null && (
                       <span className="text-xs text-gray-500">
                         Confidence: {Math.round((scan.confidence ?? 0) * 100)}%
@@ -136,6 +182,34 @@ function ScanDetailModal({ verificationId, onClose }: { verificationId: string; 
                     <p className="text-xs text-gray-700 leading-relaxed">{scan.whatsapp_summary}</p>
                   </div>
                 )}
+
+                {isUnlinked && (
+                  linkingId === scan.id ? (
+                    <div className="flex items-center gap-2 pt-1">
+                      <span className="text-xs text-gray-500">Link to this verification?</span>
+                      <button
+                        onClick={() => linkMutation.mutate({ scanId: scan.id, verifId: verificationId })}
+                        disabled={linkMutation.isPending}
+                        className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+                      >
+                        {linkMutation.isPending ? "Linking…" : "Confirm Link"}
+                      </button>
+                      <button
+                        onClick={() => setLinkingId(null)}
+                        className="text-xs text-gray-400 hover:underline"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => setLinkingId(scan.id)}
+                      className="text-xs text-blue-600 hover:underline font-medium pt-1"
+                    >
+                      + Link to this Verification
+                    </button>
+                  )
+                )}
               </div>
             );
           })}
@@ -150,8 +224,10 @@ function ScanDetailModal({ verificationId, onClose }: { verificationId: string; 
 export default function VerificationPage() {
   const queryClient = useQueryClient();
   const [reviewingId, setReviewingId] = useState<string | null>(null);
-  const [scanModalId, setScanModalId] = useState<string | null>(null);
+  const [scanModalVerif, setScanModalVerif] = useState<Verification | null>(null);
   const [notes, setNotes] = useState("");
+  const [selectedVerifIds, setSelectedVerifIds] = useState<Set<string>>(new Set());
+  const [bulkNotes, setBulkNotes] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-verifications"],
@@ -168,12 +244,45 @@ export default function VerificationPage() {
     },
   });
 
+  const bulkRejectMutation = useMutation({
+    mutationFn: ({ ids, notes }: { ids: string[]; notes?: string }) =>
+      bulkRejectVerifications(ids, notes),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-verifications"] });
+      setSelectedVerifIds(new Set());
+      setBulkNotes("");
+    },
+  });
+
   const verifications: Verification[] = data?.results ?? [];
+
+  function handleToggleVerif(id: string) {
+    setSelectedVerifIds((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function handleSelectAllVerifs() {
+    const pending = verifications.filter((v) => v.status === "pending");
+    if (selectedVerifIds.size === pending.length && pending.length > 0) {
+      setSelectedVerifIds(new Set());
+    } else {
+      setSelectedVerifIds(new Set(pending.map((v) => v.id)));
+    }
+  }
+
+  const pendingVerifs = verifications.filter((v) => v.status === "pending");
 
   return (
     <div>
-      {scanModalId && (
-        <ScanDetailModal verificationId={scanModalId} onClose={() => setScanModalId(null)} />
+      {scanModalVerif && (
+        <ScanDetailModal
+          verificationId={scanModalVerif.id}
+          propertyId={scanModalVerif.property_id}
+          onClose={() => setScanModalVerif(null)}
+        />
       )}
 
       <div className="mb-8">
@@ -182,6 +291,37 @@ export default function VerificationPage() {
           Review property verification requests — approve or reject based on document signals
         </p>
       </div>
+
+      {/* Bulk reject toolbar */}
+      {selectedVerifIds.size > 0 && (
+        <div className="mb-4 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3">
+          <span className="text-sm font-medium text-red-800">
+            {selectedVerifIds.size} verification{selectedVerifIds.size > 1 ? "s" : ""} selected
+          </span>
+          <div className="flex-1 flex items-center gap-2">
+            <input
+              type="text"
+              placeholder="Rejection notes (optional)"
+              value={bulkNotes}
+              onChange={(e) => setBulkNotes(e.target.value)}
+              className="flex-1 max-w-xs rounded-lg border border-red-200 bg-white px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+            />
+            <button
+              onClick={() => bulkRejectMutation.mutate({
+                ids: Array.from(selectedVerifIds),
+                notes: bulkNotes || undefined,
+              })}
+              disabled={bulkRejectMutation.isPending}
+              className="rounded-lg bg-red-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50"
+            >
+              {bulkRejectMutation.isPending ? "Rejecting…" : `Bulk Reject (${selectedVerifIds.size})`}
+            </button>
+          </div>
+          <button onClick={() => setSelectedVerifIds(new Set())} className="text-xs text-red-500 hover:underline">
+            Clear
+          </button>
+        </div>
+      )}
 
       {isLoading ? (
         <LoadingSpinner />
@@ -197,6 +337,15 @@ export default function VerificationPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th className="px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={selectedVerifIds.size === pendingVerifs.length && pendingVerifs.length > 0}
+                    onChange={handleSelectAllVerifs}
+                    className="rounded border-gray-300"
+                    title="Select all pending"
+                  />
+                </th>
                 <th className="px-6 py-3">Property</th>
                 <th className="px-6 py-3">Requester</th>
                 <th className="px-6 py-3">Status</th>
@@ -211,6 +360,16 @@ export default function VerificationPage() {
               {verifications.map((v) => (
                 <>
                   <tr key={v.id} className="hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      {v.status === "pending" && (
+                        <input
+                          type="checkbox"
+                          checked={selectedVerifIds.has(v.id)}
+                          onChange={() => handleToggleVerif(v.id)}
+                          className="rounded border-gray-300"
+                        />
+                      )}
+                    </td>
                     <td className="px-6 py-3">
                       <p className="font-medium text-gray-900">{v.property_title}</p>
                       <p className="text-xs text-gray-400">{v.property_city}</p>
@@ -226,7 +385,7 @@ export default function VerificationPage() {
                     </td>
                     <td className="px-6 py-3">
                       <button
-                        onClick={() => setScanModalId(v.id)}
+                        onClick={() => setScanModalVerif(v)}
                         className="text-xs text-blue-600 hover:underline font-medium"
                       >
                         {v.document_count} {v.document_count === 1 ? "doc" : "docs"}
@@ -261,7 +420,7 @@ export default function VerificationPage() {
                   </tr>
                   {reviewingId === v.id && (
                     <tr key={`${v.id}-review`} className="bg-blue-50">
-                      <td colSpan={8} className="px-6 py-4">
+                      <td colSpan={9} className="px-6 py-4">
                         <div className="flex items-end gap-3">
                           <div className="flex-1">
                             <label className="block text-xs font-medium text-gray-600 mb-1">

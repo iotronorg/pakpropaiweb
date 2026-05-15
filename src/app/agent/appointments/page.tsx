@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getAppointments, createAppointment,
   confirmAppointment, completeAppointment,
+  cancelAppointment, rescheduleAppointment,
   getAgentProfile, getLeads,
 } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
@@ -212,6 +213,8 @@ function CreateModal({
 export default function AgentAppointmentsPage() {
   const queryClient = useQueryClient();
   const [showCreate, setShowCreate] = useState(false);
+  const [rescheduleId, setRescheduleId] = useState<string | null>(null);
+  const [rescheduleAt, setRescheduleAt] = useState("");
 
   const { data: profileData } = useQuery({
     queryKey: ["agent-profile"],
@@ -238,6 +241,21 @@ export default function AgentAppointmentsPage() {
   const completeMutation = useMutation({
     mutationFn: (id: string) => completeAppointment(id),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["agent-appointments"] }),
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: (id: string) => cancelAppointment(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["agent-appointments"] }),
+  });
+
+  const rescheduleMutation = useMutation({
+    mutationFn: ({ id, scheduledAt }: { id: string; scheduledAt: string }) =>
+      rescheduleAppointment(id, new Date(scheduledAt).toISOString()),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["agent-appointments"] });
+      setRescheduleId(null);
+      setRescheduleAt("");
+    },
   });
 
   const appointments: Appointment[] = data?.results ?? data ?? [];
@@ -299,7 +317,7 @@ export default function AgentAppointmentsPage() {
                           <Badge label={a.status} variant={STATUS_COLOR[a.status]} />
                         </td>
                         <td className="px-6 py-3">
-                          <div className="flex gap-2">
+                          <div className="flex flex-wrap gap-2">
                             {a.status === "scheduled" && (
                               <button
                                 onClick={() => confirmMutation.mutate(a.id)}
@@ -315,6 +333,47 @@ export default function AgentAppointmentsPage() {
                               >
                                 Mark Complete
                               </button>
+                            )}
+                            {(a.status === "scheduled" || a.status === "confirmed") && (
+                              <>
+                                <button
+                                  onClick={() => cancelMutation.mutate(a.id)}
+                                  disabled={cancelMutation.isPending}
+                                  className="text-xs text-red-500 hover:underline disabled:opacity-50"
+                                >
+                                  Cancel
+                                </button>
+                                {rescheduleId === a.id ? (
+                                  <div className="flex items-center gap-1">
+                                    <input
+                                      type="datetime-local"
+                                      value={rescheduleAt}
+                                      onChange={(e) => setRescheduleAt(e.target.value)}
+                                      className="rounded border border-gray-200 px-1.5 py-1 text-xs"
+                                    />
+                                    <button
+                                      onClick={() => rescheduleMutation.mutate({ id: a.id, scheduledAt: rescheduleAt })}
+                                      disabled={!rescheduleAt || rescheduleMutation.isPending}
+                                      className="text-xs text-blue-600 hover:underline disabled:opacity-50"
+                                    >
+                                      Save
+                                    </button>
+                                    <button
+                                      onClick={() => { setRescheduleId(null); setRescheduleAt(""); }}
+                                      className="text-xs text-gray-400 hover:underline"
+                                    >
+                                      ×
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <button
+                                    onClick={() => { setRescheduleId(a.id); setRescheduleAt(""); }}
+                                    className="text-xs text-yellow-600 hover:underline"
+                                  >
+                                    Reschedule
+                                  </button>
+                                )}
+                              </>
                             )}
                           </div>
                         </td>

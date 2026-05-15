@@ -9,6 +9,7 @@ import {
   getBlacklist,
   addBlacklistToken,
   removeBlacklistToken,
+  runFraudCheck,
 } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate } from "@/lib/utils";
@@ -52,6 +53,13 @@ interface BlacklistEntry {
   created_at: string;
 }
 
+interface FraudCheckResult {
+  risk_level: "high" | "medium" | "low";
+  flags: string[];
+  reasoning: string;
+  recommendation: string;
+}
+
 // ── Sub-components ───────────────────────────────────────────────────────────
 
 const SEVERITY_STYLES = {
@@ -65,6 +73,101 @@ const TYPE_ICONS = {
   verification:  "🔍",
   property:      "🏠",
 };
+
+function FraudCheckCard() {
+  const [query, setQuery] = useState("");
+  const [result, setResult] = useState<FraudCheckResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  async function handleCheck() {
+    if (!query.trim()) return;
+    setLoading(true);
+    setError("");
+    setResult(null);
+    try {
+      const res = await runFraudCheck(query.trim());
+      setResult(res.data);
+    } catch {
+      setError("Check failed. Verify the input and try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const riskStyles: Record<string, string> = {
+    high:   "bg-red-50 border-red-200 text-red-800",
+    medium: "bg-yellow-50 border-yellow-200 text-yellow-800",
+    low:    "bg-green-50 border-green-200 text-green-800",
+  };
+
+  return (
+    <div className="bg-white rounded-xl border p-5 space-y-4">
+      <div>
+        <h3 className="font-semibold text-gray-900">Run Fraud Check</h3>
+        <p className="text-xs text-gray-500 mt-0.5">
+          Paste a listing link, phone number, property description, or screenshot text
+        </p>
+      </div>
+      <div className="flex gap-2">
+        <textarea
+          rows={3}
+          className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-red-400"
+          placeholder="e.g. https://zameen.com/listing/... or '03001234567 selling plot in DHA Phase 6...'"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        <button
+          onClick={handleCheck}
+          disabled={loading || !query.trim()}
+          className="self-start rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
+        >
+          {loading ? "Checking…" : "Check"}
+        </button>
+      </div>
+
+      {error && (
+        <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+      )}
+
+      {result && (
+        <div className={`rounded-xl border p-4 space-y-3 ${riskStyles[result.risk_level] ?? "bg-gray-50 border-gray-200"}`}>
+          <div className="flex items-center gap-2">
+            <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase ${
+              result.risk_level === "high" ? "bg-red-200 text-red-800"
+              : result.risk_level === "medium" ? "bg-yellow-200 text-yellow-800"
+              : "bg-green-200 text-green-800"
+            }`}>
+              {result.risk_level} risk
+            </span>
+          </div>
+          {result.flags.length > 0 && (
+            <div>
+              <p className="text-xs font-semibold mb-1">Flags</p>
+              <div className="flex flex-wrap gap-1.5">
+                {result.flags.map((f, i) => (
+                  <span key={i} className="text-xs border rounded px-1.5 py-0.5">{f}</span>
+                ))}
+              </div>
+            </div>
+          )}
+          {result.reasoning && (
+            <div>
+              <p className="text-xs font-semibold mb-1">AI Reasoning</p>
+              <p className="text-xs leading-relaxed">{result.reasoning}</p>
+            </div>
+          )}
+          {result.recommendation && (
+            <div>
+              <p className="text-xs font-semibold mb-1">Recommendation</p>
+              <p className="text-xs font-medium">{result.recommendation}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function StatCard({
   label, value, sub, color,
@@ -327,6 +430,9 @@ export default function FraudMonitorPage() {
           Real-time fraud signals, suspicious activity, and blacklist management
         </p>
       </div>
+
+      {/* Fraud check tool */}
+      <FraudCheckCard />
 
       {/* Stats cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

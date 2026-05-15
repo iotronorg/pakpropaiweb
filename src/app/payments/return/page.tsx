@@ -5,12 +5,14 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getDealLock } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { formatPKR } from "@/lib/utils";
+import { formatPKR, roleHomePath } from "@/lib/utils";
+import { useAuthStore } from "@/store/auth";
 import { DealLock } from "@/types";
 
 export default function PaymentReturnPage() {
   const params = useSearchParams();
   const router = useRouter();
+  const { user } = useAuthStore();
   const status = params.get("status") ?? "unknown";
   const dealId = params.get("deal_id");
 
@@ -31,7 +33,7 @@ export default function PaymentReturnPage() {
       setCountdown((c) => {
         if (c <= 1) {
           clearInterval(timer);
-          router.replace("/agent");
+          router.replace(roleHomePath(user?.role ?? "agent"));
           return 0;
         }
         return c - 1;
@@ -114,7 +116,7 @@ export default function PaymentReturnPage() {
         </p>
 
         <button
-          onClick={() => router.replace("/agent")}
+          onClick={() => router.replace(roleHomePath(user?.role ?? "agent"))}
           className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors ${
             isSuccess
               ? "bg-green-600 text-white hover:bg-green-700"

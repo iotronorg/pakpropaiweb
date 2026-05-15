@@ -7,6 +7,7 @@ import {
   getLead, updateLead, getLeadConversations, sendLeadMessage,
   getAppointments, createAppointment, confirmAppointment,
   cancelAppointment, getAgentProfile, summarizeLead, suggestReplies,
+  getLeadActivities, getLeadScoreHistory,
 } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
@@ -39,6 +40,98 @@ function Section({ title, children }: { title: string; children: React.ReactNode
     <div className="rounded-xl border border-gray-200 bg-white p-5">
       <h3 className="text-sm font-semibold text-gray-700 mb-4">{title}</h3>
       {children}
+    </div>
+  );
+}
+
+const ACTION_COLORS: Record<string, string> = {
+  created:   "bg-blue-100 text-blue-700",
+  assigned:  "bg-purple-100 text-purple-700",
+  status:    "bg-yellow-100 text-yellow-700",
+  note:      "bg-gray-100 text-gray-600",
+  contacted: "bg-green-100 text-green-700",
+  scored:    "bg-orange-100 text-orange-700",
+  deal_lock: "bg-red-100 text-red-700",
+};
+
+function ActivitySection({
+  activities,
+  scoreHistory,
+}: {
+  activities: Array<{ id: number; action: string; notes: string; meta: Record<string, unknown>; actor_phone: string | null; actor_name: string | null; created_at: string }>;
+  scoreHistory: Array<{ id: number; old_score: number; new_score: number; reason: string; changed_by_phone: string | null; created_at: string }>;
+}) {
+  const [tab, setTab] = useState<"activity" | "score">("activity");
+
+  if (activities.length === 0 && scoreHistory.length === 0) return null;
+
+  return (
+    <div className="mt-8 rounded-xl border border-gray-200 bg-white">
+      <div className="flex gap-1 border-b border-gray-100 px-4 pt-3">
+        {(["activity", "score"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              tab === t
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-400 hover:text-gray-600"
+            }`}
+          >
+            {t === "activity" ? `Activity (${activities.length})` : `Score History (${scoreHistory.length})`}
+          </button>
+        ))}
+      </div>
+
+      <div className="p-5">
+        {tab === "activity" && (
+          <div className="space-y-3">
+            {activities.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">No activity recorded yet</p>
+            ) : (
+              activities.map((a) => (
+                <div key={a.id} className="flex items-start gap-3">
+                  <span className={`mt-0.5 text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${ACTION_COLORS[a.action] ?? "bg-gray-100 text-gray-600"}`}>
+                    {a.action.replace("_", " ")}
+                  </span>
+                  <div className="flex-1 min-w-0">
+                    {a.notes && <p className="text-sm text-gray-700">{a.notes}</p>}
+                    <p className="text-xs text-gray-400 mt-0.5">
+                      {a.actor_name || a.actor_phone || "System"} · {formatDate(a.created_at)}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+
+        {tab === "score" && (
+          <div className="space-y-3">
+            {scoreHistory.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">No score changes recorded yet</p>
+            ) : (
+              scoreHistory.map((s) => (
+                <div key={s.id} className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    <span className="text-sm font-bold text-gray-500">{s.old_score}</span>
+                    <span className="text-gray-300">→</span>
+                    <span className={`text-sm font-bold ${s.new_score > s.old_score ? "text-green-600" : s.new_score < s.old_score ? "text-red-500" : "text-gray-500"}`}>
+                      {s.new_score}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    {s.reason && <p className="text-xs text-gray-600">{s.reason}</p>}
+                    <p className="text-xs text-gray-400">
+                      {s.changed_by_phone || "System"} · {formatDate(s.created_at)}
+                    </p>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
@@ -85,8 +178,22 @@ export default function LeadDetailPage() {
     enabled: !!id,
   });
 
+  const { data: activitiesData } = useQuery({
+    queryKey: ["lead-activities", id],
+    queryFn: () => getLeadActivities(id).then((r) => r.data),
+    enabled: !!id,
+  });
+
+  const { data: scoreHistoryData } = useQuery({
+    queryKey: ["lead-score-history", id],
+    queryFn: () => getLeadScoreHistory(id).then((r) => r.data),
+    enabled: !!id,
+  });
+
   const messages: ConversationMessage[] = msgData ?? [];
   const appointments: Appointment[] = apptData?.results ?? apptData ?? [];
+  const activities: Array<{ id: number; action: string; notes: string; meta: Record<string, unknown>; actor_phone: string | null; actor_name: string | null; created_at: string }> = activitiesData ?? [];
+  const scoreHistory: Array<{ id: number; old_score: number; new_score: number; reason: string; changed_by_phone: string | null; created_at: string }> = scoreHistoryData ?? [];
 
   // ── Mutations ──────────────────────────────────────────────────────────────
   const statusMutation = useMutation({
@@ -461,6 +568,9 @@ export default function LeadDetailPage() {
           </Section>
         </div>
       </div>
+
+      {/* ── Activity section ────────────────────────────────────────────────── */}
+      <ActivitySection activities={activities} scoreHistory={scoreHistory} />
 
       {/* ── Book appointment modal ─────────────────────────────────────────── */}
       {showBookModal && (

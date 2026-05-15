@@ -362,6 +362,17 @@ export const bulkAssignLeads = (lead_ids: string[], agent_id: number) =>
 export const bulkRejectVerifications = (verification_ids: string[], notes?: string) =>
   api.post("/verification/bulk-reject/", { verification_ids, notes });
 
+// ── Deal Lock — seller confirm ────────────────────────────────────────────────
+export const sellerConfirmDealLock = (id: string, token?: string) =>
+  api.patch(`/deals/lock/${id}/seller-confirm/`, token ? { token } : {});
+
+// ── Lead Activities & Score History ──────────────────────────────────────────
+export const getLeadActivities = (id: string) =>
+  api.get(`/leads/${id}/activities/`);
+
+export const getLeadScoreHistory = (id: string) =>
+  api.get(`/leads/${id}/score-history/`);
+
 // ── System Config ─────────────────────────────────────────────────────────────
 export const getConfig = () =>
   api.get("/config/").then((r) => r.data);

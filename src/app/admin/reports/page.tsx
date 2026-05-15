@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getLeadReport, getAgentReport, getPropertyReport } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getLeadReport, getAgentReport, getPropertyReport, generateReport, getMyReports, downloadReport } from "@/lib/api";
+import type { ReportType, Report } from "@/types";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 
@@ -72,6 +73,118 @@ function PeriodToggle({ value, onChange }: { value: Period; onChange: (p: Period
   );
 }
 
+const STATUS_COLOR: Record<string, "green" | "yellow" | "red" | "gray" | "blue"> = {
+  ready:      "green",
+  generating: "blue",
+  pending:    "yellow",
+  failed:     "red",
+};
+
+async function handleDownload(id: string, reportType: string) {
+  const res = await downloadReport(id);
+  const url = URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `PakProp_Report_${reportType}_${id}.pdf`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+const REPORT_TYPES: { value: ReportType; label: string; description: string }[] = [
+  { value: "property_analysis", label: "Property Analysis", description: "AI audit of a specific property" },
+  { value: "tax_advisory",      label: "Tax Advisory",      description: "Tax liability estimate (7E, CGT, WHT)" },
+  { value: "loan_eligibility",  label: "Loan Eligibility",  description: "Bank financing eligibility check" },
+  { value: "fraud_check",       label: "Fraud Check",       description: "Risk and fraud indicators for a property" },
+];
+
+function GenerateReportCard() {
+  const qc = useQueryClient();
+  const [selectedType,   setSelectedType]   = useState<ReportType>("property_analysis");
+  const [propertyId,     setPropertyId]     = useState("");
+  const [monthlyIncome,  setMonthlyIncome]  = useState("");
+  const [propertyValue,  setPropertyValue]  = useState("");
+  const [successMsg,     setSuccessMsg]     = useState("");
+
+  const generateMutation = useMutation({
+    mutationFn: () => {
+      const payload: Record<string, unknown> = { report_type: selectedType };
+      if (propertyId)    payload.property_id    = propertyId;
+      if (monthlyIncome) payload.monthly_income = Number(monthlyIncome);
+      if (propertyValue) payload.property_value = Number(propertyValue);
+      return generateReport(payload as Parameters<typeof generateReport>[0]);
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-reports"] });
+      setPropertyId(""); setMonthlyIncome(""); setPropertyValue("");
+      setSuccessMsg("Report queued — it will appear below in Generated Reports when ready.");
+      setTimeout(() => setSuccessMsg(""), 5000);
+    },
+  });
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-6 mb-8">
+      <h2 className="text-sm font-semibold text-gray-700 mb-4">Generate New Report</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="lg:col-span-1">
+          <label className="block text-xs font-medium text-gray-500 mb-1">Report Type</label>
+          <select
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value as ReportType)}
+            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            {REPORT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
+          </select>
+          <p className="mt-1 text-xs text-gray-400">
+            {REPORT_TYPES.find((t) => t.value === selectedType)?.description}
+          </p>
+        </div>
+        {["property_analysis", "tax_advisory", "fraud_check"].includes(selectedType) && (
+          <div>
+            <label className="block text-xs font-medium text-gray-500 mb-1">Property ID (UUID)</label>
+            <input
+              type="text" placeholder="550e8400-e29b-41d4-a716…"
+              value={propertyId} onChange={(e) => setPropertyId(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        )}
+        {selectedType === "loan_eligibility" && (
+          <>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Monthly Income (PKR)</label>
+              <input
+                type="number" placeholder="e.g. 150000"
+                value={monthlyIncome} onChange={(e) => setMonthlyIncome(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Property Value (PKR)</label>
+              <input
+                type="number" placeholder="e.g. 10000000"
+                value={propertyValue} onChange={(e) => setPropertyValue(e.target.value)}
+                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </>
+        )}
+        <div className="flex items-end">
+          <button
+            onClick={() => generateMutation.mutate()}
+            disabled={generateMutation.isPending}
+            className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
+          >
+            {generateMutation.isPending ? "Queuing…" : "Generate Report"}
+          </button>
+        </div>
+      </div>
+      {successMsg && (
+        <p className="mt-3 text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">{successMsg}</p>
+      )}
+    </div>
+  );
+}
+
 export default function AdminReportsPage() {
   const [period, setPeriod] = useState<Period>("weekly");
 
@@ -90,6 +203,12 @@ export default function AdminReportsPage() {
     queryFn: () => getPropertyReport({ period }).then((r) => r.data),
   });
 
+  const { data: myReports } = useQuery({
+    queryKey: ["my-reports"],
+    queryFn: () => getMyReports().then((r) => r.data),
+    refetchInterval: 15000,
+  });
+
   const isLoading = leadLoading || agentLoading || propLoading;
 
   return (
@@ -101,6 +220,50 @@ export default function AdminReportsPage() {
         </div>
         <PeriodToggle value={period} onChange={setPeriod} />
       </div>
+
+      <GenerateReportCard />
+
+      {/* Generated Reports List */}
+      {((myReports as Report[] | undefined) ?? []).length > 0 && (
+        <div className="rounded-xl border border-gray-200 bg-white mb-8 overflow-x-auto">
+          <div className="border-b border-gray-100 px-6 py-4">
+            <h2 className="text-sm font-semibold text-gray-700">Generated Reports</h2>
+          </div>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <th className="px-6 py-3">Type</th>
+                <th className="px-6 py-3">Status</th>
+                <th className="px-6 py-3">Created</th>
+                <th className="px-6 py-3">Download</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {((myReports as Report[] | undefined) ?? []).map((r: Report) => (
+                <tr key={r.id} className="hover:bg-gray-50">
+                  <td className="px-6 py-3 text-gray-700 capitalize">{r.report_type.replace(/_/g, " ")}</td>
+                  <td className="px-6 py-3">
+                    <Badge label={r.status} variant={STATUS_COLOR[r.status] ?? "gray"} />
+                  </td>
+                  <td className="px-6 py-3 text-gray-400 text-xs">{r.created_at ? new Date(r.created_at).toLocaleDateString() : "—"}</td>
+                  <td className="px-6 py-3">
+                    {r.status === "ready" ? (
+                      <button
+                        onClick={() => handleDownload(r.id, r.report_type)}
+                        className="text-xs font-medium text-blue-600 hover:underline"
+                      >
+                        Download PDF
+                      </button>
+                    ) : (
+                      <span className="text-xs text-gray-300">—</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       {isLoading ? (
         <LoadingSpinner />

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getDealLocks, confirmDealLock, cancelDealLock, createCheckout, getPayments } from "@/lib/api";
+import { getDealLocks, confirmDealLock, cancelDealLock, createCheckout, getPayments, sellerConfirmDealLock } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatPKR } from "@/lib/utils";
 import { DealLock, DealLockStatus, Payment } from "@/types";
@@ -111,6 +111,11 @@ export default function AdminDealsPage() {
       queryClient.invalidateQueries({ queryKey: ["deals"] });
       setCancelId(null);
     },
+  });
+
+  const sellerConfirmMutation = useMutation({
+    mutationFn: (id: string) => sellerConfirmDealLock(id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["deals"] }),
   });
 
   async function handlePayOnline(dealId: string) {
@@ -292,6 +297,15 @@ export default function AdminDealsPage() {
                       Confirm Manual
                     </button>
                   </>
+                )}
+                {deal.status === "locked" && (deal as DealLock & { seller_confirmed?: boolean }).seller_confirmed === false && (
+                  <button
+                    onClick={() => sellerConfirmMutation.mutate(deal.id)}
+                    disabled={sellerConfirmMutation.isPending}
+                    className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                  >
+                    {sellerConfirmMutation.isPending ? "…" : "Seller Confirm"}
+                  </button>
                 )}
                 {(deal.status === "initiated" || deal.status === "locked") && (
                   <button
