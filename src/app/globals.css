@@ -2,8 +2,39 @@
 
 :root {
   color-scheme: light;
-  --background: #ffffff;
-  --foreground: #171717;
+
+  /* Surfaces */
+  --bg-base:       #F1F5F9;
+  --bg-surface:    #FFFFFF;
+  --bg-card:       #FFFFFF;
+  --bg-hover:      #F8FAFC;
+  --bg-muted:      #F1F5F9;
+
+  /* Brand */
+  --primary:       #0284C7;
+  --primary-light: #E0F2FE;
+  --primary-dim:   rgba(2, 132, 199, 0.1);
+  --secondary:     #0D9488;
+  --accent:        #D97706;
+
+  /* Text */
+  --text-primary:  #0F172A;
+  --text-muted:    #64748B;
+  --text-faint:    #CBD5E1;
+
+  /* Borders */
+  --border:        rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.12);
+  --border-focus:  rgba(2, 132, 199, 0.5);
+
+  /* Status */
+  --success: #059669;
+  --warning: #D97706;
+  --error:   #DC2626;
+  --info:    #0284C7;
+
+  --background: var(--bg-base);
+  --foreground: var(--text-primary);
 }
 
 @theme inline {
@@ -13,23 +44,46 @@
   --font-mono: var(--font-geist-mono);
 }
 
-html {
-  scroll-behavior: smooth;
-}
+html { scroll-behavior: smooth; }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-input,
-textarea,
-select {
-  color: var(--foreground);
+/* Thin light scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+input, textarea, select { color: var(--foreground); }
+::placeholder { color: var(--text-muted); opacity: 1; }
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, #0284C7 0%, #0D9488 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-::placeholder {
-  color: #9ca3af;
-  opacity: 1;
+/* Shimmer for skeleton */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+.shimmer {
+  background: linear-gradient(90deg, #F1F5F9 25%, #E2E8F0 50%, #F1F5F9 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
