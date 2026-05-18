@@ -129,7 +129,7 @@ export function Sidebar() {
   async function handleLogout() {
     try { await logout(); } catch { /* proceed */ }
     clearAuth();
-    document.cookie = "user_role=; Max-Age=0; path=/";
+    // user_role cookie is HttpOnly and cleared server-side by the logout endpoint.
     router.replace("/login");
   }
 

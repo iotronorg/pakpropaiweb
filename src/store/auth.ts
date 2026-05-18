@@ -18,8 +18,19 @@ export const useAuthStore = create<AuthState>()(
       clearAuth: () => set({ user: null, isAuthenticated: false }),
     }),
     {
-      name: "pakprop-auth",
+      name: "realtron-auth",
       partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+      // Migrate users from old key automatically on first load
+      onRehydrateStorage: () => (state) => {
+        if (state) return;
+        try {
+          const old = localStorage.getItem("pakprop-auth");
+          if (old) {
+            localStorage.setItem("realtron-auth", old);
+            localStorage.removeItem("pakprop-auth");
+          }
+        } catch { /* ignore storage errors */ }
+      },
     }
   )
 );

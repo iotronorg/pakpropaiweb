@@ -275,8 +275,16 @@ export const deleteAgent = (id: number) =>
 export const getPendingAgents = () =>
   api.get("/agents/", { params: { status: "pending" } });
 
-export const registerAgent = (data: Record<string, unknown>) =>
-  api.post("/agents/register/", data, { headers: { Authorization: undefined } });
+export const registerAgent = (data: Record<string, unknown>) => {
+  // Uses a clean axios instance — no auth headers, no credentials — so the
+  // registration endpoint is truly unauthenticated.
+  const instance = axios.create({
+    baseURL: BASE_URL,
+    headers: { "Content-Type": "application/json" },
+    withCredentials: false,
+  });
+  return instance.post("/agents/register/", data);
+};
 
 export const approveAgent = (id: number) =>
   api.post(`/agents/${id}/approve/`);

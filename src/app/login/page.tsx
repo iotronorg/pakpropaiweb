@@ -56,7 +56,8 @@ export default function LoginPage() {
       otpForm.reset();
       if (user.role === "client") { setStep("no-access"); return; }
       setAuth(user);
-      document.cookie = `user_role=${user.role}; path=/; max-age=${7 * 24 * 3600}`;
+      // user_role cookie is now set server-side as HttpOnly by the Django auth endpoint.
+      // Do not set it here — client-side cookie would be tamper-able via XSS.
       router.replace(roleHomePath(user.role));
     } catch { setError("Invalid or expired OTP."); }
     finally  { setLoading(false); }
