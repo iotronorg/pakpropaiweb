@@ -5,7 +5,7 @@ const PUBLIC_PATHS = ["/login", "/register", "/payments/return"];
 const ROLE_PATHS: Record<string, string> = {
   admin: "/admin",
   agent: "/agent",
-  developer: "/developer",
+  developer: "/organization",
 };
 
 export function middleware(req: NextRequest) {

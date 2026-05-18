@@ -66,7 +66,7 @@ const features = [
     title: "Deal Lock & Escrow",
     tag: "Transaction",
     description:
-      "PKR 25K–100K token in Safepay escrow. 48-hour exclusivity guaranteed. Both sides protected. PakProp never holds your money.",
+      "PKR 25K–100K token in Safepay escrow. 48-hour exclusivity guaranteed. Both sides protected. RealTron AI never holds your money.",
     bullets: ["Safepay escrow", "48hr exclusivity", "Fully traceable"],
     color: "#D97706",
     tagBg: "bg-amber-50",

@@ -38,10 +38,10 @@ export default function Navbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center shadow-sm">
-            <span className="text-white font-bold text-sm">P</span>
+            <span className="text-white font-bold text-sm">R</span>
           </div>
           <span className="font-bold text-lg tracking-tight text-gray-900">
-            PakProp<span className="text-emerald-600"> AI</span>
+            RealTron<span className="text-emerald-600"> AI</span>
           </span>
         </Link>
 

@@ -33,15 +33,15 @@ export default function LandingFooter() {
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-400 flex items-center justify-center">
-                <span className="text-white font-bold text-sm">P</span>
+                <span className="text-white font-bold text-sm">R</span>
               </div>
               <span className="font-bold text-lg tracking-tight text-white">
-                PakProp<span className="text-emerald-400"> AI</span>
+                RealTron<span className="text-emerald-400"> AI</span>
               </span>
             </div>
             <p className="text-sm text-gray-400 leading-relaxed max-w-xs mb-6">
-              Pakistan&apos;s first AI-powered real estate assistant. Find, verify, and close
-              property deals safely — on WhatsApp.
+              AI Sales Infrastructure for Real Estate Developers &amp; Agencies.
+              Automate leads, qualify buyers, and close deals via WhatsApp.
             </p>
 
             {/* Contact */}
@@ -93,7 +93,7 @@ export default function LandingFooter() {
 
         <div className="border-t border-white/8 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-600">
-            © {new Date().getFullYear()} PakProp AI. All rights reserved.
+            © {new Date().getFullYear()} RealTron AI. All rights reserved.
           </p>
           <p className="text-xs text-gray-600">
             Pakistan&apos;s First AI Real Estate Assistant · WhatsApp-First

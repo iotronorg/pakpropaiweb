@@ -12,7 +12,7 @@ const problems = [
     statLabel: "of listings are stale or fake",
     description:
       "You find the perfect property, contact the seller, and discover it was sold months ago — or never existed. Time wasted. Trust broken.",
-    fix: "PakProp AI cross-checks every listing for freshness, duplicates, and ownership validity before you spend a single rupee.",
+    fix: "RealTron AI cross-checks every listing for freshness, duplicates, and ownership validity before you spend a single rupee.",
     color: "#EF4444",
     bg: "bg-red-50",
     border: "border-red-100",
@@ -36,7 +36,7 @@ const problems = [
     statLabel: "centralized agent verification system in Pakistan",
     description:
       "Anyone can call themselves a property agent. No KYC. No rating. No accountability. You're trusting a stranger with your life savings.",
-    fix: "Every PakProp agent is KYC-verified, rated by buyers, and accountable through our platform. Verified badge = proven track record.",
+    fix: "Every RealTron agent is KYC-verified, rated by buyers, and accountable through our platform. Verified badge = proven track record.",
     color: "#8B5CF6",
     bg: "bg-violet-50",
     border: "border-violet-100",

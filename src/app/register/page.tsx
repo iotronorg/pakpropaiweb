@@ -159,7 +159,7 @@ export default function AgentRegisterPage() {
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Agent Registration</h1>
           <p className="mt-1 text-sm text-gray-500">
-            Register as an agent on PakProp AI. Your application will be reviewed before activation.
+            Register as an agent on RealTron AI. Your application will be reviewed before activation.
           </p>
         </div>
 

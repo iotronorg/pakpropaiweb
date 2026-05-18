@@ -398,3 +398,20 @@ export const getConfig = () =>
 
 export const updateConfig = (data: Record<string, string>) =>
   api.patch("/config/", data).then((r) => r.data);
+
+// ── Organization ──────────────────────────────────────────────────────────────
+export const getMyOrganization = () =>
+  api.get("/organizations/me/");
+
+export const updateMyOrganization = (data: Record<string, unknown>) =>
+  api.patch("/organizations/me/", data);
+
+// ── Organization Feature Flags ────────────────────────────────────────────────
+export const getOrgConfig = () =>
+  api.get("/organizations/me/config/").then((r) => r.data);
+
+export const updateOrgConfig = (data: Record<string, boolean>) =>
+  api.patch("/organizations/me/config/", data).then((r) => r.data);
+
+export const resetOrgConfigKey = (key: string) =>
+  api.delete(`/organizations/me/config/${key}/`).then((r) => r.data);

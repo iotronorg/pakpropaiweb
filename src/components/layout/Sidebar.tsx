@@ -34,7 +34,7 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Duplicates",    href: "/admin/leads/duplicates",   icon: AlertTriangle },
     { label: "Appointments",  href: "/admin/appointments",       icon: Calendar },
     { label: "Agents",        href: "/admin/agents",             icon: Building2 },
-    { label: "Developers",    href: "/admin/developers",         icon: Building },
+    { label: "Organizations",  href: "/admin/organizations",      icon: Building },
     { label: "Admins",        href: "/admin/admins",             icon: ShieldCheck },
     { label: "Properties",    href: "/admin/properties",         icon: Home, exact: true },
     { label: "Compare",       href: "/admin/properties/compare", icon: GitCompare },
@@ -58,21 +58,21 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Notifications", href: "/agent/notifications", icon: Bell },
   ],
   developer: [
-    { label: "Overview",       href: "/developer",               icon: LayoutDashboard, exact: true },
-    { label: "Analytics",      href: "/developer/analytics",     icon: TrendingUp },
-    { label: "Inventory",      href: "/developer/inventory",     icon: Building },
-    { label: "Lead Analytics", href: "/developer/leads",         icon: BarChart3 },
-    { label: "My Team",        href: "/developer/team",          icon: Users },
-    { label: "Reports",        href: "/developer/reports",       icon: FileBarChart },
-    { label: "Notifications",  href: "/developer/notifications", icon: Bell },
-    { label: "Settings",       href: "/developer/settings",      icon: Settings2 },
+    { label: "Overview",       href: "/organization",               icon: LayoutDashboard, exact: true },
+    { label: "Analytics",      href: "/organization/analytics",     icon: TrendingUp },
+    { label: "Inventory",      href: "/organization/inventory",     icon: Building },
+    { label: "Lead Analytics", href: "/organization/leads",         icon: BarChart3 },
+    { label: "My Team",        href: "/organization/team",          icon: Users },
+    { label: "Reports",        href: "/organization/reports",       icon: FileBarChart },
+    { label: "Notifications",  href: "/organization/notifications", icon: Bell },
+    { label: "Settings",       href: "/organization/settings",      icon: Settings2 },
   ],
 };
 
 const ROLE_LABELS: Record<string, string> = {
   admin:     "Administrator",
   agent:     "Sales Agent",
-  developer: "Developer",
+  developer: "Org Admin",
 };
 
 const ROLE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
@@ -145,10 +145,10 @@ export function Sidebar() {
       {/* Logo */}
       <div className="flex items-center gap-2.5 border-b border-[var(--border)] px-5 py-4">
         <div className={`h-7 w-7 rounded-lg ${rc.bg} flex items-center justify-center`}>
-          <span className="text-[10px] font-bold text-white">PP</span>
+          <span className="text-[10px] font-bold text-white">RT</span>
         </div>
         <div className="flex items-baseline gap-1.5">
-          <span className="text-base font-bold text-[var(--text-primary)]">PakProp</span>
+          <span className="text-base font-bold text-[var(--text-primary)]">RealTron</span>
           <span className={`rounded bg-sky-50 px-1 py-0.5 text-[10px] font-semibold text-sky-600 border border-sky-200`}>AI</span>
         </div>
       </div>

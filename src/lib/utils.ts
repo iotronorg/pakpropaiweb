@@ -23,7 +23,7 @@ export function roleHomePath(role: string): string {
   switch (role) {
     case "admin": return "/admin";
     case "agent": return "/agent";
-    case "developer": return "/developer";
+    case "developer": return "/organization";
     default: return "/login";
   }
 }

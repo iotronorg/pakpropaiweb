@@ -20,9 +20,9 @@ const cinzel = Cinzel({
 });
 
 export const metadata = {
-  title: "PakProp AI — Pakistan's First AI Real Estate Assistant",
+  title: "RealTron AI — AI Sales Infrastructure for Real Estate",
   description:
-    "Find properties, verify listings, detect scams, and close deals on WhatsApp. Pakistan's first AI-powered real estate assistant with built-in trust verification.",
+    "AI-powered real estate sales platform for developers, agencies, and brokerages. Automate leads, qualify buyers, and close deals via WhatsApp.",
 };
 
 export default function LandingPage() {

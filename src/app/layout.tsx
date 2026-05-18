@@ -6,8 +6,8 @@ import { Providers } from "./providers";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "PakProp AI",
-  description: "Trust Infrastructure for Pakistani Real Estate",
+  title: "RealTron AI",
+  description: "AI Sales Infrastructure for Real Estate Developers & Agencies",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

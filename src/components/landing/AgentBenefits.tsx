@@ -23,7 +23,7 @@ const benefits = [
     icon: BadgeCheck,
     title: "Verified Badge = Instant Buyer Trust",
     description:
-      "Complete our quick KYC process and earn the PakProp Verified badge. Buyers trust verified agents 3x more. Your profile ranks higher. More leads come to you automatically.",
+      "Complete our quick KYC process and earn the RealTron Verified badge. Buyers trust verified agents 3x more. Your profile ranks higher. More leads come to you automatically.",
     highlight: false,
   },
   {
@@ -85,7 +85,7 @@ export default function AgentBenefits() {
             <span className="text-teal-600">Do Less Chasing.</span>
           </h2>
           <p className="mt-4 text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            PakProp AI gives you AI-qualified leads, a WhatsApp CRM, and tools that close deals —
+            RealTron AI gives you AI-qualified leads, a WhatsApp CRM, and tools that close deals —
             not a new app to learn. You work smarter, not harder.
           </p>
         </motion.div>

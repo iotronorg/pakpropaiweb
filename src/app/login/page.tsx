@@ -85,10 +85,10 @@ export default function LoginPage() {
           className="mb-8 text-center"
         >
           <div className="mb-3 flex items-center justify-center gap-2">
-            <span className="text-3xl font-bold text-[var(--text-primary)]">PakProp</span>
+            <span className="text-3xl font-bold text-[var(--text-primary)]">RealTron</span>
             <span className="rounded-md bg-sky-50 px-2 py-1 text-sm font-semibold text-sky-600 border border-sky-200">AI</span>
           </div>
-          <p className="text-sm text-[var(--text-muted)]">Trust Infrastructure for Pakistani Real Estate</p>
+          <p className="text-sm text-[var(--text-muted)]">AI Sales Infrastructure for Real Estate</p>
         </motion.div>
 
         {/* Card */}
@@ -114,7 +114,7 @@ export default function LoginPage() {
                 <div>
                   <h1 className="text-lg font-semibold text-[var(--text-primary)]">Use WhatsApp to continue</h1>
                   <p className="mt-2 text-sm text-[var(--text-muted)] leading-relaxed">
-                    Your account uses PakProp AI via WhatsApp. The dashboard is only available for agents, developers, and admins.
+                    Your account uses RealTron AI via WhatsApp. The dashboard is only available for agents, developers, and admins.
                   </p>
                 </div>
                 <motion.button

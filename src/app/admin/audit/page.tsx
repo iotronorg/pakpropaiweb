@@ -46,7 +46,7 @@ async function handleDownload(id: number) {
   const url = URL.createObjectURL(new Blob([res.data], { type: "application/pdf" }));
   const a = document.createElement("a");
   a.href = url;
-  a.download = `PakProp_Audit_${id}.pdf`;
+  a.download = `RealTron_Audit_${id}.pdf`;
   a.click();
   URL.revokeObjectURL(url);
 }
