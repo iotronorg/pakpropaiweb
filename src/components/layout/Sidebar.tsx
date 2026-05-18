@@ -11,7 +11,7 @@ import {
   ClipboardList, AlertTriangle, Calendar, Building2, Building,
   ShieldCheck, Home, GitCompare, BadgeCheck, Lock, AlertOctagon,
   FileBarChart, FileText, FolderOpen, Bell, Settings2, Users, User,
-  LogOut, ChevronRight, SlidersHorizontal,
+  LogOut, ChevronRight, SlidersHorizontal, Bot,
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
@@ -58,14 +58,15 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Notifications", href: "/agent/notifications", icon: Bell },
   ],
   developer: [
-    { label: "Overview",       href: "/organization",               icon: LayoutDashboard, exact: true },
-    { label: "Analytics",      href: "/organization/analytics",     icon: TrendingUp },
-    { label: "Inventory",      href: "/organization/inventory",     icon: Building },
-    { label: "Lead Analytics", href: "/organization/leads",         icon: BarChart3 },
-    { label: "My Team",        href: "/organization/team",          icon: Users },
-    { label: "Reports",        href: "/organization/reports",       icon: FileBarChart },
-    { label: "Notifications",  href: "/organization/notifications", icon: Bell },
-    { label: "Settings",       href: "/organization/settings",      icon: Settings2 },
+    { label: "Overview",       href: "/organization",                  icon: LayoutDashboard, exact: true },
+    { label: "Analytics",      href: "/organization/analytics",        icon: TrendingUp },
+    { label: "AI Monitor",     href: "/organization/ai-monitor",       icon: Bot },
+    { label: "Inventory",      href: "/organization/inventory",        icon: Building },
+    { label: "Lead Analytics", href: "/organization/leads",            icon: BarChart3 },
+    { label: "My Team",        href: "/organization/team",             icon: Users },
+    { label: "Reports",        href: "/organization/reports",          icon: FileBarChart },
+    { label: "Notifications",  href: "/organization/notifications",    icon: Bell },
+    { label: "Settings",       href: "/organization/settings",         icon: Settings2 },
   ],
 };
 

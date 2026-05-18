@@ -347,6 +347,13 @@ export const getRevenueReport = (params?: { period?: "weekly" | "monthly" }) =>
 export const getBotReport = (params?: { period?: "weekly" | "monthly" }) =>
   api.get("/reports/bot/", { params });
 
+// ── Organization Dashboard ────────────────────────────────────────────────────
+export const getOrgDashboard = () =>
+  api.get("/organizations/me/dashboard/");
+
+export const getOrgAIStats = () =>
+  api.get("/organizations/me/ai-stats/");
+
 // ── Notifications ─────────────────────────────────────────────────────────────
 export const getNotifications = (params?: Record<string, unknown>) =>
   api.get("/notifications/", { params });

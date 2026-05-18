@@ -329,3 +329,89 @@ export interface ApiError {
   message?: string;
   [key: string]: unknown;
 }
+
+// ── Organization Dashboard ─────────────────────────────────────────────────────
+
+export interface OrgDashboardStats {
+  leads: {
+    total: number;
+    hot: number;
+    new_this_week: number;
+    routing_queue: number;
+    by_status: Record<string, number>;
+    by_intent: Record<string, number>;
+  };
+  agents: {
+    active: number;
+    pending: number;
+  };
+  inventory: {
+    total: number;
+    verified: number;
+    avg_ai_score: number;
+    by_type: Record<string, number>;
+  };
+}
+
+export interface OrgAIConversation {
+  lead_id: string;
+  lead_phone: string;
+  lead_name: string | null;
+  lead_score: number;
+  lead_status: string;
+  message_preview: string;
+  channel: string;
+  created_at: string;
+}
+
+export interface OrgAIStats {
+  summary: {
+    total_leads: number;
+    hot_leads: number;
+    routing_queue: number;
+    agent_assigned: number;
+    qualified_leads: number;
+    new_this_week: number;
+    leads_with_convos: number;
+    chat_success_rate: number;
+  };
+  recent_conversations: OrgAIConversation[];
+}
+
+export interface AgentPerformanceRow {
+  id: number;
+  name: string;
+  phone: string;
+  is_verified: boolean;
+  total_leads: number;
+  closed_leads: number;
+  closed_deals: number;
+  rating: number;
+  primary_city: string;
+}
+
+export interface LeadReportData {
+  total: number;
+  avg_score: number;
+  hot_leads: number;
+  by_status: Record<string, number>;
+  by_intent: Record<string, number>;
+  by_source: Record<string, number>;
+  trend?: { period: string; count: number }[];
+}
+
+export interface PropertyReportData {
+  total: number;
+  avg_ai_score: number;
+  installment_available: number;
+  by_type: Record<string, number>;
+  by_legal_status: Record<string, number>;
+  by_risk_level: Record<string, number>;
+  by_city: Record<string, number>;
+  trend?: { period: string; count: number }[];
+}
+
+export interface AgentReportData {
+  count: number;
+  results: AgentPerformanceRow[];
+}
