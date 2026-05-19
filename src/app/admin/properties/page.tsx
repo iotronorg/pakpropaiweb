@@ -51,7 +51,7 @@ const BLANK_FORM = {
   city: "",
   location: "",
   area_marla: "",
-  price_pkr: "",
+  price: "",
   property_type: "residential",
   furnished_status: "",
   construction_status: "",
@@ -244,7 +244,7 @@ export default function PropertiesPage() {
       city:                p.city ?? "",
       location:            p.location ?? "",
       area_marla:          p.area_marla != null ? String(p.area_marla) : "",
-      price_pkr:           p.price_pkr  != null ? String(p.price_pkr)  : "",
+      price:           p.price  != null ? String(p.price)  : "",
       property_type:       p.property_type ?? "residential",
       furnished_status:    p.furnished_status    ?? "",
       construction_status: p.construction_status ?? "",
@@ -331,7 +331,7 @@ export default function PropertiesPage() {
                     {p.title || `Property #${p.id.slice(0, 8)}`}
                   </td>
                   <td className="px-5 py-3 text-gray-600">{p.city}</td>
-                  <td className="px-5 py-3 text-gray-700">{p.price_pkr ? formatPKR(p.price_pkr) : "—"}</td>
+                  <td className="px-5 py-3 text-gray-700">{p.price ? formatPKR(p.price) : "—"}</td>
                   <td className="px-5 py-3">
                     <Badge label={p.property_type} />
                   </td>
@@ -448,7 +448,7 @@ export default function PropertiesPage() {
             <DetailRow label="Location"    value={detailProp.location} />
             <DetailRow label="Type"        value={detailProp.property_type} />
             <DetailRow label="Area"        value={detailProp.area_marla != null ? `${detailProp.area_marla} Marla` : undefined} />
-            <DetailRow label="Price"       value={detailProp.price_pkr ? formatPKR(detailProp.price_pkr) : undefined} />
+            <DetailRow label="Price"       value={detailProp.price ? formatPKR(detailProp.price) : undefined} />
             <DetailRow label="Furnished"   value={detailProp.furnished_status ?? undefined} />
             <DetailRow label="Construction" value={detailProp.construction_status ?? undefined} />
             <DetailRow label="Legal Status">
@@ -583,7 +583,7 @@ function PropertyForm({
           <Field label="Price (PKR)">
             <input
               type="number" min="0"
-              value={form.price_pkr} onChange={set("price_pkr")}
+              value={form.price} onChange={set("price")}
               placeholder="e.g. 15000000"
               className={inputCls}
             />
@@ -852,7 +852,7 @@ function formToPayload(form: PropertyForm): Record<string, unknown> {
     location:            form.location,
     property_type:       form.property_type,
     area_marla:          form.area_marla  ? Number(form.area_marla)  : null,
-    price_pkr:           form.price_pkr   ? Number(form.price_pkr)   : null,
+    price:           form.price   ? Number(form.price)   : null,
     furnished_status:    form.furnished_status    || null,
     construction_status: form.construction_status || null,
     legal_status:        form.legal_status,

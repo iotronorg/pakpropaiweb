@@ -187,13 +187,13 @@ export default function OrgInventoryPage() {
                       {p.property_type.replace(/_/g, " ")}
                     </td>
                     <td className="px-5 py-3 whitespace-nowrap tabular-nums">
-                      {p.price_pkr
+                      {p.price
                         ? <span className="font-medium text-gray-800">
-                            {p.price_pkr >= 10_000_000
-                              ? `${(p.price_pkr / 10_000_000).toFixed(1)}Cr`
-                              : p.price_pkr >= 100_000
-                              ? `${(p.price_pkr / 100_000).toFixed(1)}L`
-                              : p.price_pkr.toLocaleString()}
+                            {p.price >= 10_000_000
+                              ? `${(p.price / 10_000_000).toFixed(1)}Cr`
+                              : p.price >= 100_000
+                              ? `${(p.price / 100_000).toFixed(1)}L`
+                              : p.price.toLocaleString()}
                           </span>
                         : <span className="text-gray-400">—</span>}
                     </td>

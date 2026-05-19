@@ -139,7 +139,7 @@ function EditPropertyModal({
   const [description,         setDescription]         = useState((property as unknown as Record<string,unknown>).description as string ?? "");
   const [city,                setCity]                = useState(property.city ?? "");
   const [location,            setLocation]            = useState(property.location ?? "");
-  const [pricePkr,            setPricePkr]            = useState(property.price_pkr != null ? String(property.price_pkr) : "");
+  const [price,            setPrice]            = useState(property.price != null ? String(property.price) : "");
   const [areaMarla,           setAreaMarla]           = useState(property.area_marla != null ? String(property.area_marla) : "");
   const [propertyType,        setPropertyType]        = useState(property.property_type ?? "house");
   const [constructionStatus,  setConstructionStatus]  = useState(property.construction_status ?? "");
@@ -152,7 +152,7 @@ function EditPropertyModal({
       city,
       location,
       property_type:       propertyType,
-      price_pkr:           pricePkr   ? Number(pricePkr)   : null,
+      price:           price   ? Number(price)   : null,
       area_marla:          areaMarla  ? Number(areaMarla)  : null,
       construction_status: constructionStatus || null,
       furnished_status:    furnishedStatus    || null,
@@ -194,7 +194,7 @@ function EditPropertyModal({
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Price (PKR)</label>
-              <input type="number" className={inputCls} value={pricePkr} onChange={(e) => setPricePkr(e.target.value)} />
+              <input type="number" className={inputCls} value={price} onChange={(e) => setPrice(e.target.value)} />
             </div>
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-1">Area (Marla)</label>
@@ -451,7 +451,7 @@ export default function AgentListingsPage() {
               {/* Price + area */}
               <div className="flex items-baseline justify-between">
                 <p className="text-lg font-bold text-blue-700">
-                  {p.price_pkr ? formatPKR(p.price_pkr) : "Price TBD"}
+                  {p.price ? formatPKR(p.price) : "Price TBD"}
                 </p>
                 {p.area_marla && (
                   <span className="text-sm text-gray-500">{p.area_marla} marla</span>

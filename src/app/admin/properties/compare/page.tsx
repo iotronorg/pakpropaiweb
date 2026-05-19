@@ -15,7 +15,7 @@ const ROWS: { label: string; key: keyof Property; format?: (v: unknown) => strin
   { label: "Location",       key: "location" },
   { label: "Type",           key: "property_type" },
   { label: "Area (Marla)",   key: "area_marla",  format: (v) => v != null ? String(v) : "—" },
-  { label: "Price (PKR)",    key: "price_pkr",   format: (v) => v != null ? `₨ ${Number(v).toLocaleString()}` : "—" },
+  { label: "Price (PKR)",    key: "price",   format: (v) => v != null ? `₨ ${Number(v).toLocaleString()}` : "—" },
   { label: "Construction",   key: "construction_status" },
   { label: "Furnished",      key: "furnished_status" },
   { label: "Legal Status",   key: "legal_status" },

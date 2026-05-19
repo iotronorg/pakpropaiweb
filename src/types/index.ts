@@ -33,7 +33,7 @@ export interface Property {
   city: string;
   location: string;
   area_marla: number | null;
-  price_pkr: number | null;
+  price: number | null;
   property_type: string;
   construction_status: string | null;
   furnished_status: string | null;
@@ -312,7 +312,7 @@ export interface UserNotificationPreference {
 
 export interface MarketTrend {
   period: string;
-  avg_price_pkr: number | null;
+  avg_price: number | null;
   listing_count: number;
 }
 

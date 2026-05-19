@@ -40,7 +40,7 @@ export default function MarketTrendsPage() {
 
   const trends = data ?? [];
   const maxListings = Math.max(...trends.map((t) => t.listing_count), 1);
-  const maxPrice    = Math.max(...trends.map((t) => t.avg_price_pkr ?? 0), 1);
+  const maxPrice    = Math.max(...trends.map((t) => t.avg_price ?? 0), 1);
 
   return (
     <div className="space-y-6">
@@ -95,10 +95,10 @@ export default function MarketTrendsPage() {
                   <div className="flex-1 bg-gray-100 rounded-full h-2 overflow-hidden">
                     <div
                       className="bg-emerald-500 h-2 rounded-full"
-                      style={{ width: `${maxPrice > 0 ? Math.round(((t.avg_price_pkr ?? 0) / maxPrice) * 100) : 0}%` }}
+                      style={{ width: `${maxPrice > 0 ? Math.round(((t.avg_price ?? 0) / maxPrice) * 100) : 0}%` }}
                     />
                   </div>
-                  <span className="text-xs text-gray-700 w-24 text-right">{formatPkr(t.avg_price_pkr)}</span>
+                  <span className="text-xs text-gray-700 w-24 text-right">{formatPkr(t.avg_price)}</span>
                 </div>
               ))}
             </div>
@@ -128,7 +128,7 @@ export default function MarketTrendsPage() {
                 {trends.map((t) => (
                   <tr key={t.period} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-4 py-2.5 text-gray-800">{t.period}</td>
-                    <td className="px-4 py-2.5 text-right text-gray-800">{formatPkr(t.avg_price_pkr)}</td>
+                    <td className="px-4 py-2.5 text-right text-gray-800">{formatPkr(t.avg_price)}</td>
                     <td className="px-4 py-2.5 text-right text-gray-800">{t.listing_count}</td>
                   </tr>
                 ))}
