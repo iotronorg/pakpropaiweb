@@ -1,18 +1,46 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getOrgDashboard, getOrgAIStats } from "@/lib/api";
+import { getOrgDashboard, getOrgAIStats, getMyOrganization } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { StatCard, BreakdownBar, SectionHeader } from "@/components/ui/Charts";
 import type { OrgDashboardStats, OrgAIStats } from "@/types";
 import Link from "next/link";
 
+function TrialBanner() {
+  return (
+    <div className="flex items-center justify-between gap-4 rounded-xl border border-amber-300 bg-amber-50 px-5 py-3.5">
+      <div className="flex items-center gap-3">
+        <span className="rounded-full bg-amber-400 px-2 py-0.5 text-[11px] font-bold text-white uppercase tracking-wide">
+          Trial
+        </span>
+        <p className="text-sm text-amber-800">
+          You are on the <strong>Trial plan</strong> — limited to 10 properties and 2 agents.
+          Upgrade to unlock unlimited listings, team members, and advanced features.
+        </p>
+      </div>
+      <Link
+        href="/organization/settings"
+        className="shrink-0 rounded-lg bg-amber-500 px-4 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition-colors"
+      >
+        Upgrade Plan
+      </Link>
+    </div>
+  );
+}
+
 export default function OrgOverviewPage() {
   const { data: dash, isLoading: l1 } = useQuery({
     queryKey: ["org-dashboard"],
     queryFn: () => getOrgDashboard().then((r) => r.data as OrgDashboardStats),
   });
+
+  const { data: orgData } = useQuery({
+    queryKey: ["my-organization"],
+    queryFn: () => getMyOrganization().then((r) => r.data),
+  });
+  const isTrialPlan = (orgData as { plan?: string } | undefined)?.plan === "trial";
 
   const { data: ai, isLoading: l2 } = useQuery({
     queryKey: ["org-ai-stats"],
@@ -42,6 +70,9 @@ export default function OrgOverviewPage() {
 
   return (
     <div className="space-y-7 pb-10">
+
+      {/* Trial plan banner */}
+      {isTrialPlan && <TrialBanner />}
 
       {/* Header */}
       <div className="flex items-start justify-between">

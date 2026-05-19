@@ -7,10 +7,10 @@ import { UserNotificationPreference } from "@/types";
 
 type BoolKey = keyof Omit<UserNotificationPreference, "updated_at">;
 
-const CHANNEL_FIELDS: { key: BoolKey; label: string }[] = [
+const CHANNEL_FIELDS: { key: BoolKey; label: string; comingSoon?: boolean }[] = [
   { key: "whatsapp_enabled", label: "WhatsApp" },
-  { key: "sms_enabled",      label: "SMS" },
-  { key: "email_enabled",    label: "Email" },
+  { key: "sms_enabled",      label: "SMS",   comingSoon: true },
+  { key: "email_enabled",    label: "Email", comingSoon: true },
 ];
 
 const EVENT_FIELDS: { key: BoolKey; label: string }[] = [
@@ -51,9 +51,16 @@ export function NotificationPreferencesPanel() {
       <div>
         <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Channels</p>
         <div className="space-y-2">
-          {CHANNEL_FIELDS.map(({ key, label }) => (
-            <Toggle key={key} label={label} checked={data[key] as boolean} onChange={() => toggle(key)} />
-          ))}
+          {CHANNEL_FIELDS.map(({ key, label, comingSoon }) =>
+            comingSoon ? (
+              <div key={key} className="flex items-center justify-between py-1">
+                <span className="text-sm text-gray-400">{label}</span>
+                <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-400">Coming soon</span>
+              </div>
+            ) : (
+              <Toggle key={key} label={label} checked={data[key] as boolean} onChange={() => toggle(key)} />
+            )
+          )}
         </div>
       </div>
 

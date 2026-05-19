@@ -111,6 +111,7 @@ export interface DealLock {
   seller_phone: string | null;
   agent_name: string | null;
   token_amount: number;
+  currency: string;
   status: DealLockStatus;
   payment_gateway: string;
   payment_ref: string;
@@ -414,4 +415,26 @@ export interface PropertyReportData {
 export interface AgentReportData {
   count: number;
   results: AgentPerformanceRow[];
+}
+
+export type CampaignStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed';
+export type CampaignAudienceFilter =
+  | 'all' | 'new' | 'warm' | 'qualified' | 'cold'
+  | 'buy' | 'sell' | 'rent' | 'invest';
+
+export interface Campaign {
+  id: string;
+  name: string;
+  message_template: string;
+  audience_filter: CampaignAudienceFilter;
+  scheduled_at: string | null;
+  status: CampaignStatus;
+  recipient_count: number;
+  sent_count: number;
+  failed_count: number;
+  sent_at: string | null;
+  created_by: string | null;
+  created_by_name: string | null;
+  created_at: string;
+  updated_at: string;
 }

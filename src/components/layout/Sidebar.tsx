@@ -3,24 +3,26 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { useAuthStore } from "@/store/auth";
-import { logout } from "@/lib/api";
+import { logout, getNotifications } from "@/lib/api";
 import { cn } from "@/lib/utils";
 import {
   LayoutDashboard, TrendingUp, BarChart3, Settings, MessageSquare,
   ClipboardList, AlertTriangle, Calendar, Building2, Building,
   ShieldCheck, Home, GitCompare, BadgeCheck, Lock, AlertOctagon,
   FileBarChart, FileText, FolderOpen, Bell, Settings2, Users, User,
-  LogOut, ChevronRight, SlidersHorizontal, Bot,
+  LogOut, ChevronRight, SlidersHorizontal, Bot, Megaphone,
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
 
 interface NavItem {
-  label: string;
-  href:  string;
-  icon:  LucideIcon;
+  label:  string;
+  href:   string;
+  icon:   LucideIcon;
   exact?: boolean;
+  badge?: boolean;
 }
 
 const NAV_ITEMS: Record<string, NavItem[]> = {
@@ -45,7 +47,7 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Audit Log",     href: "/admin/audit",              icon: FileText, exact: true },
     { label: "Benchmarks",   href: "/admin/audit/benchmarks",   icon: SlidersHorizontal },
     { label: "System Log",   href: "/admin/audit-log",          icon: FolderOpen },
-    { label: "Notifications", href: "/admin/notifications",      icon: Bell },
+    { label: "Notifications", href: "/admin/notifications",      icon: Bell, badge: true },
     { label: "Settings",      href: "/admin/settings",           icon: Settings2 },
   ],
   agent: [
@@ -55,7 +57,7 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Appointments",  href: "/agent/appointments",  icon: Calendar },
     { label: "My Listings",   href: "/agent/listings",      icon: Home },
     { label: "My Profile",    href: "/agent/profile",       icon: User },
-    { label: "Notifications", href: "/agent/notifications", icon: Bell },
+    { label: "Notifications", href: "/agent/notifications", icon: Bell, badge: true },
   ],
   developer: [
     { label: "Overview",       href: "/organization",                  icon: LayoutDashboard, exact: true },
@@ -64,8 +66,9 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "Inventory",      href: "/organization/inventory",        icon: Building },
     { label: "Lead Analytics", href: "/organization/leads",            icon: BarChart3 },
     { label: "My Team",        href: "/organization/team",             icon: Users },
+    { label: "Campaigns",      href: "/organization/campaigns",        icon: Megaphone },
     { label: "Reports",        href: "/organization/reports",          icon: FileBarChart },
-    { label: "Notifications",  href: "/organization/notifications",    icon: Bell },
+    { label: "Notifications",  href: "/organization/notifications",    icon: Bell, badge: true },
     { label: "Settings",       href: "/organization/settings",         icon: Settings2 },
   ],
 };
@@ -82,8 +85,9 @@ const ROLE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
   developer: { bg: "bg-amber-600",  text: "text-amber-600",  dot: "bg-amber-500" },
 };
 
-function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+function NavLink({ item, active, unreadCount = 0 }: { item: NavItem; active: boolean; unreadCount?: number }) {
   const Icon = item.icon;
+  const showBadge = item.badge && unreadCount > 0;
   return (
     <Link
       href={item.href}
@@ -101,14 +105,23 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
           transition={{ type: "spring", stiffness: 400, damping: 35 }}
         />
       )}
-      <Icon
-        size={15}
-        className={cn(
-          "relative z-10 shrink-0",
-          active ? "text-[var(--primary)]" : "text-slate-400 group-hover:text-slate-600"
+      <span className="relative z-10 shrink-0">
+        <Icon
+          size={15}
+          className={cn(
+            active ? "text-[var(--primary)]" : "text-slate-400 group-hover:text-slate-600"
+          )}
+        />
+        {showBadge && (
+          <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 ring-1 ring-white" />
         )}
-      />
+      </span>
       <span className="relative z-10 truncate">{item.label}</span>
+      {showBadge && !active && (
+        <span className="relative z-10 ml-auto rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
+          {unreadCount > 99 ? "99+" : unreadCount}
+        </span>
+      )}
       {active && <ChevronRight size={12} className="relative z-10 ml-auto text-[var(--primary)]/50" />}
     </Link>
   );
@@ -121,6 +134,14 @@ export function Sidebar() {
   const role  = user?.role ?? "admin";
   const items = NAV_ITEMS[role] ?? [];
   const rc    = ROLE_COLORS[role] ?? ROLE_COLORS.admin;
+
+  const { data: notifData } = useQuery({
+    queryKey: ["notif-unread-count"],
+    queryFn: () => getNotifications({ limit: 1 }).then((r) => r.data),
+    refetchInterval: 60_000,
+    enabled: !!user,
+  });
+  const unreadCount: number = (notifData as { unread_count?: number })?.unread_count ?? 0;
 
   function isActive(item: NavItem) {
     return item.exact ? pathname === item.href : pathname.startsWith(item.href);
@@ -166,7 +187,7 @@ export function Sidebar() {
         <ul className="space-y-0.5">
           {items.map((item) => (
             <li key={item.href}>
-              <NavLink item={item} active={isActive(item)} />
+              <NavLink item={item} active={isActive(item)} unreadCount={unreadCount} />
             </li>
           ))}
         </ul>

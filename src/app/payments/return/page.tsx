@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getDealLock } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { formatPKR, roleHomePath } from "@/lib/utils";
+import { roleHomePath } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
 import { DealLock } from "@/types";
 
@@ -83,7 +83,7 @@ function PaymentReturnContent() {
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Token Amount</span>
-              <span className="font-semibold text-gray-900">{formatPKR(deal.token_amount)}</span>
+              <span className="font-semibold text-gray-900">{deal.currency} {deal.token_amount.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Gateway</span>

@@ -430,3 +430,28 @@ export const updateOrgConfig = (data: Record<string, boolean>) =>
 
 export const resetOrgConfigKey = (key: string) =>
   api.delete(`/organizations/me/config/${key}/`).then((r) => r.data);
+
+// ── Campaigns ─────────────────────────────────────────────────────────────────
+export const getCampaigns = (params?: Record<string, unknown>) =>
+  api.get("/campaigns/", { params });
+
+export const getCampaign = (id: string) =>
+  api.get(`/campaigns/${id}/`);
+
+export const createCampaign = (data: Record<string, unknown>) =>
+  api.post("/campaigns/", data);
+
+export const updateCampaign = (id: string, data: Record<string, unknown>) =>
+  api.patch(`/campaigns/${id}/`, data);
+
+export const deleteCampaign = (id: string) =>
+  api.delete(`/campaigns/${id}/`);
+
+export const sendCampaign = (id: string) =>
+  api.post(`/campaigns/${id}/send/`);
+
+export const cancelCampaign = (id: string) =>
+  api.post(`/campaigns/${id}/cancel/`);
+
+export const scheduleCampaign = (id: string, scheduled_at: string) =>
+  api.post(`/campaigns/${id}/schedule/`, { scheduled_at });
