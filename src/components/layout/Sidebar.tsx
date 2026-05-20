@@ -65,6 +65,7 @@ const NAV_ITEMS: Record<string, NavItem[]> = {
     { label: "AI Monitor",     href: "/organization/ai-monitor",       icon: Bot },
     { label: "Inventory",      href: "/organization/inventory",        icon: Building },
     { label: "Lead Analytics", href: "/organization/leads",            icon: BarChart3 },
+    { label: "Deal Locks",     href: "/organization/deals",            icon: Lock },
     { label: "My Team",        href: "/organization/team",             icon: Users },
     { label: "Campaigns",      href: "/organization/campaigns",        icon: Megaphone },
     { label: "Reports",        href: "/organization/reports",          icon: FileBarChart },
