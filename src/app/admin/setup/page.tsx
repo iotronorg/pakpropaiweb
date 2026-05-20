@@ -104,6 +104,8 @@ export default function SetupPage() {
   const [aiVals, setAiVals] = useState<Record<string, string>>({});
   const [gwVal, setGwVal] = useState<string>("manual");
   const [gwCredsVals, setGwCredsVals] = useState<Record<string, string>>({});
+  const [billingGwVal, setBillingGwVal] = useState<string>("manual");
+  const [billingGwVals, setBillingGwVals] = useState<Record<string, string>>({});
   const [featureVals, setFeatureVals] = useState<Record<string, boolean>>({});
   const [scraperEnabled, setScraperEnabled] = useState(true);
   const [savedSection, setSavedSection] = useState<string | null>(null);
@@ -123,6 +125,24 @@ export default function SetupPage() {
       gemini_model:   config.gemini_model,
       ai_backend:     config.ai_backend,
       base_url:       config.base_url,
+    });
+    setBillingGwVal(config.billing_gateway ?? "manual");
+    setBillingGwVals({
+      stripe_secret_key:                config.stripe_secret_key === SENTINEL ? "" : (config.stripe_secret_key ?? ""),
+      stripe_webhook_secret:            config.stripe_webhook_secret === SENTINEL ? "" : (config.stripe_webhook_secret ?? ""),
+      stripe_price_basic:               config.stripe_price_basic ?? "",
+      stripe_price_professional:        config.stripe_price_professional ?? "",
+      stripe_price_enterprise:          config.stripe_price_enterprise ?? "",
+      billing_price_basic_pkr:          config.billing_price_basic_pkr ?? "13000",
+      billing_price_professional_pkr:   config.billing_price_professional_pkr ?? "40000",
+      billing_price_enterprise_pkr:     config.billing_price_enterprise_pkr ?? "120000",
+      // Safepay/bSecure keys reused from deal-lock section
+      safepay_merchant_key:  config.safepay_merchant_key === SENTINEL ? "" : (config.safepay_merchant_key ?? ""),
+      safepay_secret_key:    config.safepay_secret_key === SENTINEL ? "" : (config.safepay_secret_key ?? ""),
+      safepay_environment:   config.safepay_environment ?? "sandbox",
+      bsecure_client_id:     config.bsecure_client_id === SENTINEL ? "" : (config.bsecure_client_id ?? ""),
+      bsecure_client_secret: config.bsecure_client_secret === SENTINEL ? "" : (config.bsecure_client_secret ?? ""),
+      bsecure_environment:   config.bsecure_environment ?? "sandbox",
     });
     setGwVal(config.active_payment_gateway);
     setGwCredsVals({
@@ -353,12 +373,193 @@ export default function SetupPage() {
           />
         </div>
 
-        {/* ── Section 3: Payment Gateway ── */}
+        {/* ── Section 3: Billing Gateway ── */}
         <div className="rounded-xl border border-gray-200 bg-white">
           <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="font-semibold text-gray-900">Payment Gateway</h2>
+            <h2 className="font-semibold text-gray-900">Billing Gateway</h2>
             <p className="mt-0.5 text-sm text-gray-500">
-              Choose the active payment method. Only the selected gateway will be used for deal lock payments.
+              Controls which gateway organizations use to upgrade their SaaS plan. Stripe for global payments; Safepay/bSecure for Pakistan.
+            </p>
+          </div>
+          <div className="px-6 py-5 space-y-4">
+            {/* Gateway selector */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              {[
+                { value: "stripe",  label: "Stripe",   desc: "Global recurring subscriptions" },
+                { value: "safepay", label: "Safepay",  desc: "One-time payment (Pakistan)" },
+                { value: "bsecure", label: "bSecure",  desc: "One-time payment (Pakistan)" },
+                { value: "manual",  label: "Manual",   desc: "Admin upgrades plan in Django admin" },
+              ].map(({ value, label, desc }) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setBillingGwVal(value)}
+                  className={`rounded-lg border-2 p-4 text-left transition-all ${
+                    billingGwVal === value
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 bg-white hover:border-gray-300"
+                  }`}
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className={`h-4 w-4 rounded-full border-2 flex-shrink-0 ${billingGwVal === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
+                    <span className="text-sm font-semibold text-gray-900">{label}</span>
+                  </div>
+                  <p className="text-xs text-gray-500 ml-6">{desc}</p>
+                </button>
+              ))}
+            </div>
+
+            {/* Stripe credentials */}
+            {billingGwVal === "stripe" && (
+              <div className="rounded-lg border border-indigo-100 bg-indigo-50 p-4 space-y-4">
+                <p className="text-xs font-semibold text-indigo-700 uppercase tracking-wide">Stripe Credentials</p>
+                <div className="space-y-3">
+                  {[
+                    { key: "stripe_secret_key",     label: "Secret Key",         sensitive: true,  placeholder: "sk_live_…",   help: "Stripe Dashboard → Developers → API keys" },
+                    { key: "stripe_webhook_secret", label: "Webhook Secret",      sensitive: true,  placeholder: "whsec_…",     help: "Stripe Dashboard → Webhooks → endpoint secret" },
+                    { key: "stripe_price_basic",         label: "Price ID — Basic",         sensitive: false, placeholder: "price_…",    help: "Monthly recurring price ID for Basic plan" },
+                    { key: "stripe_price_professional",  label: "Price ID — Professional",  sensitive: false, placeholder: "price_…",    help: "Monthly recurring price ID for Professional plan" },
+                    { key: "stripe_price_enterprise",    label: "Price ID — Enterprise",    sensitive: false, placeholder: "price_… (optional)", help: "Monthly recurring price ID for Enterprise plan" },
+                  ].map(({ key, label, sensitive, placeholder, help }) => (
+                    <div key={key}>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-medium text-gray-700">{label}</label>
+                        {sensitive && <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />}
+                      </div>
+                      {sensitive ? (
+                        <SensitiveInput
+                          fieldKey={key}
+                          originalValue={(config as unknown as Record<string, string>)?.[key] ?? ""}
+                          value={billingGwVals[key] ?? ""}
+                          onChange={(v) => setBillingGwVals((p) => ({ ...p, [key]: v }))}
+                          placeholder={placeholder}
+                        />
+                      ) : (
+                        <input
+                          type="text"
+                          value={billingGwVals[key] ?? ""}
+                          onChange={(e) => setBillingGwVals((p) => ({ ...p, [key]: e.target.value }))}
+                          placeholder={placeholder}
+                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono outline-none focus:border-blue-500"
+                        />
+                      )}
+                      {help && <p className="mt-1 text-xs text-gray-400">{help}</p>}
+                    </div>
+                  ))}
+                </div>
+                <p className="text-xs text-indigo-600 border-t border-indigo-100 pt-3">
+                  Register webhook at: <code className="font-mono text-xs bg-indigo-100 px-1 rounded">POST /api/v1/billing/webhook/stripe/</code><br />
+                  Events: checkout.session.completed, customer.subscription.updated, customer.subscription.deleted, invoice.payment_failed
+                </p>
+              </div>
+            )}
+
+            {/* Safepay billing credentials */}
+            {billingGwVal === "safepay" && (
+              <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 space-y-3">
+                <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Safepay Credentials</p>
+                {[
+                  { key: "safepay_merchant_key", label: "Merchant Key", sensitive: true,  placeholder: "sk_live_…" },
+                  { key: "safepay_secret_key",   label: "Secret Key",   sensitive: true,  placeholder: "sk_…" },
+                  { key: "safepay_environment",  label: "Environment",  sensitive: false, placeholder: "sandbox" },
+                ].map(({ key, label, sensitive, placeholder }) => (
+                  <div key={key}>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-medium text-gray-700">{label}</label>
+                      {sensitive && <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />}
+                    </div>
+                    {sensitive ? (
+                      <SensitiveInput
+                        fieldKey={key}
+                        originalValue={(config as unknown as Record<string, string>)?.[key] ?? ""}
+                        value={billingGwVals[key] ?? ""}
+                        onChange={(v) => setBillingGwVals((p) => ({ ...p, [key]: v }))}
+                        placeholder={placeholder}
+                      />
+                    ) : (
+                      <select
+                        value={billingGwVals[key] ?? "sandbox"}
+                        onChange={(e) => setBillingGwVals((p) => ({ ...p, [key]: e.target.value }))}
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                      >
+                        <option value="sandbox">Sandbox (testing)</option>
+                        <option value="production">Production (live)</option>
+                      </select>
+                    )}
+                  </div>
+                ))}
+                <p className="text-xs text-blue-600 border-t border-blue-100 pt-3">
+                  Register webhook at: <code className="font-mono text-xs bg-blue-100 px-1 rounded">POST /api/v1/billing/webhook/safepay/</code>
+                </p>
+                <BillingPkrPrices vals={billingGwVals} onChange={(k, v) => setBillingGwVals((p) => ({ ...p, [k]: v }))} />
+              </div>
+            )}
+
+            {/* bSecure billing credentials */}
+            {billingGwVal === "bsecure" && (
+              <div className="rounded-lg border border-purple-100 bg-purple-50 p-4 space-y-3">
+                <p className="text-xs font-semibold text-purple-700 uppercase tracking-wide">bSecure Credentials</p>
+                {[
+                  { key: "bsecure_client_id",     label: "Client ID",     sensitive: true,  placeholder: "bs_…" },
+                  { key: "bsecure_client_secret",  label: "Client Secret", sensitive: true,  placeholder: "bs_secret_…" },
+                  { key: "bsecure_environment",    label: "Environment",   sensitive: false, placeholder: "sandbox" },
+                ].map(({ key, label, sensitive, placeholder }) => (
+                  <div key={key}>
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="text-xs font-medium text-gray-700">{label}</label>
+                      {sensitive && <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />}
+                    </div>
+                    {sensitive ? (
+                      <SensitiveInput
+                        fieldKey={key}
+                        originalValue={(config as unknown as Record<string, string>)?.[key] ?? ""}
+                        value={billingGwVals[key] ?? ""}
+                        onChange={(v) => setBillingGwVals((p) => ({ ...p, [key]: v }))}
+                        placeholder={placeholder}
+                      />
+                    ) : (
+                      <select
+                        value={billingGwVals[key] ?? "sandbox"}
+                        onChange={(e) => setBillingGwVals((p) => ({ ...p, [key]: e.target.value }))}
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                      >
+                        <option value="sandbox">Sandbox (testing)</option>
+                        <option value="production">Production (live)</option>
+                      </select>
+                    )}
+                  </div>
+                ))}
+                <p className="text-xs text-purple-600 border-t border-purple-100 pt-3">
+                  Register webhook at: <code className="font-mono text-xs bg-purple-100 px-1 rounded">POST /api/v1/billing/webhook/bsecure/</code>
+                </p>
+                <BillingPkrPrices vals={billingGwVals} onChange={(k, v) => setBillingGwVals((p) => ({ ...p, [k]: v }))} />
+              </div>
+            )}
+
+            {billingGwVal === "manual" && (
+              <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+                Manual mode — when an organization upgrades their plan, you will receive a notification and must activate the plan via Django admin.
+              </div>
+            )}
+          </div>
+          <SectionFooter
+            saved={savedSection === "billing-gateway"}
+            saving={mutation.isPending && savedSection === "billing-gateway"}
+            onSave={() =>
+              save("billing-gateway", {
+                billing_gateway: billingGwVal,
+                ...billingGwVals,
+              })
+            }
+          />
+        </div>
+
+        {/* ── Section 5: Deal-Lock Payment Gateway ── */}
+        <div className="rounded-xl border border-gray-200 bg-white">
+          <div className="border-b border-gray-100 px-6 py-5">
+            <h2 className="font-semibold text-gray-900">Deal-Lock Payment Gateway</h2>
+            <p className="mt-0.5 text-sm text-gray-500">
+              Gateway used for client token payments (deal lock feature). Separate from the SaaS billing gateway above.
             </p>
           </div>
           <div className="px-6 py-5 space-y-4">
@@ -482,7 +683,7 @@ export default function SetupPage() {
           />
         </div>
 
-        {/* ── Section 4: WhatsApp Features ── */}
+        {/* ── Section 6: WhatsApp Features ── */}
         <div className="rounded-xl border border-gray-200 bg-white">
           <div className="border-b border-gray-100 px-6 py-5">
             <h2 className="font-semibold text-gray-900">WhatsApp Features</h2>
@@ -534,6 +735,37 @@ export default function SetupPage() {
         </div>
 
       </div>
+    </div>
+  );
+}
+
+function BillingPkrPrices({
+  vals,
+  onChange,
+}: {
+  vals: Record<string, string>;
+  onChange: (key: string, value: string) => void;
+}) {
+  return (
+    <div className="border-t border-gray-200 pt-3 space-y-2">
+      <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Plan Prices (PKR / month)</p>
+      {[
+        { key: "billing_price_basic_pkr",        label: "Basic",        placeholder: "13000" },
+        { key: "billing_price_professional_pkr", label: "Professional", placeholder: "40000" },
+        { key: "billing_price_enterprise_pkr",   label: "Enterprise",   placeholder: "120000" },
+      ].map(({ key, label, placeholder }) => (
+        <div key={key} className="flex items-center gap-3">
+          <label className="w-28 text-xs text-gray-600 shrink-0">{label}</label>
+          <input
+            type="number"
+            min={0}
+            value={vals[key] ?? ""}
+            onChange={(e) => onChange(key, e.target.value)}
+            placeholder={placeholder}
+            className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-mono outline-none focus:border-blue-500"
+          />
+        </div>
+      ))}
     </div>
   );
 }

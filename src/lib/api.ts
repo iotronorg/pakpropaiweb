@@ -459,3 +459,12 @@ export const scheduleCampaign = (id: string, scheduled_at: string) =>
 // ── Billing ───────────────────────────────────────────────────────────────────
 export const getBillingUsage = () =>
   api.get("/billing/usage/");
+
+export const createBillingCheckout = (plan: string) =>
+  api.post("/billing/checkout/", { plan });
+
+export const getOrgPaymentSettings = () =>
+  api.get("/billing/payment-settings/");
+
+export const updateOrgPaymentSettings = (data: Record<string, string>) =>
+  api.patch("/billing/payment-settings/", data);

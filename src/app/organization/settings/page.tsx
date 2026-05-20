@@ -1,10 +1,12 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage } from "@/lib/api";
+import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings } from "@/lib/api";
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import type { BillingUsage, BillingDimension } from "@/types";
+import { PricingModal } from "@/components/ui/PricingModal";
+import type { BillingUsage, BillingDimension, OrgPaymentSettings } from "@/types";
 
 const PLAN_LABELS: Record<string, string> = {
   trial: 'Trial',
@@ -56,8 +58,29 @@ const FEATURE_LABELS: Record<string, { label: string; desc: string }> = {
   feature_property_audit:        { label: "Property Audit",        desc: "AI-generated audit reports with investment scores" },
 };
 
+const SENTINEL = "__configured__";
+
+function SensitiveInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <input
+        type={show ? "text" : "password"}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={placeholder}
+        className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-14 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+      />
+      <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600">
+        {show ? "Hide" : "Show"}
+      </button>
+    </div>
+  );
+}
+
 export default function OrgSettingsPage() {
   const qc = useQueryClient();
+  const [showPricing, setShowPricing] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["org-config"],
@@ -78,6 +101,41 @@ export default function OrgSettingsPage() {
   const resetMutation = useMutation({
     mutationFn: (key: string) => resetOrgConfigKey(key),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["org-config"] }),
+  });
+
+  const { data: paymentSettings } = useQuery<OrgPaymentSettings>({
+    queryKey: ["org-payment-settings"],
+    queryFn: () => getOrgPaymentSettings().then((r) => r.data),
+  });
+  const [psGateway, setPsGateway] = useState<string>("manual");
+  const [psVals, setPsVals] = useState<Record<string, string>>({});
+  const [psSaved, setPsSaved] = useState(false);
+
+  // Sync payment settings from server
+  useEffect(() => {
+    if (!paymentSettings) return;
+    setPsGateway(paymentSettings.gateway ?? "manual");
+    setPsVals({
+      safepay_merchant_key:  paymentSettings.safepay_merchant_key === SENTINEL ? "" : (paymentSettings.safepay_merchant_key ?? ""),
+      safepay_secret_key:    paymentSettings.safepay_secret_key === SENTINEL ? "" : (paymentSettings.safepay_secret_key ?? ""),
+      safepay_environment:   paymentSettings.safepay_environment ?? "sandbox",
+      bsecure_client_id:     paymentSettings.bsecure_client_id === SENTINEL ? "" : (paymentSettings.bsecure_client_id ?? ""),
+      bsecure_client_secret: paymentSettings.bsecure_client_secret === SENTINEL ? "" : (paymentSettings.bsecure_client_secret ?? ""),
+      bsecure_environment:   paymentSettings.bsecure_environment ?? "sandbox",
+      jazzcash_number:       paymentSettings.jazzcash_number ?? "",
+      easypaisa_number:      paymentSettings.easypaisa_number ?? "",
+      bank_account_number:   paymentSettings.bank_account_number ?? "",
+      bank_account_name:     paymentSettings.bank_account_name ?? "",
+    });
+  }, [paymentSettings]);
+
+  const paymentSettingsMutation = useMutation({
+    mutationFn: (data: Record<string, string>) => updateOrgPaymentSettings(data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["org-payment-settings"] });
+      setPsSaved(true);
+      setTimeout(() => setPsSaved(false), 2500);
+    },
   });
 
   const features: Record<string, string> = data?.features ?? {};
@@ -112,9 +170,19 @@ export default function OrgSettingsPage() {
               <h2 className="text-sm font-semibold text-gray-800">Plan &amp; Usage</h2>
               <p className="text-xs text-gray-400 mt-0.5">Current billing period consumption</p>
             </div>
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide ${PLAN_COLORS[billingData.plan] ?? PLAN_COLORS.trial}`}>
-              {PLAN_LABELS[billingData.plan] ?? billingData.plan}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide ${PLAN_COLORS[billingData.plan] ?? PLAN_COLORS.trial}`}>
+                {PLAN_LABELS[billingData.plan] ?? billingData.plan}
+              </span>
+              {billingData.plan !== 'enterprise' && (
+                <button
+                  onClick={() => setShowPricing(true)}
+                  className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-blue-700 transition-colors"
+                >
+                  Upgrade
+                </button>
+              )}
+            </div>
           </div>
           <div className="px-6 py-5 space-y-5">
             <UsageMeter label="Agents" dim={billingData.usage.agents} />
@@ -124,9 +192,17 @@ export default function OrgSettingsPage() {
               dim={billingData.usage.wa_tokens}
             />
             {billingData.plan === 'trial' && (
-              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5">
-                You are on the <strong>Trial plan</strong>. Upgrade to unlock higher limits and advanced features.
-              </p>
+              <div className="flex items-center justify-between gap-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2.5">
+                <p className="text-xs text-amber-700">
+                  You are on the <strong>Trial plan</strong>. Upgrade to unlock higher limits and advanced features.
+                </p>
+                <button
+                  onClick={() => setShowPricing(true)}
+                  className="shrink-0 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 transition-colors"
+                >
+                  View plans
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -188,8 +264,136 @@ export default function OrgSettingsPage() {
         </div>
       </div>
 
+      {/* Deal-lock payment gateway */}
+      <div className="rounded-xl border border-gray-200 bg-white">
+        <div className="border-b border-gray-100 px-6 py-4">
+          <h2 className="text-sm font-semibold text-gray-800">Deal-Lock Payment Gateway</h2>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Configure how clients pay the token deposit when locking a deal. Overrides the platform default.
+          </p>
+        </div>
+        <div className="px-6 py-5 space-y-4">
+          {/* Gateway selector */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { value: "safepay", label: "Safepay",  desc: "Online (Safepay checkout)" },
+              { value: "bsecure", label: "bSecure",  desc: "Online (bSecure checkout)" },
+              { value: "manual",  label: "Manual",   desc: "JazzCash / bank transfer" },
+            ].map(({ value, label, desc }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setPsGateway(value)}
+                className={`rounded-lg border-2 p-3 text-left transition-all ${
+                  psGateway === value ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-0.5">
+                  <div className={`h-3.5 w-3.5 rounded-full border-2 shrink-0 ${psGateway === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
+                  <span className="text-sm font-semibold text-gray-900">{label}</span>
+                </div>
+                <p className="text-xs text-gray-500 ml-5">{desc}</p>
+              </button>
+            ))}
+          </div>
+
+          {/* Safepay credentials */}
+          {psGateway === "safepay" && (
+            <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 space-y-3">
+              <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Safepay Credentials</p>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Merchant Key</label>
+                <SensitiveInput value={psVals.safepay_merchant_key ?? ""} onChange={(v) => setPsVals((p) => ({ ...p, safepay_merchant_key: v }))} placeholder="sk_live_…" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Secret Key</label>
+                <SensitiveInput value={psVals.safepay_secret_key ?? ""} onChange={(v) => setPsVals((p) => ({ ...p, safepay_secret_key: v }))} placeholder="sk_…" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Environment</label>
+                <select
+                  value={psVals.safepay_environment ?? "sandbox"}
+                  onChange={(e) => setPsVals((p) => ({ ...p, safepay_environment: e.target.value }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                >
+                  <option value="sandbox">Sandbox (testing)</option>
+                  <option value="production">Production (live)</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {/* bSecure credentials */}
+          {psGateway === "bsecure" && (
+            <div className="rounded-lg border border-purple-100 bg-purple-50 p-4 space-y-3">
+              <p className="text-xs font-semibold text-purple-700 uppercase tracking-wide">bSecure Credentials</p>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Client ID</label>
+                <SensitiveInput value={psVals.bsecure_client_id ?? ""} onChange={(v) => setPsVals((p) => ({ ...p, bsecure_client_id: v }))} placeholder="bs_…" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Client Secret</label>
+                <SensitiveInput value={psVals.bsecure_client_secret ?? ""} onChange={(v) => setPsVals((p) => ({ ...p, bsecure_client_secret: v }))} placeholder="bs_secret_…" />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-1">Environment</label>
+                <select
+                  value={psVals.bsecure_environment ?? "sandbox"}
+                  onChange={(e) => setPsVals((p) => ({ ...p, bsecure_environment: e.target.value }))}
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                >
+                  <option value="sandbox">Sandbox (testing)</option>
+                  <option value="production">Production (live)</option>
+                </select>
+              </div>
+            </div>
+          )}
+
+          {/* Manual payment details */}
+          {psGateway === "manual" && (
+            <div className="rounded-lg border border-gray-100 bg-gray-50 p-4 space-y-3">
+              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Manual Payment Details</p>
+              {[
+                { key: "jazzcash_number",    label: "JazzCash Number",    placeholder: "03xx-xxxxxxx" },
+                { key: "easypaisa_number",   label: "Easypaisa Number",   placeholder: "03xx-xxxxxxx" },
+                { key: "bank_account_number", label: "Bank Account No.",  placeholder: "PK00XXXX0000000000000000" },
+                { key: "bank_account_name",   label: "Account Name",      placeholder: "Company Ltd." },
+              ].map(({ key, label, placeholder }) => (
+                <div key={key}>
+                  <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
+                  <input
+                    type="text"
+                    value={psVals[key] ?? ""}
+                    onChange={(e) => setPsVals((p) => ({ ...p, [key]: e.target.value }))}
+                    placeholder={placeholder}
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono outline-none focus:border-blue-500"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+        <div className="flex items-center justify-end gap-3 border-t border-gray-100 px-6 py-4">
+          {psSaved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
+          <button
+            onClick={() => paymentSettingsMutation.mutate({ gateway: psGateway, ...psVals })}
+            disabled={paymentSettingsMutation.isPending}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+          >
+            {paymentSettingsMutation.isPending ? "Saving…" : "Save"}
+          </button>
+        </div>
+      </div>
+
       {/* Notification preferences */}
       <NotificationPreferencesPanel />
+
+      {showPricing && billingData && (
+        <PricingModal
+          currentPlan={billingData.plan}
+          onClose={() => setShowPricing(false)}
+        />
+      )}
     </div>
   );
 }

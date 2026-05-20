@@ -257,8 +257,18 @@ export interface SystemConfig {
   safepay_secret_key: string;
   bsecure_client_id: string;
   bsecure_client_secret: string;
-  // Payment control
+  // Deal-lock payment gateway (org-to-client payments)
   active_payment_gateway: "safepay" | "bsecure" | "manual";
+  // SaaS billing gateway (org plan upgrades)
+  billing_gateway: "stripe" | "safepay" | "bsecure" | "manual";
+  stripe_secret_key: string;
+  stripe_webhook_secret: string;
+  stripe_price_basic: string;
+  stripe_price_professional: string;
+  stripe_price_enterprise: string;
+  billing_price_basic_pkr: string;
+  billing_price_professional_pkr: string;
+  billing_price_enterprise_pkr: string;
   // Feature toggles ("true" | "false" strings)
   feature_property_search: string;
   feature_property_listing: string;
@@ -274,6 +284,20 @@ export interface SystemConfig {
   // Computed
   setup_complete: boolean;
   missing_required: string[];
+}
+
+export interface OrgPaymentSettings {
+  gateway: "safepay" | "bsecure" | "manual";
+  safepay_merchant_key: string;
+  safepay_secret_key: string;
+  safepay_environment: "sandbox" | "production";
+  bsecure_client_id: string;
+  bsecure_client_secret: string;
+  bsecure_environment: "sandbox" | "production";
+  jazzcash_number: string;
+  easypaisa_number: string;
+  bank_account_number: string;
+  bank_account_name: string;
 }
 
 export type ReportType = "property_analysis" | "tax_advisory" | "loan_eligibility" | "fraud_check";
