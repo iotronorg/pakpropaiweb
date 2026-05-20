@@ -455,3 +455,7 @@ export const cancelCampaign = (id: string) =>
 
 export const scheduleCampaign = (id: string, scheduled_at: string) =>
   api.post(`/campaigns/${id}/schedule/`, { scheduled_at });
+
+// ── Billing ───────────────────────────────────────────────────────────────────
+export const getBillingUsage = () =>
+  api.get("/billing/usage/");

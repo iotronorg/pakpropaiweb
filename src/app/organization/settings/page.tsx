@@ -1,9 +1,48 @@
 "use client";
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getOrgConfig, updateOrgConfig, resetOrgConfigKey } from "@/lib/api";
+import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage } from "@/lib/api";
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import type { BillingUsage, BillingDimension } from "@/types";
+
+const PLAN_LABELS: Record<string, string> = {
+  trial: 'Trial',
+  basic: 'Basic',
+  professional: 'Professional',
+  enterprise: 'Enterprise',
+};
+
+const PLAN_COLORS: Record<string, string> = {
+  trial: 'bg-gray-100 text-gray-600',
+  basic: 'bg-blue-100 text-blue-700',
+  professional: 'bg-violet-100 text-violet-700',
+  enterprise: 'bg-amber-100 text-amber-700',
+};
+
+function UsageMeter({ label, dim }: { label: string; dim: BillingDimension }) {
+  const isUnlimited = dim.limit === null;
+  const pct = isUnlimited ? 100 : Math.min(100, Math.round((dim.used / dim.limit!) * 100));
+  const barColor =
+    pct >= 90 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-400' : 'bg-blue-500';
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center justify-between text-xs">
+        <span className="font-medium text-gray-700">{label}</span>
+        <span className="text-gray-400 tabular-nums">
+          {isUnlimited ? `${dim.used.toLocaleString()} / ∞` : `${dim.used.toLocaleString()} / ${dim.limit!.toLocaleString()}`}
+        </span>
+      </div>
+      <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+        <div
+          className={`h-full rounded-full transition-all duration-500 ${barColor}`}
+          style={{ width: `${isUnlimited ? 20 : pct}%` }}
+        />
+      </div>
+    </div>
+  );
+}
 
 const FEATURE_LABELS: Record<string, { label: string; desc: string }> = {
   feature_property_search:       { label: "Property Search",       desc: "AI-powered natural language property search via WhatsApp" },
@@ -23,6 +62,12 @@ export default function OrgSettingsPage() {
   const { data, isLoading } = useQuery({
     queryKey: ["org-config"],
     queryFn: () => getOrgConfig(),
+  });
+
+  const { data: billingData } = useQuery<BillingUsage>({
+    queryKey: ["billing-usage"],
+    queryFn: () => getBillingUsage().then((r) => r.data),
+    staleTime: 60_000,
   });
 
   const updateMutation = useMutation({
@@ -58,6 +103,34 @@ export default function OrgSettingsPage() {
           Organization profile preferences and AI feature flags
         </p>
       </div>
+
+      {/* Plan & usage */}
+      {billingData && (
+        <div className="rounded-xl border border-gray-200 bg-white">
+          <div className="border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-semibold text-gray-800">Plan &amp; Usage</h2>
+              <p className="text-xs text-gray-400 mt-0.5">Current billing period consumption</p>
+            </div>
+            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide ${PLAN_COLORS[billingData.plan] ?? PLAN_COLORS.trial}`}>
+              {PLAN_LABELS[billingData.plan] ?? billingData.plan}
+            </span>
+          </div>
+          <div className="px-6 py-5 space-y-5">
+            <UsageMeter label="Agents" dim={billingData.usage.agents} />
+            <UsageMeter label="Inventory listings" dim={billingData.usage.inventory} />
+            <UsageMeter
+              label={`WhatsApp AI turns — ${billingData.usage.wa_tokens.period}`}
+              dim={billingData.usage.wa_tokens}
+            />
+            {billingData.plan === 'trial' && (
+              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5">
+                You are on the <strong>Trial plan</strong>. Upgrade to unlock higher limits and advanced features.
+              </p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Feature flags */}
       <div className="rounded-xl border border-gray-200 bg-white">

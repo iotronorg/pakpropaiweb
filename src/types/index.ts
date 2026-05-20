@@ -418,6 +418,20 @@ export interface AgentReportData {
 }
 
 export type CampaignStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed';
+export interface BillingDimension {
+  used: number;
+  limit: number | null;
+}
+
+export interface BillingUsage {
+  plan: 'trial' | 'basic' | 'professional' | 'enterprise';
+  usage: {
+    agents: BillingDimension;
+    inventory: BillingDimension;
+    wa_tokens: BillingDimension & { period: string };
+  };
+}
+
 export type CampaignAudienceFilter =
   | 'all' | 'new' | 'warm' | 'qualified' | 'cold'
   | 'buy' | 'sell' | 'rent' | 'invest';
