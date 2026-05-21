@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getLeads, getAgentsList, assignAgentToLead, autoAssignLead } from "@/lib/api";
+import { getLeads, getLeadStats, getAgentsList, assignAgentToLead, autoAssignLead } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
-import type { Lead } from "@/types";
+import type { Lead, LeadStats } from "@/types";
 
 const STATUS_TABS = ["all", "new", "warm", "qualified", "cold"] as const;
 
@@ -42,6 +43,11 @@ export default function OrgLeadsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["org-leads"] }),
   });
 
+  const { data: statsData } = useQuery({
+    queryKey: ["lead-stats"],
+    queryFn: () => getLeadStats().then((r) => r.data as LeadStats),
+  });
+
   const leads: Lead[]  = data?.results ?? [];
   const total: number  = data?.count   ?? 0;
   const agents         = agentsData?.results ?? agentsData ?? [];
@@ -53,6 +59,21 @@ export default function OrgLeadsPage() {
         <p className="mt-1 text-sm text-gray-500">
           All leads scoped to your organization — assign, route, and track
         </p>
+      </div>
+
+      {/* KPI cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[
+          { label: "Hot Leads (≥70)", value: statsData?.hot_leads ?? "—", color: "text-amber-600" },
+          { label: "Unassigned", value: statsData?.unassigned ?? "—", color: "text-red-500" },
+          { label: "Avg Score", value: statsData?.avg_score != null ? statsData.avg_score : "—", color: "text-blue-600" },
+          { label: "New Today", value: statsData?.new_today ?? "—", color: "text-green-600" },
+        ].map(({ label, value, color }) => (
+          <div key={label} className="rounded-xl border border-gray-200 bg-white px-5 py-4">
+            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
+            <p className={`mt-1 text-2xl font-bold tabular-nums ${color}`}>{value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Status tabs */}
@@ -95,7 +116,7 @@ export default function OrgLeadsPage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  {["Lead", "City / Budget", "Score", "Status", "Intent", "Source", "Agent", "Actions"].map((h) => (
+                  {["Lead", "City / Budget", "Score", "Status", "Intent", "Source", "Agent", "Actions", ""].map((h) => (
                     <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
@@ -186,6 +207,14 @@ export default function OrgLeadsPage() {
                             Auto
                           </button>
                         </div>
+                      </td>
+                      <td className="px-5 py-3">
+                        <Link
+                          href={`/organization/leads/${lead.id}`}
+                          className="text-xs text-blue-600 hover:underline whitespace-nowrap"
+                        >
+                          View →
+                        </Link>
                       </td>
                     </tr>
                   ))

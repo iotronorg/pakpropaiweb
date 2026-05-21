@@ -56,16 +56,27 @@ export interface Lead {
   name: string | null;
   budget_min: number | null;
   budget_max: number | null;
+  budget_currency: string | null;
   location_interest: string | null;
   intent_score: number | null;
   status: string;
+  priority: string | null;
+  routing_state: string | null;
   intent: string | null;
   notes: string;
   source: "whatsapp" | "web" | "manual" | null;
   intent_signals: Record<string, unknown> | null;
   assigned_agent_id: number | null;
   assigned_agent_name: string | null;
+  last_contacted_at: string | null;
   created_at: string;
+}
+
+export interface LeadStats {
+  hot_leads: number;
+  unassigned: number;
+  avg_score: number | null;
+  new_today: number;
 }
 
 export interface ConversationMessage {

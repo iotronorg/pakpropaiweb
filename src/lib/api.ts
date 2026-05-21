@@ -78,6 +78,9 @@ export const getLeads = (params?: Record<string, unknown>) =>
 export const getLead = (id: string) =>
   api.get(`/leads/${id}/`);
 
+export const getLeadStats = () =>
+  api.get("/leads/stats/");
+
 export const updateLead = (id: string, data: Record<string, unknown>) =>
   api.patch(`/leads/${id}/`, data);
 
