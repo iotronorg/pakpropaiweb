@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings, getBillingPortal } from "@/lib/api";
+import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings, getBillingPortal, getMyOrganization, updateMyOrganization } from "@/lib/api";
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { PricingModal } from "@/components/ui/PricingModal";
@@ -140,6 +140,23 @@ export default function OrgSettingsPage() {
       qc.invalidateQueries({ queryKey: ["org-payment-settings"] });
       setPsSaved(true);
       setTimeout(() => setPsSaved(false), 2500);
+    },
+  });
+
+  const { data: orgProfile } = useQuery({
+    queryKey: ["my-org"],
+    queryFn: () => getMyOrganization().then((r) => r.data),
+  });
+  const [orgLang, setOrgLang] = useState<string>("en");
+  const [langSaved, setLangSaved] = useState(false);
+  useEffect(() => { if (orgProfile?.language) setOrgLang(orgProfile.language); }, [orgProfile]);
+
+  const orgLangMutation = useMutation({
+    mutationFn: (lang: string) => updateMyOrganization({ language: lang }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-org"] });
+      setLangSaved(true);
+      setTimeout(() => setLangSaved(false), 2500);
     },
   });
 
@@ -281,6 +298,53 @@ export default function OrgSettingsPage() {
               </div>
             );
           })}
+        </div>
+      </div>
+
+      {/* AI Response Language */}
+      <div className="rounded-xl border border-gray-200 bg-white">
+        <div className="border-b border-gray-100 px-6 py-4">
+          <h2 className="text-sm font-semibold text-gray-800">AI Response Language</h2>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Default language for AI replies to your clients via WhatsApp.
+          </p>
+        </div>
+        <div className="px-6 py-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {[
+              { value: "en", label: "English" },
+              { value: "ar", label: "Arabic" },
+              { value: "ur", label: "Urdu" },
+              { value: "fr", label: "French" },
+              { value: "zh", label: "Chinese" },
+              { value: "es", label: "Spanish" },
+            ].map(({ value, label }) => (
+              <button
+                key={value}
+                onClick={() => setOrgLang(value)}
+                className={`rounded-lg border px-3 py-2.5 text-sm font-medium text-left transition-colors ${
+                  orgLang === value
+                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          <p className="mt-3 text-xs text-gray-400">
+            The AI will switch to the client&apos;s language if they write in English, regardless of this setting.
+          </p>
+          <div className="flex items-center justify-end gap-3 mt-4">
+            {langSaved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
+            <button
+              onClick={() => orgLangMutation.mutate(orgLang)}
+              disabled={orgLangMutation.isPending || orgLang === (orgProfile?.language ?? "en")}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
+              {orgLangMutation.isPending ? "Saving…" : "Save Language"}
+            </button>
+          </div>
         </div>
       </div>
 
