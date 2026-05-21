@@ -7,10 +7,11 @@ import {
   getLead, updateLead, getLeadActivities, getLeadScoreHistory,
   getLeadConversations, suggestAgentsForLead, autoAssignLead,
   assignAgentToLead, summarizeLead, sendLeadMessage,
+  getRecommendedProperties,
 } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import type { Lead, ConversationMessage, AgentProfile } from "@/types";
+import type { Lead, ConversationMessage, AgentProfile, Property } from "@/types";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -98,6 +99,12 @@ export default function LeadDetailPage() {
   const { data: suggestedAgents = [] } = useQuery<AgentProfile[]>({
     queryKey: ["lead-agents", id],
     queryFn: () => suggestAgentsForLead(id).then((r) => r.data),
+    enabled: !!lead,
+  });
+
+  const { data: recommendedProps = [] } = useQuery<Property[]>({
+    queryKey: ["lead-recommended-props", id],
+    queryFn: () => getRecommendedProperties(id).then((r) => r.data),
     enabled: !!lead,
   });
 
@@ -428,6 +435,57 @@ export default function LeadDetailPage() {
             >
               {autoMutation.isPending ? "Assigning…" : "Auto-assign best match"}
             </button>
+          </div>
+
+          {/* Recommended Properties */}
+          <div className="rounded-xl border border-gray-200 bg-white px-5 py-5">
+            <h2 className="text-sm font-semibold text-gray-700 mb-4">Recommended Properties</h2>
+            {recommendedProps.length === 0 ? (
+              <p className="text-sm text-gray-400 italic">
+                {lead.location_interest || lead.budget_max
+                  ? "No matching properties found"
+                  : "Set city or budget on this lead to get recommendations"}
+              </p>
+            ) : (
+              recommendedProps.map((p) => (
+                <div
+                  key={p.id}
+                  className="mb-3 last:mb-0 rounded-lg border border-gray-100 bg-gray-50 p-3 space-y-1"
+                >
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-medium text-gray-900 leading-snug line-clamp-2">{p.title}</p>
+                    {p.ai_score != null && (
+                      <span className={`flex-shrink-0 text-xs font-bold rounded-full px-2 py-0.5 ${
+                        p.ai_score >= 70 ? "bg-green-100 text-green-700"
+                          : p.ai_score >= 40 ? "bg-yellow-100 text-yellow-700"
+                          : "bg-gray-100 text-gray-500"
+                      }`}>
+                        {p.ai_score}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    {p.city}{p.location ? ` · ${p.location}` : ""} · {p.property_type}
+                  </p>
+                  {p.price != null && (
+                    <p className="text-xs font-semibold text-gray-700">
+                      {(p as Property & { currency?: string }).currency ?? "PKR"}{" "}
+                      {p.price >= 10_000_000
+                        ? `${(p.price / 10_000_000).toFixed(1)} Cr`
+                        : p.price >= 100_000
+                        ? `${(p.price / 100_000).toFixed(0)} L`
+                        : p.price.toLocaleString()}
+                    </p>
+                  )}
+                  <a
+                    href={`/organization/inventory?highlight=${p.id}`}
+                    className="text-xs text-blue-600 hover:underline"
+                  >
+                    View in inventory →
+                  </a>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

@@ -194,6 +194,12 @@ export const uploadPropertyImages = (id: string, files: File[]) => {
 export const deletePropertyImage = (propertyId: string, imageId: string) =>
   api.delete(`/properties/${propertyId}/images/${imageId}/`);
 
+export const getRecommendedProperties = (leadId: string) =>
+  api.get(`/properties/recommended/?lead=${leadId}`);
+
+export const getSimilarProperties = (propertyId: string) =>
+  api.get(`/properties/${propertyId}/similar/`);
+
 // ── Audit ─────────────────────────────────────────────────────────────────────
 export const getAudits = () =>
   api.get("/audit/");
