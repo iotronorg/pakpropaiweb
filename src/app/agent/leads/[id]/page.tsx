@@ -11,7 +11,7 @@ import {
 } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { formatDate, formatPKR } from "@/lib/utils";
+import { formatDate, formatCurrency } from "@/lib/utils";
 import type { Lead, ConversationMessage, Appointment, AppointmentStatus, AgentProfile } from "@/types";
 
 const STATUS_OPTIONS = ["new", "warm", "qualified", "cold"] as const;
@@ -348,13 +348,13 @@ export default function LeadDetailPage() {
               <div className="flex justify-between">
                 <span className="text-xs text-gray-500">Budget Min</span>
                 <span className="text-xs font-medium text-gray-700">
-                  {lead.budget_min ? formatPKR(lead.budget_min) : "—"}
+                  {lead.budget_min ? formatCurrency(lead.budget_min) : "—"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-xs text-gray-500">Budget Max</span>
                 <span className="text-xs font-medium text-gray-700">
-                  {lead.budget_max ? formatPKR(lead.budget_max) : "—"}
+                  {lead.budget_max ? formatCurrency(lead.budget_max) : "—"}
                 </span>
               </div>
               <div className="flex justify-between">

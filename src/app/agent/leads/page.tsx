@@ -6,7 +6,7 @@ import Link from "next/link";
 import { getLeads, getLeadConversations, sendLeadMessage, updateLead } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { formatDate, formatPKR } from "@/lib/utils";
+import { formatDate, formatCurrency } from "@/lib/utils";
 import type { Lead, ConversationMessage } from "@/types";
 
 function IntentBar({ score }: { score: number }) {
@@ -226,7 +226,7 @@ export default function AgentLeadsPage() {
                       </td>
                       <td className="px-6 py-3 text-gray-600 text-xs">
                         <p>{l.location_interest || "—"}</p>
-                        <p className="text-gray-400">{l.budget_max ? formatPKR(l.budget_max) : "Budget unknown"}</p>
+                        <p className="text-gray-400">{l.budget_max ? formatCurrency(l.budget_max) : "Budget unknown"}</p>
                       </td>
                       <td className="px-6 py-3">
                         {l.intent_score !== null ? (

@@ -468,3 +468,9 @@ export const getOrgPaymentSettings = () =>
 
 export const updateOrgPaymentSettings = (data: Record<string, string>) =>
   api.patch("/billing/payment-settings/", data);
+
+export const getBillingPortal = () =>
+  api.post("/billing/portal/").then((r) => r.data as { url: string });
+
+export const getBillingInvoices = () =>
+  api.get("/billing/invoices/").then((r) => r.data as { invoices: import("@/types").BillingInvoice[] });

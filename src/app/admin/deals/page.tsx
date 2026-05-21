@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getDealLocks, confirmDealLock, cancelDealLock, createCheckout, getPayments, sellerConfirmDealLock, releaseDealLock, disputeDealLock } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { formatDate, formatPKR } from "@/lib/utils";
+import { formatDate, formatCurrency } from "@/lib/utils";
 import { DealLock, DealLockStatus, Payment } from "@/types";
 
 const STATUS_COLORS: Record<DealLockStatus, string> = {
@@ -40,7 +40,7 @@ function ConfirmModal({ deal, onClose, onConfirm, loading }: ConfirmModalProps) 
       <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
         <h3 className="text-lg font-semibold mb-1">Confirm Payment</h3>
         <p className="text-sm text-gray-500 mb-4">
-          {deal.property_title} — PKR {formatPKR(deal.token_amount)}
+          {deal.property_title} — {formatCurrency(deal.token_amount)}
         </p>
 
         <label className="block text-sm font-medium mb-1">Payment Reference *</label>
@@ -198,7 +198,7 @@ export default function AdminDealsPage() {
                   {payments.map(p => (
                     <tr key={p.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 font-mono text-xs">{p.user}</td>
-                      <td className="px-4 py-3 font-semibold">PKR {formatPKR(p.amount_pkr)}</td>
+                      <td className="px-4 py-3 font-semibold">{formatCurrency(p.amount_pkr)}</td>
                       <td className="px-4 py-3 capitalize">{p.gateway}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
@@ -268,7 +268,7 @@ export default function AdminDealsPage() {
 
               {/* Amount + gateway */}
               <div className="text-right sm:text-left sm:min-w-[140px]">
-                <p className="text-lg font-bold text-gray-900">PKR {formatPKR(deal.token_amount)}</p>
+                <p className="text-lg font-bold text-gray-900">{formatCurrency(deal.token_amount)}</p>
                 <p className="text-xs text-gray-500">{GATEWAYS[deal.payment_gateway] ?? deal.payment_gateway}</p>
                 {deal.payment_ref && (
                   <p className="text-xs text-gray-400 font-mono mt-0.5">Ref: {deal.payment_ref}</p>

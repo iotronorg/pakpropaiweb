@@ -456,6 +456,18 @@ export interface BillingUsage {
   };
 }
 
+export interface BillingInvoice {
+  id: string;
+  number: string | null;
+  amount_due: number;
+  amount_paid: number;
+  currency: string;
+  status: string;
+  created: number;
+  hosted_invoice_url: string | null;
+  invoice_pdf: string | null;
+}
+
 export type CampaignAudienceFilter =
   | 'all' | 'new' | 'warm' | 'qualified' | 'cold'
   | 'buy' | 'sell' | 'rent' | 'invest';

@@ -35,7 +35,8 @@ function riskColor(score: number): string {
   return "text-red-600";
 }
 
-function formatPKR(n: number): string {
+function formatPKR(n: number | null | undefined): string {
+  if (n == null || isNaN(n)) return '—';
   if (n >= 10_000_000) return `${(n / 10_000_000).toFixed(1)} Cr`;
   if (n >= 100_000) return `${(n / 100_000).toFixed(1)} Lac`;
   return n.toLocaleString();

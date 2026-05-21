@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings } from "@/lib/api";
+import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings, getBillingPortal } from "@/lib/api";
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { PricingModal } from "@/components/ui/PricingModal";
@@ -103,6 +103,11 @@ export default function OrgSettingsPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["org-config"] }),
   });
 
+  const portalMutation = useMutation({
+    mutationFn: getBillingPortal,
+    onSuccess: (data) => { window.location.href = data.url; },
+  });
+
   const { data: paymentSettings } = useQuery<OrgPaymentSettings>({
     queryKey: ["org-payment-settings"],
     queryFn: () => getOrgPaymentSettings().then((r) => r.data),
@@ -182,6 +187,21 @@ export default function OrgSettingsPage() {
                   Upgrade
                 </button>
               )}
+              {billingData.plan !== 'trial' && (
+                <button
+                  onClick={() => portalMutation.mutate()}
+                  disabled={portalMutation.isPending}
+                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                >
+                  {portalMutation.isPending ? "Opening…" : "Manage Subscription"}
+                </button>
+              )}
+              <a
+                href="/organization/billing/invoices"
+                className="text-xs font-medium text-gray-500 hover:text-gray-700 underline underline-offset-2"
+              >
+                Invoices
+              </a>
             </div>
           </div>
           <div className="px-6 py-5 space-y-5">

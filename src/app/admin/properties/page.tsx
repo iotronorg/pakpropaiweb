@@ -10,7 +10,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
-import { formatPKR, formatDate } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 import { Property, User } from "@/types";
 
 // ── Option maps ───────────────────────────────────────────────────────────────
@@ -331,7 +331,7 @@ export default function PropertiesPage() {
                     {p.title || `Property #${p.id.slice(0, 8)}`}
                   </td>
                   <td className="px-5 py-3 text-gray-600">{p.city}</td>
-                  <td className="px-5 py-3 text-gray-700">{p.price ? formatPKR(p.price) : "—"}</td>
+                  <td className="px-5 py-3 text-gray-700">{p.price ? formatCurrency(p.price) : "—"}</td>
                   <td className="px-5 py-3">
                     <Badge label={p.property_type} />
                   </td>
@@ -448,7 +448,7 @@ export default function PropertiesPage() {
             <DetailRow label="Location"    value={detailProp.location} />
             <DetailRow label="Type"        value={detailProp.property_type} />
             <DetailRow label="Area"        value={detailProp.area_marla != null ? `${detailProp.area_marla} Marla` : undefined} />
-            <DetailRow label="Price"       value={detailProp.price ? formatPKR(detailProp.price) : undefined} />
+            <DetailRow label="Price"       value={detailProp.price ? formatCurrency(detailProp.price) : undefined} />
             <DetailRow label="Furnished"   value={detailProp.furnished_status ?? undefined} />
             <DetailRow label="Construction" value={detailProp.construction_status ?? undefined} />
             <DetailRow label="Legal Status">

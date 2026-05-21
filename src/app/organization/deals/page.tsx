@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { getDealLocks, confirmDealLock, cancelDealLock, releaseDealLock } from "@/lib/api";
+import { getDealLocks, confirmDealLock, cancelDealLock, releaseDealLock, disputeDealLock, sellerConfirmDealLock } from "@/lib/api";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import type { DealLock, DealLockStatus } from "@/types";
@@ -22,8 +22,10 @@ const STATUS_VARIANT: Record<DealLockStatus, "yellow" | "green" | "gray" | "red"
 export default function OrgDealsPage() {
   const qc = useQueryClient();
   const [tab, setTab] = useState<string>("all");
-  const [confirmDeal, setConfirmDeal] = useState<DealLock | null>(null);
-  const [paymentRef, setPaymentRef]   = useState("");
+  const [confirmDeal,  setConfirmDeal]  = useState<DealLock | null>(null);
+  const [paymentRef,   setPaymentRef]   = useState("");
+  const [disputeDeal,  setDisputeDeal]  = useState<DealLock | null>(null);
+  const [disputeNotes, setDisputeNotes] = useState("");
 
   const { data, isLoading } = useQuery({
     queryKey: ["org-deals", tab],
@@ -51,6 +53,21 @@ export default function OrgDealsPage() {
   const releaseMutation = useMutation({
     mutationFn: (id: string) => releaseDealLock(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["org-deals"] }),
+  });
+
+  const sellerConfirmMutation = useMutation({
+    mutationFn: (id: string) => sellerConfirmDealLock(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["org-deals"] }),
+  });
+
+  const disputeMutation = useMutation({
+    mutationFn: ({ id, notes }: { id: string; notes: string }) =>
+      disputeDealLock(id, notes || undefined),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["org-deals"] });
+      setDisputeDeal(null);
+      setDisputeNotes("");
+    },
   });
 
   return (
@@ -160,6 +177,23 @@ export default function OrgDealsPage() {
                               Release
                             </button>
                           )}
+                          {deal.status === "locked" && (
+                            <button
+                              onClick={() => sellerConfirmMutation.mutate(deal.id)}
+                              disabled={sellerConfirmMutation.isPending}
+                              className="whitespace-nowrap rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:opacity-50"
+                            >
+                              Seller Confirm
+                            </button>
+                          )}
+                          {deal.status === "locked" && (
+                            <button
+                              onClick={() => { setDisputeDeal(deal); setDisputeNotes(""); }}
+                              className="whitespace-nowrap rounded-md bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-600 transition-colors hover:bg-orange-100"
+                            >
+                              Dispute
+                            </button>
+                          )}
                           {(deal.status === "initiated" || deal.status === "locked") && (
                             <button
                               onClick={() => cancelMutation.mutate(deal.id)}
@@ -182,6 +216,54 @@ export default function OrgDealsPage() {
           </div>
         )}
       </div>
+
+      {/* Dispute modal */}
+      <AnimatePresence>
+        {disputeDeal && (
+          <motion.div
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+            onClick={() => setDisputeDeal(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+            >
+              <h2 className="mb-1 text-lg font-semibold text-gray-900">Dispute Deal</h2>
+              <p className="mb-4 text-sm text-gray-500">
+                Property: <span className="font-medium text-gray-700">{disputeDeal.property_title}</span>
+              </p>
+              <label className="mb-1 block text-xs font-medium text-gray-600">Notes (optional)</label>
+              <textarea
+                rows={3}
+                placeholder="Describe the reason for this dispute…"
+                value={disputeNotes}
+                onChange={(e) => setDisputeNotes(e.target.value)}
+                className="mb-4 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200"
+              />
+              {disputeMutation.isError && (
+                <p className="mb-3 text-xs text-red-500">Failed to dispute deal. Please try again.</p>
+              )}
+              <div className="flex justify-end gap-2">
+                <button onClick={() => setDisputeDeal(null)}
+                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50">
+                  Cancel
+                </button>
+                <button
+                  onClick={() => disputeMutation.mutate({ id: disputeDeal.id, notes: disputeNotes })}
+                  disabled={disputeMutation.isPending}
+                  className="rounded-lg bg-orange-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-orange-600 disabled:opacity-50">
+                  {disputeMutation.isPending ? "Submitting…" : "Submit Dispute"}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Confirm Payment modal */}
       <AnimatePresence>

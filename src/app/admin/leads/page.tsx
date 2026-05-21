@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getLeads, autoAssignLead, assignAgentToLead, suggestAgentsForLead,
@@ -9,7 +9,7 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Pagination } from "@/components/ui/Pagination";
-import { formatDate, formatPKR } from "@/lib/utils";
+import { formatDate, formatCurrency } from "@/lib/utils";
 import type { Lead, ConversationMessage } from "@/types";
 
 const PAGE_SIZE = 20;
@@ -286,8 +286,8 @@ export default function AdminLeadsPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {leads.map((l) => (
-                <>
-                  <tr key={l.id} className="hover:bg-gray-50">
+                <Fragment key={l.id}>
+                  <tr className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
@@ -323,7 +323,7 @@ export default function AdminLeadsPage() {
                       )}
                     </td>
                     <td className="px-6 py-3 text-gray-600">
-                      {l.budget_max ? formatPKR(l.budget_max) : "—"}
+                      {l.budget_max ? formatCurrency(l.budget_max) : "—"}
                     </td>
                     <td className="px-6 py-3 text-gray-600">
                       {l.location_interest || "—"}
@@ -397,7 +397,7 @@ export default function AdminLeadsPage() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
               {leads.length === 0 && (
                 <tr>

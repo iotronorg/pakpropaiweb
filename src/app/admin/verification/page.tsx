@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Fragment } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getVerificationQueue, reviewVerification, getDocumentScans,
@@ -358,8 +358,8 @@ export default function VerificationPage() {
             </thead>
             <tbody className="divide-y divide-gray-50">
               {verifications.map((v) => (
-                <>
-                  <tr key={v.id} className="hover:bg-gray-50">
+                <Fragment key={v.id}>
+                  <tr className="hover:bg-gray-50">
                     <td className="px-4 py-3">
                       {v.status === "pending" && (
                         <input
@@ -464,7 +464,7 @@ export default function VerificationPage() {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               ))}
             </tbody>
           </table>

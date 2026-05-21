@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   getCampaigns, createCampaign, sendCampaign, cancelCampaign, deleteCampaign,
+  updateCampaign, scheduleCampaign,
 } from "@/lib/api";
 import type { Campaign, CampaignAudienceFilter } from "@/types";
 
@@ -130,9 +131,125 @@ function CreateModal({ onClose }: { onClose: () => void }) {
   );
 }
 
+// ── Edit Modal ────────────────────────────────────────────────────────────────
+
+function EditModal({ campaign, onClose }: { campaign: Campaign; onClose: () => void }) {
+  const qc = useQueryClient();
+  const [name,     setName]     = useState(campaign.name);
+  const [message,  setMessage]  = useState(campaign.message_template);
+  const [audience, setAudience] = useState<CampaignAudienceFilter>(campaign.audience_filter);
+  const [error,    setError]    = useState("");
+
+  const edit = useMutation({
+    mutationFn: () => updateCampaign(campaign.id, { name, message_template: message, audience_filter: audience }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["campaigns"] }); onClose(); },
+    onError: (e: unknown) => {
+      const msg = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setError(msg ?? "Failed to update campaign.");
+    },
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+      >
+        <h2 className="mb-5 text-lg font-semibold text-gray-900">Edit Campaign</h2>
+        <div className="space-y-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Campaign name</label>
+            <input value={name} onChange={(e) => setName(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Audience</label>
+            <select value={audience} onChange={(e) => setAudience(e.target.value as CampaignAudienceFilter)}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+              {Object.entries(AUDIENCE_LABELS).map(([v, l]) => (
+                <option key={v} value={v}>{l}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+              Message <span className="text-gray-400 font-normal">({message.length}/4096)</span>
+            </label>
+            <textarea value={message} onChange={(e) => setMessage(e.target.value)}
+              rows={5} maxLength={4096}
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-400" />
+          </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+        </div>
+        <div className="mt-6 flex justify-end gap-3">
+          <button onClick={onClose}
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
+            Cancel
+          </button>
+          <button onClick={() => edit.mutate()} disabled={!name.trim() || !message.trim() || edit.isPending}
+            className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50 cursor-pointer">
+            {edit.isPending ? "Saving…" : "Save Changes"}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
+// ── Schedule Modal ────────────────────────────────────────────────────────────
+
+function ScheduleModal({ campaign, onClose }: { campaign: Campaign; onClose: () => void }) {
+  const qc = useQueryClient();
+  const [scheduledAt, setScheduledAt] = useState("");
+  const [error,       setError]       = useState("");
+
+  const schedule = useMutation({
+    mutationFn: () => scheduleCampaign(campaign.id, scheduledAt),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["campaigns"] }); onClose(); },
+    onError: (e: unknown) => {
+      const msg = (e as { response?: { data?: { detail?: string } } })?.response?.data?.detail;
+      setError(msg ?? "Failed to schedule campaign.");
+    },
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+      >
+        <h2 className="mb-2 text-lg font-semibold text-gray-900">Schedule Campaign</h2>
+        <p className="mb-4 text-sm text-gray-500">{campaign.name}</p>
+        <label className="mb-1 block text-sm font-medium text-gray-700">Send at</label>
+        <input type="datetime-local" value={scheduledAt} onChange={(e) => setScheduledAt(e.target.value)}
+          className="mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
+        {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+        <div className="flex justify-end gap-3">
+          <button onClick={onClose}
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
+            Cancel
+          </button>
+          <button onClick={() => schedule.mutate()} disabled={!scheduledAt || schedule.isPending}
+            className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 cursor-pointer">
+            {schedule.isPending ? "Scheduling…" : "Schedule"}
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Campaign Card ─────────────────────────────────────────────────────────────
 
-function CampaignCard({ campaign }: { campaign: Campaign }) {
+function CampaignCard({ campaign, onEdit, onSchedule }: {
+  campaign: Campaign;
+  onEdit: (c: Campaign) => void;
+  onSchedule: (c: Campaign) => void;
+}) {
   const qc = useQueryClient();
 
   const sendMut = useMutation({
@@ -148,9 +265,11 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
     onSuccess:  () => qc.invalidateQueries({ queryKey: ["campaigns"] }),
   });
 
-  const canSend   = campaign.status === "draft" || campaign.status === "scheduled";
-  const canCancel = campaign.status === "scheduled";
-  const canDelete = campaign.status === "draft" || campaign.status === "cancelled";
+  const canSend     = campaign.status === "draft" || campaign.status === "scheduled";
+  const canCancel   = campaign.status === "scheduled";
+  const canDelete   = campaign.status === "draft" || campaign.status === "cancelled";
+  const canEdit     = campaign.status === "draft";
+  const canSchedule = campaign.status === "draft";
 
   return (
     <motion.div
@@ -211,33 +330,35 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
       </p>
 
       {/* Actions */}
-      <div className="mt-4 flex gap-2">
+      <div className="mt-4 flex gap-2 flex-wrap">
         {canSend && (
-          <button
-            onClick={() => sendMut.mutate()}
-            disabled={sendMut.isPending}
-            className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 disabled:opacity-50 cursor-pointer"
-          >
+          <button onClick={() => sendMut.mutate()} disabled={sendMut.isPending}
+            className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 disabled:opacity-50 cursor-pointer">
             {sendMut.isPending ? "Sending…" : "Send Now"}
           </button>
         )}
+        {canSchedule && (
+          <button onClick={() => onSchedule(campaign)}
+            className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 cursor-pointer">
+            Schedule
+          </button>
+        )}
+        {canEdit && (
+          <button onClick={() => onEdit(campaign)}
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
+            Edit
+          </button>
+        )}
         {canCancel && (
-          <button
-            onClick={() => cancelMut.mutate()}
-            disabled={cancelMut.isPending}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
-          >
+          <button onClick={() => cancelMut.mutate()} disabled={cancelMut.isPending}
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 cursor-pointer">
             Cancel
           </button>
         )}
         {canDelete && (
-          <button
-            onClick={() => {
-              if (confirm("Delete this campaign?")) deleteMut.mutate();
-            }}
+          <button onClick={() => { if (confirm("Delete this campaign?")) deleteMut.mutate(); }}
             disabled={deleteMut.isPending}
-            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 disabled:opacity-50 cursor-pointer ml-auto"
-          >
+            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 disabled:opacity-50 cursor-pointer ml-auto">
             Delete
           </button>
         )}
@@ -251,8 +372,10 @@ function CampaignCard({ campaign }: { campaign: Campaign }) {
 const STATUS_TABS = ["all", "draft", "scheduled", "sending", "sent", "cancelled"] as const;
 
 export default function CampaignsPage() {
-  const [tab,        setTab]        = useState("all");
-  const [showCreate, setShowCreate] = useState(false);
+  const [tab,          setTab]          = useState("all");
+  const [showCreate,   setShowCreate]   = useState(false);
+  const [editCampaign, setEditCampaign] = useState<Campaign | null>(null);
+  const [schedCampaign, setSchedCampaign] = useState<Campaign | null>(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ["campaigns", tab],
@@ -266,7 +389,9 @@ export default function CampaignsPage() {
   return (
     <>
       <AnimatePresence>
-        {showCreate && <CreateModal onClose={() => setShowCreate(false)} />}
+        {showCreate    && <CreateModal   onClose={() => setShowCreate(false)} />}
+        {editCampaign  && <EditModal     campaign={editCampaign}  onClose={() => setEditCampaign(null)} />}
+        {schedCampaign && <ScheduleModal campaign={schedCampaign} onClose={() => setSchedCampaign(null)} />}
       </AnimatePresence>
 
       <div className="space-y-6 pb-10">
@@ -325,7 +450,9 @@ export default function CampaignsPage() {
           <div className="space-y-4">
             <p className="text-xs text-gray-400">{total} campaign{total !== 1 ? "s" : ""}</p>
             {campaigns.map((c) => (
-              <CampaignCard key={c.id} campaign={c} />
+              <CampaignCard key={c.id} campaign={c}
+                onEdit={setEditCampaign}
+                onSchedule={setSchedCampaign} />
             ))}
           </div>
         )}
