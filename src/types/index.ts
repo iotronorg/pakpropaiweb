@@ -287,17 +287,17 @@ export interface SystemConfig {
 }
 
 export interface OrgPaymentSettings {
-  gateway: "safepay" | "bsecure" | "manual";
-  safepay_merchant_key: string;
-  safepay_secret_key: string;
-  safepay_environment: "sandbox" | "production";
-  bsecure_client_id: string;
-  bsecure_client_secret: string;
-  bsecure_environment: "sandbox" | "production";
-  jazzcash_number: string;
-  easypaisa_number: string;
-  bank_account_number: string;
-  bank_account_name: string;
+  gateway?: "safepay" | "bsecure" | "manual";
+  safepay_merchant_key?: string;
+  safepay_secret_key?: string;
+  safepay_environment?: "sandbox" | "production";
+  bsecure_client_id?: string;
+  bsecure_client_secret?: string;
+  bsecure_environment?: "sandbox" | "production";
+  jazzcash_number?: string;
+  easypaisa_number?: string;
+  bank_account_number?: string;
+  bank_account_name?: string;
 }
 
 export type ReportType = "property_analysis" | "tax_advisory" | "loan_eligibility" | "fraud_check";
