@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
@@ -11,15 +11,14 @@ const PLAN_LABELS: Record<string, string> = {
   enterprise:   "Enterprise",
 };
 
-export default function BillingSuccessPage() {
-  const router       = useRouter();
-  const params       = useSearchParams();
-  const qc           = useQueryClient();
-  const plan         = params.get("plan") ?? "";
-  const planLabel    = PLAN_LABELS[plan] ?? plan;
+function BillingSuccessContent() {
+  const router    = useRouter();
+  const params    = useSearchParams();
+  const qc        = useQueryClient();
+  const plan      = params.get("plan") ?? "";
+  const planLabel = PLAN_LABELS[plan] ?? plan;
 
   useEffect(() => {
-    // Invalidate billing data so settings page reflects the new plan immediately
     qc.invalidateQueries({ queryKey: ["billing-usage"] });
     qc.invalidateQueries({ queryKey: ["my-organization"] });
   }, [qc]);
@@ -55,5 +54,13 @@ export default function BillingSuccessPage() {
         </Link>
       </div>
     </div>
+  );
+}
+
+export default function BillingSuccessPage() {
+  return (
+    <Suspense>
+      <BillingSuccessContent />
+    </Suspense>
   );
 }

@@ -1,12 +1,124 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getProperties, getPropertyReport } from "@/lib/api";
+import { useState, useRef } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getProperties, getPropertyReport, getProperty, uploadPropertyImages, deletePropertyImage } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { StatCard, BreakdownBar, ChartCard, BarChart, type Period, type TrendPoint } from "@/components/ui/Charts";
-import type { Property, PropertyReportData } from "@/types";
+import type { Property, PropertyImage, PropertyReportData } from "@/types";
+
+// ── Image Management Modal ────────────────────────────────────────────────────
+
+function ImageManageModal({
+  propertyId,
+  propertyTitle,
+  onClose,
+}: {
+  propertyId: string;
+  propertyTitle: string;
+  onClose: () => void;
+}) {
+  const qc = useQueryClient();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  const { data: prop, isLoading } = useQuery({
+    queryKey: ["property-detail", propertyId],
+    queryFn: () => getProperty(propertyId).then((r) => r.data as Property),
+  });
+
+  const deleteMut = useMutation({
+    mutationFn: ({ imgId }: { imgId: string }) =>
+      deletePropertyImage(propertyId, imgId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["property-detail", propertyId] }),
+    onError: () => setError("Failed to delete image."),
+  });
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    setUploading(true);
+    setError("");
+    try {
+      await uploadPropertyImages(propertyId, files);
+      await qc.invalidateQueries({ queryKey: ["property-detail", propertyId] });
+      await qc.invalidateQueries({ queryKey: ["org-inventory"] });
+    } catch {
+      setError("Upload failed. Max 5 MB per image; JPEG/PNG/WebP only.");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
+
+  const images: PropertyImage[] = prop?.images ?? [];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+      <div className="w-full max-w-2xl rounded-2xl bg-white shadow-2xl">
+        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
+          <div>
+            <h2 className="text-base font-semibold text-gray-900">Manage Images</h2>
+            <p className="text-xs text-gray-500 mt-0.5 truncate max-w-xs">{propertyTitle}</p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        </div>
+
+        <div className="p-6 space-y-5">
+          {error && (
+            <p className="text-xs text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>
+          )}
+
+          {isLoading ? (
+            <div className="flex justify-center py-8"><LoadingSpinner /></div>
+          ) : images.length === 0 ? (
+            <p className="text-sm text-gray-400 text-center py-8">No images uploaded yet.</p>
+          ) : (
+            <div className="grid grid-cols-3 gap-3">
+              {images.map((img) => (
+                <div key={img.id} className="group relative rounded-xl overflow-hidden border border-gray-200 aspect-video bg-gray-50">
+                  <img src={img.url} alt={img.caption || "property"} className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => deleteMut.mutate({ imgId: img.id })}
+                    disabled={deleteMut.isPending}
+                    className="absolute top-1.5 right-1.5 hidden group-hover:flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white text-xs shadow"
+                    title="Delete"
+                  >
+                    &times;
+                  </button>
+                  {img.caption && (
+                    <p className="absolute bottom-0 left-0 right-0 text-xs text-white bg-black/50 px-2 py-1 truncate">{img.caption}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+            <p className="text-xs text-gray-400">{images.length}/10 images · JPEG, PNG, WebP · max 5 MB each</p>
+            <div className="flex items-center gap-2">
+              {uploading && <LoadingSpinner />}
+              <label className={`cursor-pointer rounded-lg px-4 py-2 text-sm font-medium ${images.length >= 10 ? "bg-gray-100 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"}`}>
+                {uploading ? "Uploading…" : "Upload Images"}
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  disabled={images.length >= 10 || uploading}
+                  onChange={handleUpload}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const LEGAL_VARIANT: Record<string, "green" | "yellow" | "red" | "gray"> = {
   verified:   "green",
@@ -26,6 +138,7 @@ export default function OrgInventoryPage() {
   const [typeFilter, setType]     = useState("");
   const [legalFilter, setLegal]   = useState("");
   const [period, setPeriod]       = useState<Period>("monthly");
+  const [imageModal, setImageModal] = useState<{ id: string; title: string } | null>(null);
 
   const { data: propResponse, isLoading: l1 } = useQuery({
     queryKey: ["org-inventory"],
@@ -68,10 +181,26 @@ export default function OrgInventoryPage() {
   return (
     <div className="space-y-7 pb-10">
 
+      {imageModal && (
+        <ImageManageModal
+          propertyId={imageModal.id}
+          propertyTitle={imageModal.title}
+          onClose={() => setImageModal(null)}
+        />
+      )}
+
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
-        <p className="mt-1 text-sm text-gray-500">Your organization's property portfolio</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Inventory</h1>
+          <p className="mt-1 text-sm text-gray-500">Your organization's property portfolio</p>
+        </div>
+        <a
+          href="/organization/inventory/analytics"
+          className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+        >
+          View Analytics →
+        </a>
       </div>
 
       {/* KPI strip */}
@@ -156,7 +285,7 @@ export default function OrgInventoryPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
-                {["Ref", "Title", "City", "Type", "Price", "AI Score", "Risk", "Legal", "Agent", "Status"].map((h) => (
+                {["Ref", "Title", "City", "Type", "Price", "AI Score", "Risk", "Legal", "Agent", "Status", "Images"].map((h) => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                     {h}
                   </th>
@@ -166,7 +295,7 @@ export default function OrgInventoryPage() {
             <tbody className="divide-y divide-gray-50">
               {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={10} className="px-6 py-12 text-center text-sm text-gray-400">
+                  <td colSpan={11} className="px-6 py-12 text-center text-sm text-gray-400">
                     {allProperties.length === 0
                       ? "No inventory yet — add properties to get started"
                       : "No results match your filters"}
@@ -239,6 +368,14 @@ export default function OrgInventoryPage() {
                         label={p.is_active ? "Active" : "Inactive"}
                         variant={p.is_active ? "green" : "gray"}
                       />
+                    </td>
+                    <td className="px-5 py-3">
+                      <button
+                        onClick={() => setImageModal({ id: p.id, title: p.title })}
+                        className="text-xs text-blue-600 hover:text-blue-800 font-medium whitespace-nowrap"
+                      >
+                        {p.primary_image ? "View / Edit" : "Upload"}
+                      </button>
                     </td>
                   </tr>
                 ))
