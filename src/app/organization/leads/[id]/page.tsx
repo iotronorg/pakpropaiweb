@@ -12,32 +12,10 @@ import {
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import type { Lead, ConversationMessage, AgentProfile, Property } from "@/types";
+import { ScoreGauge } from "@/components/leads/ScoreGauge";
+import { ScoreFactorBars } from "@/components/leads/ScoreFactorBars";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
-
-function ScoreGauge({ score }: { score: number | null }) {
-  const s = score ?? 0;
-  const color = s >= 70 ? "#f59e0b" : s >= 40 ? "#60a5fa" : "#9ca3af";
-  const r = 28, circ = 2 * Math.PI * r;
-  const filled = (s / 100) * circ;
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <svg width={72} height={72} className="-rotate-90">
-        <circle cx={36} cy={36} r={r} fill="none" stroke="#f3f4f6" strokeWidth={6} />
-        <circle
-          cx={36} cy={36} r={r} fill="none"
-          stroke={color} strokeWidth={6}
-          strokeDasharray={`${filled} ${circ - filled}`}
-          strokeLinecap="round"
-        />
-      </svg>
-      <span className="text-xl font-bold tabular-nums -mt-12 z-10 relative" style={{ color }}>
-        {score ?? "—"}
-      </span>
-      <span className="text-xs text-gray-400 mt-8">Intent score</span>
-    </div>
-  );
-}
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, "green" | "yellow" | "gray" | "blue" | "red"> = {
@@ -166,7 +144,10 @@ export default function LeadDetailPage() {
 
       {/* Header card */}
       <div className="rounded-xl border border-gray-200 bg-white px-6 py-5 flex flex-col sm:flex-row sm:items-start gap-6">
-        <ScoreGauge score={lead.intent_score} />
+        <div className="flex flex-col items-center gap-3">
+          <ScoreGauge score={lead.intent_score} />
+          <ScoreFactorBars factors={lead.score_factors ?? null} />
+        </div>
 
         <div className="flex-1 space-y-2">
           <div className="flex items-center gap-3 flex-wrap">

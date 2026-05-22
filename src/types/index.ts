@@ -68,6 +68,14 @@ export interface Lead {
   notes: string;
   source: "whatsapp" | "web" | "manual" | null;
   intent_signals: Record<string, unknown> | null;
+  score_factors: {
+    intent: number;
+    budget: number;
+    location: number;
+    engagement: number;
+    recency: number;
+    total: number;
+  } | null;
   assigned_agent_id: number | null;
   assigned_agent_name: string | null;
   last_contacted_at: string | null;

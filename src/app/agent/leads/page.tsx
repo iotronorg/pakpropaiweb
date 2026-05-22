@@ -10,14 +10,15 @@ import { formatDate, formatCurrency } from "@/lib/utils";
 import type { Lead, ConversationMessage } from "@/types";
 
 function IntentBar({ score }: { score: number }) {
-  const pct = (score / 10) * 100;
-  const color = score >= 7 ? "bg-green-500" : score >= 4 ? "bg-yellow-400" : "bg-red-400";
+  const pct = score;
+  const color =
+    score >= 70 ? "bg-green-500" : score >= 40 ? "bg-yellow-400" : "bg-red-400";
   return (
     <div className="flex items-center gap-2">
       <div className="w-20 h-1.5 rounded-full bg-gray-100 overflow-hidden">
         <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-xs text-gray-500">{score}/10</span>
+      <span className="text-xs text-gray-500">{score}/100</span>
     </div>
   );
 }

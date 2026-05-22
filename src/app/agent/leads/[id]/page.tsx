@@ -13,6 +13,8 @@ import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate, formatCurrency } from "@/lib/utils";
 import type { Lead, ConversationMessage, Appointment, AppointmentStatus, AgentProfile } from "@/types";
+import { ScoreGauge } from "@/components/leads/ScoreGauge";
+import { ScoreFactorBars } from "@/components/leads/ScoreFactorBars";
 
 const STATUS_OPTIONS = ["new", "warm", "qualified", "cold"] as const;
 const STATUS_COLORS: Record<string, "blue" | "yellow" | "green" | "gray"> = {
@@ -22,18 +24,6 @@ const APPT_COLORS: Record<AppointmentStatus, "green" | "yellow" | "red" | "gray"
   scheduled: "yellow", confirmed: "blue", completed: "green", cancelled: "red", rescheduled: "gray",
 };
 
-function IntentBar({ score }: { score: number }) {
-  const pct = Math.round((score / 10) * 100);
-  const color = score >= 7 ? "bg-emerald-500" : score >= 4 ? "bg-amber-400" : "bg-red-400";
-  return (
-    <div className="flex items-center gap-2">
-      <div className="flex-1 h-2 rounded-full bg-gray-100 overflow-hidden">
-        <div className={`h-full rounded-full ${color}`} style={{ width: `${pct}%` }} />
-      </div>
-      <span className="text-xs font-semibold text-gray-600 tabular-nums w-8 text-right">{score}/10</span>
-    </div>
-  );
-}
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -337,8 +327,9 @@ export default function LeadDetailPage() {
               </div>
               <div>
                 <span className="text-xs text-gray-500">Intent Score</span>
-                <div className="mt-1">
-                  <IntentBar score={lead.intent_score ?? 0} />
+                <div className="mt-3 flex flex-col gap-3">
+                  <ScoreGauge score={lead.intent_score ?? null} />
+                  <ScoreFactorBars factors={lead.score_factors ?? null} />
                 </div>
               </div>
               <div className="flex justify-between">
