@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useAuthStore } from "@/store/auth";
 import { logout, getNotifications } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -16,68 +17,69 @@ import {
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
+type NavKey = string;
 
-interface NavItem {
-  label:  string;
-  href:   string;
-  icon:   LucideIcon;
+interface NavItemDef {
+  key:   NavKey;
+  href:  string;
+  icon:  LucideIcon;
   exact?: boolean;
   badge?: boolean;
 }
 
-const NAV_ITEMS: Record<string, NavItem[]> = {
+const NAV_DEFS: Record<string, NavItemDef[]> = {
   admin: [
-    { label: "Overview",      href: "/admin",                    icon: LayoutDashboard, exact: true },
-    { label: "Analytics",     href: "/admin/analytics",          icon: TrendingUp },
-    { label: "Market Trends", href: "/admin/market-trends",      icon: BarChart3 },
-    { label: "System Setup",  href: "/admin/setup",              icon: Settings },
-    { label: "Clients",       href: "/admin/clients",            icon: MessageSquare },
-    { label: "Leads",         href: "/admin/leads",              icon: ClipboardList, exact: true },
-    { label: "Duplicates",    href: "/admin/leads/duplicates",   icon: AlertTriangle },
-    { label: "Appointments",  href: "/admin/appointments",       icon: Calendar },
-    { label: "Agents",        href: "/admin/agents",             icon: Building2 },
-    { label: "Organizations",  href: "/admin/organizations",      icon: Building },
-    { label: "Admins",        href: "/admin/admins",             icon: ShieldCheck },
-    { label: "Properties",    href: "/admin/properties",         icon: Home, exact: true },
-    { label: "Compare",       href: "/admin/properties/compare", icon: GitCompare },
-    { label: "Verification",  href: "/admin/verification",       icon: BadgeCheck },
-    { label: "Deal Locks",    href: "/admin/deals",              icon: Lock },
-    { label: "Fraud Monitor", href: "/admin/fraud",              icon: AlertOctagon },
-    { label: "Reports",       href: "/admin/reports",            icon: FileBarChart },
-    { label: "Audit Log",     href: "/admin/audit",              icon: FileText, exact: true },
-    { label: "Benchmarks",   href: "/admin/audit/benchmarks",   icon: SlidersHorizontal },
-    { label: "System Log",   href: "/admin/audit-log",          icon: FolderOpen },
-    { label: "Notifications", href: "/admin/notifications",      icon: Bell, badge: true },
-    { label: "Settings",      href: "/admin/settings",           icon: Settings2 },
+    { key: "overview",      href: "/admin",                    icon: LayoutDashboard, exact: true },
+    { key: "analytics",     href: "/admin/analytics",          icon: TrendingUp },
+    { key: "marketTrends",  href: "/admin/market-trends",      icon: BarChart3 },
+    { key: "systemSetup",   href: "/admin/setup",              icon: Settings },
+    { key: "clients",       href: "/admin/clients",            icon: MessageSquare },
+    { key: "leads",         href: "/admin/leads",              icon: ClipboardList, exact: true },
+    { key: "duplicates",    href: "/admin/leads/duplicates",   icon: AlertTriangle },
+    { key: "appointments",  href: "/admin/appointments",       icon: Calendar },
+    { key: "agents",        href: "/admin/agents",             icon: Building2 },
+    { key: "organizations", href: "/admin/organizations",      icon: Building },
+    { key: "admins",        href: "/admin/admins",             icon: ShieldCheck },
+    { key: "properties",    href: "/admin/properties",         icon: Home, exact: true },
+    { key: "compare",       href: "/admin/properties/compare", icon: GitCompare },
+    { key: "verification",  href: "/admin/verification",       icon: BadgeCheck },
+    { key: "dealLocks",     href: "/admin/deals",              icon: Lock },
+    { key: "fraudMonitor",  href: "/admin/fraud",              icon: AlertOctagon },
+    { key: "reports",       href: "/admin/reports",            icon: FileBarChart },
+    { key: "auditLog",      href: "/admin/audit",              icon: FileText, exact: true },
+    { key: "benchmarks",    href: "/admin/audit/benchmarks",   icon: SlidersHorizontal },
+    { key: "systemLog",     href: "/admin/audit-log",          icon: FolderOpen },
+    { key: "notifications", href: "/admin/notifications",      icon: Bell, badge: true },
+    { key: "settings",      href: "/admin/settings",           icon: Settings2 },
   ],
   agent: [
-    { label: "Overview",      href: "/agent",               icon: LayoutDashboard, exact: true },
-    { label: "Analytics",     href: "/agent/analytics",     icon: TrendingUp },
-    { label: "My Leads",      href: "/agent/leads",         icon: ClipboardList, exact: true },
-    { label: "Appointments",  href: "/agent/appointments",  icon: Calendar },
-    { label: "My Listings",   href: "/agent/listings",      icon: Home },
-    { label: "My Profile",    href: "/agent/profile",       icon: User },
-    { label: "Notifications", href: "/agent/notifications", icon: Bell, badge: true },
+    { key: "overview",      href: "/agent",               icon: LayoutDashboard, exact: true },
+    { key: "analytics",     href: "/agent/analytics",     icon: TrendingUp },
+    { key: "myLeads",       href: "/agent/leads",         icon: ClipboardList, exact: true },
+    { key: "appointments",  href: "/agent/appointments",  icon: Calendar },
+    { key: "myListings",    href: "/agent/listings",      icon: Home },
+    { key: "myProfile",     href: "/agent/profile",       icon: User },
+    { key: "notifications", href: "/agent/notifications", icon: Bell, badge: true },
   ],
   developer: [
-    { label: "Overview",       href: "/organization",                  icon: LayoutDashboard, exact: true },
-    { label: "Analytics",      href: "/organization/analytics",        icon: TrendingUp },
-    { label: "AI Monitor",     href: "/organization/ai-monitor",       icon: Bot },
-    { label: "Inventory",      href: "/organization/inventory",        icon: Building },
-    { label: "Lead Analytics", href: "/organization/leads",            icon: BarChart3 },
-    { label: "Deal Locks",     href: "/organization/deals",            icon: Lock },
-    { label: "My Team",        href: "/organization/team",             icon: Users },
-    { label: "Campaigns",      href: "/organization/campaigns",        icon: Megaphone },
-    { label: "Reports",        href: "/organization/reports",          icon: FileBarChart },
-    { label: "Notifications",  href: "/organization/notifications",    icon: Bell, badge: true },
-    { label: "Settings",       href: "/organization/settings",         icon: Settings2 },
+    { key: "overview",      href: "/organization",               icon: LayoutDashboard, exact: true },
+    { key: "analytics",     href: "/organization/analytics",     icon: TrendingUp },
+    { key: "aiMonitor",     href: "/organization/ai-monitor",    icon: Bot },
+    { key: "inventory",     href: "/organization/inventory",     icon: Building },
+    { key: "leadAnalytics", href: "/organization/leads",         icon: BarChart3 },
+    { key: "dealLocks",     href: "/organization/deals",         icon: Lock },
+    { key: "myTeam",        href: "/organization/team",          icon: Users },
+    { key: "campaigns",     href: "/organization/campaigns",     icon: Megaphone },
+    { key: "reports",       href: "/organization/reports",       icon: FileBarChart },
+    { key: "notifications", href: "/organization/notifications", icon: Bell, badge: true },
+    { key: "settings",      href: "/organization/settings",      icon: Settings2 },
   ],
 };
 
-const ROLE_LABELS: Record<string, string> = {
-  admin:     "Administrator",
-  agent:     "Sales Agent",
-  developer: "Org Admin",
+const ROLE_LABEL_KEYS: Record<string, string> = {
+  admin:     "admin",
+  agent:     "agent",
+  developer: "developer",
 };
 
 const ROLE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
@@ -86,7 +88,7 @@ const ROLE_COLORS: Record<string, { bg: string; text: string; dot: string }> = {
   developer: { bg: "bg-amber-600",  text: "text-amber-600",  dot: "bg-amber-500" },
 };
 
-function NavLink({ item, active, unreadCount = 0 }: { item: NavItem; active: boolean; unreadCount?: number }) {
+function NavLink({ item, label, active, unreadCount = 0 }: { item: NavItemDef; label: string; active: boolean; unreadCount?: number }) {
   const Icon = item.icon;
   const showBadge = item.badge && unreadCount > 0;
   return (
@@ -117,7 +119,7 @@ function NavLink({ item, active, unreadCount = 0 }: { item: NavItem; active: boo
           <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 ring-1 ring-white" />
         )}
       </span>
-      <span className="relative z-10 truncate">{item.label}</span>
+      <span className="relative z-10 truncate">{label}</span>
       {showBadge && !active && (
         <span className="relative z-10 ml-auto rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
           {unreadCount > 99 ? "99+" : unreadCount}
@@ -131,9 +133,11 @@ function NavLink({ item, active, unreadCount = 0 }: { item: NavItem; active: boo
 export function Sidebar() {
   const pathname = usePathname();
   const router   = useRouter();
+  const tNav     = useTranslations("nav");
+  const tRoles   = useTranslations("roles");
   const { user, clearAuth } = useAuthStore();
   const role  = user?.role ?? "admin";
-  const items = NAV_ITEMS[role] ?? [];
+  const defs  = NAV_DEFS[role] ?? [];
   const rc    = ROLE_COLORS[role] ?? ROLE_COLORS.admin;
 
   const { data: notifData } = useQuery({
@@ -144,7 +148,7 @@ export function Sidebar() {
   });
   const unreadCount: number = (notifData as { unread_count?: number })?.unread_count ?? 0;
 
-  function isActive(item: NavItem) {
+  function isActive(item: NavItemDef) {
     return item.exact ? pathname === item.href : pathname.startsWith(item.href);
   }
 
@@ -179,16 +183,21 @@ export function Sidebar() {
       {/* Role label */}
       <div className="px-5 pt-4 pb-2">
         <span className={`text-[10px] font-semibold uppercase tracking-widest ${rc.text}`}>
-          {ROLE_LABELS[role]}
+          {tRoles(ROLE_LABEL_KEYS[role] ?? role)}
         </span>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 pb-4">
         <ul className="space-y-0.5">
-          {items.map((item) => (
+          {defs.map((item) => (
             <li key={item.href}>
-              <NavLink item={item} active={isActive(item)} unreadCount={unreadCount} />
+              <NavLink
+                item={item}
+                label={tNav(item.key)}
+                active={isActive(item)}
+                unreadCount={unreadCount}
+              />
             </li>
           ))}
         </ul>
@@ -216,7 +225,7 @@ export function Sidebar() {
           className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border)] py-1.5 text-xs font-medium text-[var(--text-muted)] hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 cursor-pointer"
         >
           <LogOut size={12} />
-          Sign out
+          {tNav("signOut")}
         </motion.button>
       </div>
     </motion.aside>

@@ -45,11 +45,33 @@ export function formatCurrency(amount: number, country: string = 'PK'): string {
 export const formatPKR = (amount: number): string => formatCurrency(amount, 'PK');
 
 /**
- * Format an area value in the primary unit for the given country.
- * - PK: Marla
- * - AE / GB / US / CA: sqft
- * - default: sqm
+ * Format canonical area (in sqm) using the org's measurement system.
+ * - pk_traditional: Marla / Kanal
+ * - imperial: sqft
+ * - metric: m²
  */
+export function formatArea(
+  sqm: number | null | undefined,
+  measurementSystem: string = 'pk_traditional',
+): string {
+  if (sqm == null) return '—';
+  switch (measurementSystem) {
+    case 'pk_traditional': {
+      const marla = sqm / 25.2929;
+      if (marla >= 20) return `${(marla / 20).toFixed(2)} Kanal`;
+      return `${marla.toFixed(2)} Marla`;
+    }
+    case 'imperial': {
+      const sqft = sqm / 0.092903;
+      return `${Math.round(sqft).toLocaleString()} sqft`;
+    }
+    case 'metric':
+    default:
+      return `${sqm.toFixed(1)} m²`;
+  }
+}
+
+/** @deprecated Use formatArea(area_sqm, org.measurement_system) instead. */
 export function formatAreaUnit(value: number, country: string = 'PK'): string {
   switch (country.toUpperCase()) {
     case 'PK':

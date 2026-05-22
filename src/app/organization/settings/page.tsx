@@ -6,6 +6,9 @@ import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getO
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { PricingModal } from "@/components/ui/PricingModal";
+import { LOCALE_LABELS, locales, type Locale } from "@/i18n/config";
+import { setLocale } from "@/i18n/setLocale";
+import { useLocale } from "next-intl";
 import type { BillingUsage, BillingDimension, OrgPaymentSettings } from "@/types";
 
 const PLAN_LABELS: Record<string, string> = {
@@ -157,6 +160,23 @@ export default function OrgSettingsPage() {
       qc.invalidateQueries({ queryKey: ["my-org"] });
       setLangSaved(true);
       setTimeout(() => setLangSaved(false), 2500);
+    },
+  });
+
+  const currentLocale = useLocale();
+  const [dashLocale, setDashLocale] = useState<Locale>(currentLocale as Locale);
+
+  const [measurementSystem, setMeasurementSystem] = useState<string>("pk_traditional");
+  const [msSaved, setMsSaved] = useState(false);
+  useEffect(() => { if (orgProfile?.measurement_system) setMeasurementSystem(orgProfile.measurement_system); }, [orgProfile]);
+
+  const msMutation = useMutation({
+    mutationFn: (ms: string) => updateMyOrganization({ measurement_system: ms }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["my-org"] });
+      qc.invalidateQueries({ queryKey: ["org-profile"] });
+      setMsSaved(true);
+      setTimeout(() => setMsSaved(false), 2500);
     },
   });
 
@@ -343,6 +363,87 @@ export default function OrgSettingsPage() {
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               {orgLangMutation.isPending ? "Saving…" : "Save Language"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Dashboard Language */}
+      <div className="rounded-xl border border-gray-200 bg-white">
+        <div className="border-b border-gray-100 px-6 py-4">
+          <h2 className="text-sm font-semibold text-gray-800">Dashboard Language</h2>
+          <p className="text-xs text-gray-400 mt-0.5">
+            Language used for the dashboard interface (menus, labels, headings).
+          </p>
+        </div>
+        <div className="px-6 py-5">
+          <div className="grid grid-cols-3 gap-3">
+            {locales.map((loc) => (
+              <button
+                key={loc}
+                onClick={() => setDashLocale(loc)}
+                className={`rounded-lg border px-3 py-2.5 text-sm font-medium text-left transition-colors ${
+                  dashLocale === loc
+                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                {LOCALE_LABELS[loc]}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center justify-end mt-4">
+            <button
+              onClick={() => setLocale(dashLocale)}
+              disabled={dashLocale === currentLocale}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
+              Apply Language
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Area Measurement System */}
+      <div className="rounded-xl border border-gray-200 bg-white">
+        <div className="border-b border-gray-100 px-6 py-4">
+          <h2 className="text-sm font-semibold text-gray-800">Area Measurement System</h2>
+          <p className="text-xs text-gray-400 mt-0.5">
+            How property sizes are displayed to agents and in listings.
+          </p>
+        </div>
+        <div className="px-6 py-5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {[
+              { value: "pk_traditional", label: "Marla / Kanal",  desc: "Pakistani traditional units" },
+              { value: "imperial",       label: "Square Feet",    desc: "Imperial (sqft)" },
+              { value: "metric",         label: "Square Metres",  desc: "Metric (m²)" },
+            ].map(({ value, label, desc }) => (
+              <button
+                key={value}
+                onClick={() => setMeasurementSystem(value)}
+                className={`rounded-lg border-2 p-3 text-left transition-all ${
+                  measurementSystem === value
+                    ? "border-blue-500 bg-blue-50"
+                    : "border-gray-200 bg-white hover:border-gray-300"
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-0.5">
+                  <div className={`h-3.5 w-3.5 rounded-full border-2 shrink-0 ${measurementSystem === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
+                  <span className="text-sm font-semibold text-gray-900">{label}</span>
+                </div>
+                <p className="text-xs text-gray-500 ml-5">{desc}</p>
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center justify-end gap-3 mt-4">
+            {msSaved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
+            <button
+              onClick={() => msMutation.mutate(measurementSystem)}
+              disabled={msMutation.isPending || measurementSystem === (orgProfile?.measurement_system ?? "pk_traditional")}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
+              {msMutation.isPending ? "Saving…" : "Save"}
             </button>
           </div>
         </div>

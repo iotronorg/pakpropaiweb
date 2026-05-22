@@ -104,7 +104,7 @@ function ScanDetailModal({
 
             const extractedFields: [string, string][] = [
               ["Owner", scan.owner_name],
-              ["CNIC", scan.cnic_number],
+              ["ID Number", scan.cnic_number],
               ["Address", scan.property_address],
               ["Area", scan.area],
               ["Authority", scan.authority],

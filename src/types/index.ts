@@ -33,6 +33,8 @@ export interface Property {
   city: string;
   location: string;
   area_marla: number | null;
+  area_unit: string;
+  area_sqm: number | null;
   price: number | null;
   property_type: string;
   construction_status: string | null;

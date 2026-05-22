@@ -10,7 +10,7 @@ import {
 import type { DealLock, Property } from "@/types";
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { formatDate, formatCurrency } from "@/lib/utils";
+import { formatDate, formatCurrency, formatArea } from "@/lib/utils";
 
 const LEGAL_COLOR: Record<string, "green" | "yellow" | "red" | "gray"> = {
   verified:   "green",
@@ -453,8 +453,8 @@ export default function AgentListingsPage() {
                 <p className="text-lg font-bold text-blue-700">
                   {p.price ? formatCurrency(p.price) : "Price TBD"}
                 </p>
-                {p.area_marla && (
-                  <span className="text-sm text-gray-500">{p.area_marla} marla</span>
+                {p.area_sqm && (
+                  <span className="text-sm text-gray-500">{formatArea(p.area_sqm)}</span>
                 )}
               </div>
 

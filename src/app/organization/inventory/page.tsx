@@ -2,7 +2,8 @@
 
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProperties, getPropertyReport, getProperty, uploadPropertyImages, deletePropertyImage } from "@/lib/api";
+import { getProperties, getPropertyReport, getProperty, uploadPropertyImages, deletePropertyImage, getMyOrganization } from "@/lib/api";
+import { formatArea } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { StatCard, BreakdownBar, ChartCard, BarChart, type Period, type TrendPoint } from "@/components/ui/Charts";
@@ -148,6 +149,11 @@ export default function OrgInventoryPage() {
   const { data: reportData, isLoading: l2 } = useQuery({
     queryKey: ["org-property-report", period],
     queryFn: () => getPropertyReport({ period }).then((r) => r.data as PropertyReportData),
+  });
+
+  const { data: orgProfile } = useQuery({
+    queryKey: ["org-profile"],
+    queryFn: () => getMyOrganization().then((r) => r.data),
   });
 
   if (l1 || l2) {
@@ -307,8 +313,8 @@ export default function OrgInventoryPage() {
                     <td className="px-5 py-3 font-mono text-xs text-gray-500 whitespace-nowrap">{p.ref_no}</td>
                     <td className="px-5 py-3 max-w-[200px]">
                       <p className="font-medium text-gray-900 truncate">{p.title}</p>
-                      {p.area_marla && (
-                        <p className="text-xs text-gray-400">{p.area_marla} Marla</p>
+                      {p.area_sqm && (
+                        <p className="text-xs text-gray-400">{formatArea(p.area_sqm, orgProfile?.measurement_system ?? 'pk_traditional')}</p>
                       )}
                     </td>
                     <td className="px-5 py-3 text-gray-600 whitespace-nowrap">{p.city}</td>
