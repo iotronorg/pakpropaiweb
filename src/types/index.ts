@@ -501,3 +501,29 @@ export interface Campaign {
   created_at: string;
   updated_at: string;
 }
+
+export interface OrgMembership {
+  id: string;
+  user_phone: string;
+  user_name: string | null;
+  role: 'owner' | 'org_admin' | 'team_manager' | 'sales_manager' |
+        'crm_operator' | 'agent' | 'freelance_agent' | 'viewer';
+  employment_type: 'internal' | 'freelance';
+  is_active: boolean;
+  joined_at: string;
+}
+
+export interface InviteMemberPayload {
+  phone: string;
+  role: OrgMembership['role'];
+  employment_type: OrgMembership['employment_type'];
+}
+
+// ── Platform Admin Sub-roles ───────────────────────────────────────────────
+export interface AdminUser {
+  id: string;
+  phone: string;
+  name: string | null;
+  platform_role: 'super_admin' | 'ops_admin' | 'ai_admin' |
+                 'compliance_admin' | 'billing_admin' | 'support_admin' | null;
+}

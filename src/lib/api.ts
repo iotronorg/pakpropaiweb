@@ -483,3 +483,29 @@ export const getBillingPortal = () =>
 
 export const getBillingInvoices = () =>
   api.get("/billing/invoices/").then((r) => r.data as { invoices: import("@/types").BillingInvoice[] });
+
+// ── Organization Members ──────────────────────────────────────────────────
+export const getOrgMembers = () =>
+  api.get("/organizations/me/members/").then((r) => r.data as import("@/types").OrgMembership[]);
+
+export const inviteOrgMember = (payload: import("@/types").InviteMemberPayload) =>
+  api.post("/organizations/me/members/", payload).then((r) => r.data as import("@/types").OrgMembership);
+
+export const removeOrgMember = (membershipId: string) =>
+  api.delete(`/organizations/me/members/${membershipId}/`);
+
+// ── Platform Admin Sub-roles ───────────────────────────────────────────────
+export const getAdminUsers = (): Promise<import("@/types").AdminUser[]> =>
+  api.get("/auth/users/?role=admin").then((r) => r.data);
+
+export const updateAdminPlatformRole = (
+  userId: string,
+  platform_role: import("@/types").AdminUser['platform_role']
+): Promise<import("@/types").AdminUser> =>
+  api.patch(`/auth/users/${userId}/`, { platform_role }).then((r) => r.data);
+
+// ── Freelance Agent ────────────────────────────────────────────────────────
+export const createFreelanceProfile = (data: {
+  license_number?: string;
+}): Promise<{ id: string; verification_status: string }> =>
+  api.post("/agents/freelance-profile/", data).then((r) => r.data);

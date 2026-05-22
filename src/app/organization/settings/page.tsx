@@ -2,14 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings, getBillingPortal, getMyOrganization, updateMyOrganization } from "@/lib/api";
+import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings, getBillingPortal, getMyOrganization, updateMyOrganization, getOrgMembers, inviteOrgMember, removeOrgMember } from "@/lib/api";
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { PricingModal } from "@/components/ui/PricingModal";
 import { LOCALE_LABELS, locales, type Locale } from "@/i18n/config";
 import { setLocale } from "@/i18n/setLocale";
 import { useLocale } from "next-intl";
-import type { BillingUsage, BillingDimension, OrgPaymentSettings } from "@/types";
+import type { BillingUsage, BillingDimension, OrgPaymentSettings, OrgMembership, InviteMemberPayload } from "@/types";
 
 const PLAN_LABELS: Record<string, string> = {
   trial: 'Trial',
@@ -84,6 +84,9 @@ function SensitiveInput({ value, onChange, placeholder }: { value: string; onCha
 export default function OrgSettingsPage() {
   const qc = useQueryClient();
   const [showPricing, setShowPricing] = useState(false);
+  const [showInvite, setShowInvite] = useState(false);
+  const [invitePhone, setInvitePhone] = useState('');
+  const [inviteRole, setInviteRole] = useState<OrgMembership['role']>('agent');
 
   const { data, isLoading } = useQuery({
     queryKey: ["org-config"],
@@ -143,6 +146,21 @@ export default function OrgSettingsPage() {
       qc.invalidateQueries({ queryKey: ["org-payment-settings"] });
       setPsSaved(true);
       setTimeout(() => setPsSaved(false), 2500);
+    },
+  });
+
+  const { data: members = [] } = useQuery({
+    queryKey: ['org-members'],
+    queryFn: getOrgMembers,
+  });
+
+  const inviteMutation = useMutation({
+    mutationFn: (payload: InviteMemberPayload) => inviteOrgMember(payload),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['org-members'] });
+      setShowInvite(false);
+      setInvitePhone('');
+      setInviteRole('agent');
     },
   });
 
@@ -572,6 +590,59 @@ export default function OrgSettingsPage() {
 
       {/* Notification preferences */}
       <NotificationPreferencesPanel />
+
+      {/* Team Members */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">Team Members</h2>
+          <button onClick={() => setShowInvite(true)}
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
+            + Invite Member
+          </button>
+        </div>
+        <div className="space-y-3">
+          {members.map((m) => (
+            <div key={m.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div>
+                <p className="font-medium text-gray-900">{m.user_name || m.user_phone}</p>
+                <p className="text-sm text-gray-500">{m.user_phone} · {m.role.replace(/_/g, ' ')}</p>
+              </div>
+              {m.role !== 'owner' && (
+                <button onClick={() => removeOrgMember(m.id).then(() => qc.invalidateQueries({ queryKey: ['org-members'] }))}
+                  className="text-sm text-red-600 hover:text-red-800">Remove</button>
+              )}
+            </div>
+          ))}
+          {members.length === 0 && <p className="text-gray-400 text-sm">No team members yet.</p>}
+        </div>
+        {showInvite && (
+          <div className="mt-4 p-4 border border-blue-200 rounded-lg bg-blue-50">
+            <h3 className="font-medium mb-3">Invite Team Member</h3>
+            <div className="space-y-3">
+              <input value={invitePhone} onChange={(e) => setInvitePhone(e.target.value)}
+                placeholder="+971501234567" className="w-full border rounded-lg px-3 py-2 text-sm" />
+              <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as OrgMembership['role'])}
+                className="w-full border rounded-lg px-3 py-2 text-sm">
+                <option value="org_admin">Organization Admin</option>
+                <option value="team_manager">Team Manager</option>
+                <option value="sales_manager">Sales Manager</option>
+                <option value="crm_operator">CRM Operator</option>
+                <option value="agent">Agent</option>
+                <option value="freelance_agent">Freelance Agent</option>
+                <option value="viewer">Viewer</option>
+              </select>
+              <div className="flex gap-2">
+                <button onClick={() => inviteMutation.mutate({ phone: invitePhone, role: inviteRole, employment_type: 'internal' })}
+                  disabled={!invitePhone || inviteMutation.isPending}
+                  className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg disabled:opacity-50">
+                  {inviteMutation.isPending ? 'Inviting…' : 'Send Invite'}
+                </button>
+                <button onClick={() => setShowInvite(false)} className="px-4 py-2 text-sm text-gray-600">Cancel</button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {showPricing && billingData && (
         <PricingModal
