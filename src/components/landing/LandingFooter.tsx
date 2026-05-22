@@ -80,7 +80,7 @@ export default function LandingFooter() {
 
         <div className="border-t border-slate-200 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} RealTron AI. All rights reserved.
+            © {new Date().getFullYear()} RealTron AI. All rights reserved. Powered by IOTRON
           </p>
           <p className="text-xs text-slate-400">
             Enterprise AI Sales Infrastructure · WhatsApp-First · Global-Ready
