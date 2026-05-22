@@ -28,28 +28,32 @@ export default function AiCapabilitiesSection() {
   const prefersReduced = useReducedMotion();
 
   return (
-    <section id="ai" ref={ref} className="bg-slate-900 py-24 px-6">
-      <div className="max-w-6xl mx-auto">
+    <section id="ai" ref={ref} className="bg-white py-24 px-6 relative overflow-hidden">
+      <div
+        className="absolute inset-0 opacity-[0.02] pointer-events-none"
+        style={{ backgroundImage: `radial-gradient(circle, #334155 1px, transparent 1px)`, backgroundSize: "28px 28px" }}
+      />
+      <div className="relative max-w-6xl mx-auto">
         <motion.div
           initial={prefersReduced ? false : { opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-center mb-14"
         >
-          <span className="inline-block bg-white/8 text-indigo-300 border border-white/10 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
+          <span className="inline-block bg-indigo-50 text-indigo-700 border border-indigo-100 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
             AI Is the Operating Layer
           </span>
           <h2
-            className="text-4xl sm:text-5xl font-extrabold text-white leading-tight"
+            className="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight"
             style={{ fontFamily: "var(--font-cinzel, 'Georgia', serif)" }}
           >
             12 AI Capabilities.
             <br />
-            <span className="bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               One Unified Platform.
             </span>
           </h2>
-          <p className="mt-4 text-slate-400 text-lg max-w-xl mx-auto">
+          <p className="mt-4 text-slate-500 text-lg max-w-xl mx-auto">
             AI is not a feature here — it is the core operating layer that runs qualification,
             routing, verification, forecasting, and follow-ups automatically.
           </p>
@@ -62,17 +66,17 @@ export default function AiCapabilitiesSection() {
               initial={prefersReduced ? false : { opacity: 0, y: 18 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.4, delay: prefersReduced ? 0 : i * 0.04, ease: "easeOut" }}
-              className="bg-white/5 border border-white/8 hover:bg-white/8 hover:border-white/15 rounded-xl p-4 flex flex-col gap-3 transition-all duration-200"
+              className="bg-slate-50 border border-slate-200 hover:bg-white hover:border-slate-300 hover:shadow-sm rounded-xl p-4 flex flex-col gap-3 transition-all duration-200"
             >
               <div
                 className="w-9 h-9 rounded-lg flex items-center justify-center"
-                style={{ backgroundColor: color + "20", border: `1px solid ${color}35` }}
+                style={{ backgroundColor: color + "12", border: `1px solid ${color}25` }}
               >
                 <Icon size={16} style={{ color }} />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white leading-snug mb-1">{title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{desc}</p>
+                <h3 className="text-sm font-semibold text-slate-900 leading-snug mb-1">{title}</h3>
+                <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
               </div>
             </motion.div>
           ))}
@@ -82,7 +86,7 @@ export default function AiCapabilitiesSection() {
           initial={prefersReduced ? false : { opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="text-center text-xs text-slate-500 mt-10"
+          className="text-center text-xs text-slate-400 mt-10"
         >
           Powered by Gemini 2.5 Flash · GPT-4 Turbo · Custom fine-tuned models for real estate
         </motion.p>

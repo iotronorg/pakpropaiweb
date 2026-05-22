@@ -8,7 +8,7 @@ const ROLE_PATHS: Record<string, string> = {
   developer: "/organization",
 };
 
-export function middleware(req: NextRequest) {
+export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   const token = req.cookies.get("access_token")?.value;

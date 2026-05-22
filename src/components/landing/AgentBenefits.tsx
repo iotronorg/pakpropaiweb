@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { ArrowRight, BadgeCheck, BarChart3, BrainCircuit, MessageCircle, Mic, Zap } from "lucide-react";
+import { ArrowRight, BadgeCheck, BarChart3, BrainCircuit, MessageCircle, Mic, Zap, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 const benefits = [
@@ -99,7 +99,7 @@ export default function AgentBenefits() {
         >
           {differentiators.map((d) => (
             <span key={d} className="inline-flex items-center gap-1.5 bg-white border border-slate-200 text-slate-600 text-xs font-medium px-3 py-1.5 rounded-full">
-              <span className="text-blue-500">✓</span> {d}
+              <CheckCircle2 size={11} className="text-blue-500 shrink-0" /> {d}
             </span>
           ))}
         </motion.div>
@@ -114,16 +114,16 @@ export default function AgentBenefits() {
               transition={{ duration: 0.45, delay: prefersReduced ? 0 : 0.2 + i * 0.07, ease: "easeOut" }}
               className={`flex flex-col gap-4 p-6 rounded-xl border transition-all duration-200 ${
                 highlight
-                  ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-200"
+                  ? "bg-blue-50 border-blue-200 hover:border-blue-300 hover:shadow-sm"
                   : "bg-white border-slate-200 hover:border-sky-200 hover:shadow-sm"
               }`}
             >
-              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${highlight ? "bg-white/20" : "bg-sky-50 border border-sky-100"}`}>
-                <Icon size={17} className={highlight ? "text-white" : "text-sky-600"} />
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${highlight ? "bg-blue-100 border border-blue-200" : "bg-sky-50 border border-sky-100"}`}>
+                <Icon size={17} className={highlight ? "text-blue-600" : "text-sky-600"} />
               </div>
               <div>
-                <h3 className={`text-sm font-bold leading-snug mb-1.5 ${highlight ? "text-white" : "text-slate-900"}`}>{title}</h3>
-                <p className={`text-sm leading-relaxed ${highlight ? "text-blue-100" : "text-slate-500"}`}>{description}</p>
+                <h3 className="text-sm font-bold text-slate-900 leading-snug mb-1.5">{title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
               </div>
             </motion.div>
           ))}
@@ -137,7 +137,7 @@ export default function AgentBenefits() {
         >
           <Link
             href="/register"
-            className="group inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-4 rounded-xl transition-colors duration-150 text-base"
+            className="group inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-colors duration-150 shadow-sm shadow-blue-200 text-base"
           >
             Register as Agent — It&apos;s Free
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-150" />

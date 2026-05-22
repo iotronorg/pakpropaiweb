@@ -37,7 +37,7 @@ export default function TrustBar() {
   const prefersReduced = useReducedMotion();
 
   return (
-    <section ref={ref} className="bg-slate-50 border-y border-slate-200 py-14 px-6">
+    <section ref={ref} className="bg-slate-50 border-y border-slate-100 py-14 px-6">
       <div className="max-w-6xl mx-auto">
         <motion.p
           initial={prefersReduced ? false : { opacity: 0, y: 12 }}

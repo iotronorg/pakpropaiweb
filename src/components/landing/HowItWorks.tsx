@@ -76,35 +76,33 @@ export default function HowItWorks() {
   const prefersReduced = useReducedMotion();
 
   return (
-    <section id="how-it-works" ref={ref} className="bg-slate-900 py-24 px-6">
+    <section id="how-it-works" ref={ref} className="bg-slate-50 py-24 px-6">
       <div className="max-w-5xl mx-auto">
-        {/* Header */}
         <motion.div
           initial={prefersReduced ? false : { opacity: 0, y: 24 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-center mb-16"
         >
-          <span className="inline-block bg-white/8 text-blue-300 border border-white/10 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
+          <span className="inline-block bg-blue-50 text-blue-700 border border-blue-100 text-xs font-semibold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
             End-to-End Platform Flow
           </span>
           <h2
-            className="text-4xl sm:text-5xl font-extrabold text-white leading-tight"
+            className="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight"
             style={{ fontFamily: "var(--font-cinzel, 'Georgia', serif)" }}
           >
             From First Message
             <br />
-            <span className="bg-gradient-to-r from-blue-300 to-indigo-300 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               to Closed Deal.
             </span>
           </h2>
-          <p className="mt-4 text-slate-400 text-lg max-w-xl mx-auto leading-relaxed">
+          <p className="mt-4 text-slate-500 text-lg max-w-xl mx-auto leading-relaxed">
             Seven AI-orchestrated stages — every step automated, every interaction logged,
             every deal traceable.
           </p>
         </motion.div>
 
-        {/* Steps */}
         <div className="flex flex-col gap-3">
           {steps.map(({ icon: Icon, step, title, tagline, description, color }, i) => (
             <motion.div
@@ -112,32 +110,32 @@ export default function HowItWorks() {
               initial={prefersReduced ? false : { opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
               animate={inView ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.5, delay: prefersReduced ? 0 : i * 0.07, ease: "easeOut" }}
-              className="group relative bg-white/5 hover:bg-white/8 border border-white/8 hover:border-white/15 rounded-xl p-5 transition-all duration-200 flex flex-col sm:flex-row gap-5 items-start"
+              className="group relative bg-white hover:shadow-sm border border-slate-200 hover:border-slate-300 rounded-xl p-5 transition-all duration-200 flex flex-col sm:flex-row gap-5 items-start"
             >
               <div
-                className="absolute left-0 top-4 bottom-4 w-0.5 rounded-full opacity-0 group-hover:opacity-60 transition-opacity duration-200"
+                className="absolute left-0 top-4 bottom-4 w-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
                 style={{ backgroundColor: color }}
               />
 
               <div className="flex items-center gap-4 sm:flex-col sm:items-center sm:gap-2 sm:w-14 shrink-0">
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: color + "18", border: `1px solid ${color}30` }}
+                  style={{ backgroundColor: color + "10", border: `1px solid ${color}22` }}
                 >
                   <Icon size={18} style={{ color }} />
                 </div>
-                <div className="text-[10px] font-bold text-slate-500 tracking-widest">{step}</div>
+                <div className="text-[10px] font-bold text-slate-400 tracking-widest">{step}</div>
               </div>
 
               <div className="flex-1">
-                <h3 className="text-sm font-bold text-white mb-0.5">{title}</h3>
+                <h3 className="text-sm font-bold text-slate-900 mb-0.5">{title}</h3>
                 <p className="text-xs font-semibold mb-2" style={{ color }}>{tagline}</p>
-                <p className="text-sm text-slate-400 leading-relaxed">{description}</p>
+                <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
               </div>
 
               <div
-                className="shrink-0 self-start mt-0.5 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border opacity-60"
-                style={{ color, borderColor: color + "40", backgroundColor: color + "10" }}
+                className="shrink-0 self-start mt-0.5 text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-full border"
+                style={{ color, borderColor: color + "30", backgroundColor: color + "08" }}
               >
                 Stage {i + 1}
               </div>

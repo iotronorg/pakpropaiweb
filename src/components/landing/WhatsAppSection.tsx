@@ -43,7 +43,7 @@ export default function WhatsAppSection() {
           </span>
 
           <h2
-            className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight mb-5"
+            className="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight mb-5"
             style={{ fontFamily: "var(--font-cinzel, 'Georgia', serif)" }}
           >
             Your Clients Already
@@ -51,7 +51,7 @@ export default function WhatsAppSection() {
             <span className="text-[#25D366]">Live on WhatsApp.</span>
           </h2>
 
-          <p className="text-lg text-gray-500 leading-relaxed mb-8">
+          <p className="text-lg text-slate-500 leading-relaxed mb-8">
             No app to download. No onboarding friction. Your AI sales agent runs 24/7 on
             WhatsApp — qualifying buyers, surfacing properties, running scam checks, and
             routing hot leads directly to your agents.
@@ -59,13 +59,13 @@ export default function WhatsAppSection() {
 
           <div className="grid grid-cols-2 gap-4 mb-8">
             {inputModes.map(({ icon: Icon, label, desc }) => (
-              <div key={label} className="flex items-start gap-3 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+              <div key={label} className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
                 <div className="w-9 h-9 rounded-xl bg-[#25D366]/10 border border-[#25D366]/20 flex items-center justify-center shrink-0">
                   <Icon size={16} className="text-[#25D366]" />
                 </div>
                 <div>
-                  <div className="text-sm font-bold text-gray-900">{label}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{desc}</div>
+                  <div className="text-sm font-bold text-slate-900">{label}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">{desc}</div>
                 </div>
               </div>
             ))}
@@ -73,7 +73,7 @@ export default function WhatsAppSection() {
 
           <div className="flex flex-col gap-2">
             {["No app download required", "Works on any device", "AI available 24/7"].map((p) => (
-              <div key={p} className="flex items-center gap-2 text-sm text-gray-600">
+              <div key={p} className="flex items-center gap-2 text-sm text-slate-600">
                 <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
                 {p}
               </div>
@@ -115,7 +115,7 @@ export default function WhatsAppSection() {
                     {msg.isCard ? (
                       <div className="bg-white rounded-xl p-3 shadow-sm max-w-[75%] border border-gray-100">
                         <div className="text-xs font-bold text-gray-800 mb-1">{msg.title}</div>
-                        <div className="text-[10px] text-gray-500">{msg.detail}</div>
+                        <div className="text-[10px] text-slate-500">{msg.detail}</div>
                         <div className="mt-2 flex items-center gap-1.5">
                           <div className="text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
                             AI Score: {msg.score}/100

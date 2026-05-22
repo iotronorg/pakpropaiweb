@@ -1,4 +1,4 @@
-export async function register() {
+export async function registerHooks() {
   if (process.env.NEXT_RUNTIME === 'nodejs') {
     await import('./sentry.server.config');
   }

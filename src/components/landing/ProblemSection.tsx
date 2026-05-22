@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { AlertTriangle, Ghost, UserX } from "lucide-react";
+import { AlertTriangle, Ghost, UserX, CheckCircle2 } from "lucide-react";
 
 const problems = [
   {
@@ -61,14 +61,14 @@ export default function ProblemSection() {
             The Problem
           </span>
           <h2
-            className="text-4xl sm:text-5xl font-extrabold text-gray-900 leading-tight"
+            className="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight"
             style={{ fontFamily: "var(--font-cinzel, 'Georgia', serif)" }}
           >
             Pakistani Real Estate Has
             <br />
             <span className="text-red-500">a Trust Crisis.</span>
           </h2>
-          <p className="mt-4 text-lg text-gray-500 max-w-2xl mx-auto leading-relaxed">
+          <p className="mt-4 text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
             Scams, fake listings, and unverified agents cost buyers, sellers, and agents
             billions every year. It doesn&apos;t have to be this way.
           </p>
@@ -81,7 +81,7 @@ export default function ProblemSection() {
               initial={prefersReduced ? false : { opacity: 0, y: 28 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.55, delay: prefersReduced ? 0 : i * 0.15, ease: "easeOut" }}
-              className="rounded-2xl border border-gray-100 bg-white shadow-sm overflow-hidden flex flex-col"
+              className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden flex flex-col"
             >
               {/* Stat header */}
               <div className={`${bg} ${border} border-b px-6 py-5 flex items-center gap-4`}>
@@ -92,19 +92,19 @@ export default function ProblemSection() {
                   <Icon size={20} style={{ color }} />
                 </div>
                 <div>
-                  <div className="text-2xl font-extrabold text-gray-900 leading-none">{stat}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{statLabel}</div>
+                  <div className="text-2xl font-extrabold text-slate-900 leading-none">{stat}</div>
+                  <div className="text-xs text-slate-500 mt-0.5">{statLabel}</div>
                 </div>
               </div>
 
               <div className="px-6 py-5 flex flex-col gap-4 flex-1">
-                <h3 className="text-base font-bold text-gray-900 leading-snug">{title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+                <h3 className="text-base font-bold text-slate-900 leading-snug">{title}</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
 
                 {/* Fix */}
-                <div className="mt-auto pt-4 border-t border-gray-50">
-                  <p className="text-sm text-emerald-700 font-medium leading-relaxed">
-                    <span className="text-emerald-500 font-bold">✓ </span>{fix}
+                <div className="mt-auto pt-4 border-t border-slate-100">
+                  <p className="text-sm text-emerald-700 font-medium leading-relaxed flex items-start gap-2">
+                    <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-0.5" />{fix}
                   </p>
                 </div>
               </div>
