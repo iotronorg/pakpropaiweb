@@ -1,24 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
-import { sendOtp, verifyOtp } from "@/lib/api";
+import { sendOtp, verifyOtp, loginWithPassword } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { roleHomePath } from "@/lib/utils";
 import { User } from "@/types";
-import { ArrowLeft, Phone, Shield, MessageSquare, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  Shield,
+  MessageSquare,
+  Loader2,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+} from "lucide-react";
 
-const phoneSchema = z.object({ phone: z.string().min(10, "Enter a valid phone number") });
-const otpSchema   = z.object({ code:  z.string().length(6, "OTP must be 6 digits") });
-
-type PhoneForm = z.infer<typeof phoneSchema>;
-type OtpForm   = z.infer<typeof otpSchema>;
-type Step      = "phone" | "otp" | "no-access";
+type Mode = "password" | "otp-phone" | "otp-code" | "no-access";
 
 const stepVariants = {
   enter:  { opacity: 0, x: 16  },
@@ -26,41 +26,79 @@ const stepVariants = {
   exit:   { opacity: 0, x: -16 },
 };
 
-export default function LoginPage() {
-  const router   = useRouter();
+function LoginForm() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { setAuth } = useAuthStore();
-  const [step,    setStep]    = useState<Step>("phone");
-  const [phone,   setPhone]   = useState("");
+
+  const [mode, setMode] = useState<Mode>("password");
+
+  // Password form state
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword]     = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  // OTP flow state
+  const [otpPhone, setOtpPhone] = useState("");
+  const [otpCode,  setOtpCode]  = useState("");
+
   const [error,   setError]   = useState("");
   const [loading, setLoading] = useState(false);
 
-  const phoneForm = useForm<PhoneForm>({ resolver: zodResolver(phoneSchema) });
-  const otpForm   = useForm<OtpForm>  ({ resolver: zodResolver(otpSchema) });
+  const registered = searchParams.get("registered") === "true";
 
-  async function onSendOtp(data: PhoneForm) {
-    setLoading(true); setError("");
-    try {
-      await sendOtp(data.phone);
-      setPhone(data.phone);
-      phoneForm.reset();
-      setStep("otp");
-    } catch { setError("Could not send OTP. Check the phone number."); }
-    finally  { setLoading(false); }
+  function switchMode(next: Mode) {
+    setError("");
+    setMode(next);
   }
 
-  async function onVerifyOtp(data: OtpForm) {
-    setLoading(true); setError("");
+  async function onPasswordLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
     try {
-      const res = await verifyOtp(phone, data.code);
+      const res = await loginWithPassword(identifier, password);
       const { user } = res.data as { user: User };
-      otpForm.reset();
-      if (user.role === "client") { setStep("no-access"); return; }
+      if (user.role === "client") { setMode("no-access"); return; }
       setAuth(user);
-      // user_role cookie is now set server-side as HttpOnly by the Django auth endpoint.
-      // Do not set it here — client-side cookie would be tamper-able via XSS.
       router.replace(roleHomePath(user.role));
-    } catch { setError("Invalid or expired OTP."); }
-    finally  { setLoading(false); }
+    } catch {
+      setError("Invalid credentials. Check your email/phone and password.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function onSendOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      await sendOtp(otpPhone);
+      setMode("otp-code");
+    } catch {
+      setError("Could not send OTP. Check the phone number.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function onVerifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await verifyOtp(otpPhone, otpCode);
+      const { user } = res.data as { user: User };
+      setOtpCode("");
+      if (user.role === "client") { setMode("no-access"); return; }
+      setAuth(user);
+      router.replace(roleHomePath(user.role));
+    } catch {
+      setError("Invalid or expired OTP.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -68,7 +106,11 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
 
         {/* Back link */}
-        <motion.div initial={{ opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }}>
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.25 }}
+        >
           <Link
             href="/"
             className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors group"
@@ -99,10 +141,25 @@ export default function LoginPage() {
           transition={{ duration: 0.3, delay: 0.1 }}
           className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-sm"
         >
+          {/* Registered success banner */}
+          <AnimatePresence>
+            {registered && mode !== "no-access" && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex items-center gap-2 border-b border-green-100 bg-green-50 px-6 py-3 text-sm text-green-700"
+              >
+                <CheckCircle2 size={15} className="shrink-0 text-green-600" />
+                Account created. Please sign in.
+              </motion.div>
+            )}
+          </AnimatePresence>
+
           <AnimatePresence mode="wait">
 
             {/* No-access */}
-            {step === "no-access" && (
+            {mode === "no-access" && (
               <motion.div
                 key="no-access"
                 variants={stepVariants} initial="enter" animate="center" exit="exit"
@@ -120,72 +177,182 @@ export default function LoginPage() {
                 </div>
                 <motion.button
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                  onClick={() => { setStep("phone"); setError(""); }}
+                  onClick={() => switchMode("password")}
                   className="w-full rounded-lg border border-[var(--border)] py-2.5 text-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors cursor-pointer"
                 >
-                  Sign in with a different number
+                  Sign in with a different account
                 </motion.button>
               </motion.div>
             )}
 
-            {/* Phone step */}
-            {step === "phone" && (
+            {/* Password mode (default) */}
+            {mode === "password" && (
               <motion.form
-                key="phone"
+                key="password"
                 variants={stepVariants} initial="enter" animate="center" exit="exit"
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                onSubmit={phoneForm.handleSubmit(onSendOtp)}
+                onSubmit={onPasswordLogin}
                 className="space-y-5 p-8"
               >
-                <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-50 border border-sky-200">
-                    <Phone size={18} className="text-sky-600" />
+                <div>
+                  <h1 className="text-lg font-semibold text-[var(--text-primary)]">Sign in</h1>
+                  <div className="mt-1 h-px bg-[var(--border)]" />
+                </div>
+
+                {/* Identifier */}
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">
+                    Email or phone
+                  </label>
+                  <input
+                    type="text"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    placeholder="you@example.com or +92 300 123 4567"
+                    required
+                    className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                  />
+                </div>
+
+                {/* Password */}
+                <div>
+                  <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">
+                    Password
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      required
+                      className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 pr-10 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((v) => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                      aria-label={showPassword ? "Hide password" : "Show password"}
+                    >
+                      {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                    </button>
                   </div>
-                  <div>
-                    <h1 className="text-lg font-semibold text-[var(--text-primary)]">Sign in</h1>
-                    <p className="text-xs text-[var(--text-muted)]">Enter your WhatsApp number</p>
-                  </div>
+                </div>
+
+                {/* Error */}
+                <AnimatePresence>
+                  {error && (
+                    <motion.p
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="text-sm text-red-600"
+                    >
+                      {error}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
+
+                {/* Submit */}
+                <motion.button
+                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                  type="submit"
+                  disabled={loading}
+                  className="flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 py-2.5 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                  {loading
+                    ? <><Loader2 size={15} className="animate-spin" /> Signing in…</>
+                    : "Sign In →"}
+                </motion.button>
+
+                {/* Secondary actions */}
+                <div className="flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                    onClick={() => {/* TODO: forgot password flow */}}
+                  >
+                    Forgot password?
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => switchMode("otp-phone")}
+                    className="text-sky-600 hover:text-sky-700 font-medium transition-colors cursor-pointer"
+                  >
+                    Continue with OTP &rarr;
+                  </button>
+                </div>
+              </motion.form>
+            )}
+
+            {/* OTP — phone step */}
+            {mode === "otp-phone" && (
+              <motion.form
+                key="otp-phone"
+                variants={stepVariants} initial="enter" animate="center" exit="exit"
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                onSubmit={onSendOtp}
+                className="space-y-5 p-8"
+              >
+                <div>
+                  <h1 className="text-lg font-semibold text-[var(--text-primary)]">Sign in with OTP</h1>
+                  <div className="mt-1 h-px bg-[var(--border)]" />
                 </div>
 
                 <div>
                   <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">Phone number</label>
                   <input
-                    {...phoneForm.register("phone")}
                     type="tel"
+                    value={otpPhone}
+                    onChange={(e) => setOtpPhone(e.target.value)}
                     placeholder="+92 300 1234567"
+                    required
                     className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                   />
-                  {phoneForm.formState.errors.phone && (
-                    <p className="mt-1.5 text-xs text-red-600">{phoneForm.formState.errors.phone.message}</p>
-                  )}
                 </div>
 
                 <AnimatePresence>
                   {error && (
                     <motion.p
-                      initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
                       className="text-sm text-red-600"
-                    >{error}</motion.p>
+                    >
+                      {error}
+                    </motion.p>
                   )}
                 </AnimatePresence>
 
                 <motion.button
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                  type="submit" disabled={loading}
+                  type="submit"
+                  disabled={loading}
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 py-2.5 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-50 transition-colors cursor-pointer"
                 >
-                  {loading ? <><Loader2 size={15} className="animate-spin" /> Sending…</> : "Send OTP"}
+                  {loading
+                    ? <><Loader2 size={15} className="animate-spin" /> Sending…</>
+                    : "Send OTP →"}
                 </motion.button>
+
+                <button
+                  type="button"
+                  onClick={() => switchMode("password")}
+                  className="flex w-full items-center justify-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                >
+                  <ArrowLeft size={12} />
+                  Back to password login
+                </button>
               </motion.form>
             )}
 
-            {/* OTP step */}
-            {step === "otp" && (
+            {/* OTP — code step */}
+            {mode === "otp-code" && (
               <motion.form
-                key="otp"
+                key="otp-code"
                 variants={stepVariants} initial="enter" animate="center" exit="exit"
                 transition={{ duration: 0.2, ease: "easeOut" }}
-                onSubmit={otpForm.handleSubmit(onVerifyOtp)}
+                onSubmit={onVerifyOtp}
                 className="space-y-5 p-8"
               >
                 <div className="flex items-center gap-3">
@@ -195,7 +362,7 @@ export default function LoginPage() {
                   <div>
                     <h1 className="text-lg font-semibold text-[var(--text-primary)]">Enter OTP</h1>
                     <p className="text-xs text-[var(--text-muted)]">
-                      Sent to <span className="font-medium text-sky-600">{phone}</span>
+                      Sent to <span className="font-medium text-sky-600">{otpPhone}</span>
                     </p>
                   </div>
                 </div>
@@ -203,38 +370,44 @@ export default function LoginPage() {
                 <div>
                   <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">6-digit code</label>
                   <input
-                    {...otpForm.register("code")}
                     type="text"
                     inputMode="numeric"
                     maxLength={6}
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
                     placeholder="• • • • • •"
+                    required
                     className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-center text-lg font-bold tracking-[0.35em] text-[var(--text-primary)] placeholder:text-slate-300 placeholder:tracking-normal outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition-all"
                   />
-                  {otpForm.formState.errors.code && (
-                    <p className="mt-1.5 text-xs text-red-600">{otpForm.formState.errors.code.message}</p>
-                  )}
                 </div>
 
                 <AnimatePresence>
                   {error && (
                     <motion.p
-                      initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
                       className="text-sm text-red-600"
-                    >{error}</motion.p>
+                    >
+                      {error}
+                    </motion.p>
                   )}
                 </AnimatePresence>
 
                 <motion.button
                   whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
-                  type="submit" disabled={loading}
+                  type="submit"
+                  disabled={loading}
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50 transition-colors cursor-pointer"
                 >
-                  {loading ? <><Loader2 size={15} className="animate-spin" /> Verifying…</> : "Verify & Sign in"}
+                  {loading
+                    ? <><Loader2 size={15} className="animate-spin" /> Verifying…</>
+                    : "Verify & Sign in"}
                 </motion.button>
 
                 <button
                   type="button"
-                  onClick={() => { setStep("phone"); setError(""); phoneForm.reset(); otpForm.reset(); }}
+                  onClick={() => { switchMode("otp-phone"); setOtpCode(""); }}
                   className="w-full text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 >
                   Use a different number
@@ -246,12 +419,22 @@ export default function LoginPage() {
         </motion.div>
 
         <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.35, duration: 0.3 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.35, duration: 0.3 }}
           className="mt-6 text-center text-xs text-[var(--text-faint)]"
         >
-          Dashboard access for agents, developers & admins only
+          Dashboard access for agents, developers &amp; admins only
         </motion.p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
