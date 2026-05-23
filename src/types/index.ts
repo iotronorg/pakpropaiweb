@@ -7,6 +7,7 @@ export interface User {
   email: string;
   role: Role;
   is_active: boolean;
+  is_phone_verified: boolean;
   date_joined: string;
   last_active: string | null;
   ntn: string | null;

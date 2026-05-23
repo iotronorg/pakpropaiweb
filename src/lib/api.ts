@@ -43,11 +43,26 @@ api.interceptors.response.use(
 );
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
-export const sendOtp = (phone: string) =>
-  api.post("/auth/otp/send/", { phone });
+export const sendOtp = (phone: string, purpose = 'otp_login') =>
+  api.post("/auth/otp/send/", { phone, purpose });
 
 export const verifyOtp = (phone: string, code: string) =>
   api.post("/auth/otp/verify/", { phone, code });
+
+export const loginWithPassword = (identifier: string, password: string) =>
+  api.post("/auth/login/", { identifier, password });
+
+export const verifyRegistrationOtp = (phone: string, code: string) =>
+  api.post("/auth/registration/verify-otp/", { phone, code });
+
+export const requestPasswordReset = (phone: string) =>
+  api.post("/auth/password/reset/request/", { phone });
+
+export const confirmPasswordReset = (phone: string, code: string, new_password: string) =>
+  api.post("/auth/password/reset/confirm/", { phone, code, new_password });
+
+export const changePassword = (current_password: string, new_password: string) =>
+  api.post("/auth/password/change/", { current_password, new_password });
 
 export const getMe = () => api.get("/auth/me/");
 export const logout = () => api.post("/auth/logout/");
