@@ -292,6 +292,14 @@ export default function LeadDetailPage() {
           <p className="text-sm text-gray-400 font-mono mt-0.5">{lead.phone}</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          {lead.wa_session_id && (
+            <button
+              onClick={() => router.push(`/agent/leads/${id}/live-chat`)}
+              className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md transition-colors"
+            >
+              Live Chat
+            </button>
+          )}
           <span className="text-xs text-gray-500">Status:</span>
           {STATUS_OPTIONS.map((s) => (
             <button

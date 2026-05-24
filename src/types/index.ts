@@ -77,10 +77,12 @@ export interface Lead {
     recency: number;
     total: number;
   } | null;
+  organization: string;
   assigned_agent_id: number | null;
   assigned_agent_name: string | null;
   last_contacted_at: string | null;
   created_at: string;
+  wa_session_id?: string | null;
 }
 
 export interface LeadStats {
@@ -549,4 +551,37 @@ export interface OrgWhatsAppConfig {
   ai_enabled: boolean;
   auto_reply_enabled: boolean;
   otp_template_name: string;
+}
+
+// ── feature_talk_to_agent ──────────────────────────────────────────────────
+
+export type ConversationMode = 'AI_MANAGED' | 'AGENT_MANAGED'
+
+export interface WhatsAppMessagePayload {
+  type: string
+  text?: { body: string }
+  audio?: { id: string; mime_type: string }
+  image?: { id: string; mime_type: string; caption?: string }
+  document?: { id: string; mime_type: string; filename?: string; caption?: string }
+}
+
+export interface AgentRoomEvent {
+  type: 'agent_message' | 'connected' | 'pong'
+  event?: 'inbound_message' | 'session_taken' | 'session_released' | 'session_reverted'
+  session_id?: string
+  phone?: string
+  message?: WhatsAppMessagePayload
+  msg_type?: string
+  agent_id?: string
+  agent_name?: string
+  timestamp?: string
+  lead_id?: string
+  held_by?: string
+  released_by?: string
+  active_sessions?: Array<{ session_id: string; phone: string }>
+}
+
+export interface TakeControlResponse {
+  conversation_mode: ConversationMode
+  lock_ttl: number
 }

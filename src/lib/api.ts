@@ -539,3 +539,11 @@ export const verifyWhatsAppConnection = (): Promise<{ ok: boolean; detail: strin
 
 export const sendWhatsAppTestMessage = (): Promise<{ ok: boolean }> =>
   api.post("/whatsapp/config/test-message/").then((r) => r.data);
+
+// ── feature_talk_to_agent ──────────────────────────────────────────────────
+
+export const takeControl = (sessionId: string): Promise<import("@/types").TakeControlResponse> =>
+  api.post(`/whatsapp/sessions/${sessionId}/take-control/`).then((r) => r.data);
+
+export const releaseControl = (sessionId: string): Promise<{ conversation_mode: import("@/types").ConversationMode }> =>
+  api.post(`/whatsapp/sessions/${sessionId}/release-control/`).then((r) => r.data);
