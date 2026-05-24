@@ -524,3 +524,18 @@ export const createFreelanceProfile = (data: {
   license_number?: string;
 }): Promise<{ id: string; verification_status: string }> =>
   api.post("/agents/freelance-profile/", data).then((r) => r.data);
+
+// ── WhatsApp Integration Config ────────────────────────────────────────────
+export const getWhatsAppConfig = (): Promise<import("@/types").OrgWhatsAppConfig> =>
+  api.get("/whatsapp/config/").then((r) => r.data);
+
+export const updateWhatsAppConfig = (
+  data: Partial<import("@/types").OrgWhatsAppConfig>
+): Promise<import("@/types").OrgWhatsAppConfig> =>
+  api.patch("/whatsapp/config/", data).then((r) => r.data);
+
+export const verifyWhatsAppConnection = (): Promise<{ ok: boolean; detail: string }> =>
+  api.post("/whatsapp/config/verify/").then((r) => r.data);
+
+export const sendWhatsAppTestMessage = (): Promise<{ ok: boolean }> =>
+  api.post("/whatsapp/config/test-message/").then((r) => r.data);

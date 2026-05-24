@@ -536,3 +536,17 @@ export interface AdminUser {
   platform_role: 'super_admin' | 'ops_admin' | 'ai_admin' |
                  'compliance_admin' | 'billing_admin' | 'support_admin' | null;
 }
+
+export interface OrgWhatsAppConfig {
+  phone_number_id: string;
+  display_phone: string;
+  access_token: string;       // '••••••••' when set
+  app_id: string;
+  app_secret: string;         // '••••••••' when set
+  verify_token: string;       // '••••••••' when set
+  is_active: boolean;
+  webhook_verified_at: string | null;
+  ai_enabled: boolean;
+  auto_reply_enabled: boolean;
+  otp_template_name: string;
+}

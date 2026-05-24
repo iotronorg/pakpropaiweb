@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings, getBillingPortal, getMyOrganization, updateMyOrganization, getOrgMembers, inviteOrgMember, removeOrgMember } from "@/lib/api";
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { PasswordChangeCard } from "@/components/settings/PasswordChangeCard";
+import { WhatsAppIntegrationCard } from "@/components/settings/WhatsAppIntegrationCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { PricingModal } from "@/components/ui/PricingModal";
 import { LOCALE_LABELS, locales, type Locale } from "@/i18n/config";
@@ -647,6 +648,9 @@ export default function OrgSettingsPage() {
           </div>
         )}
       </div>
+
+      {/* WhatsApp Integration */}
+      <WhatsAppIntegrationCard />
 
       {showPricing && billingData && (
         <PricingModal
