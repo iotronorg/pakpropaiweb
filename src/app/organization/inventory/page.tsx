@@ -2,12 +2,51 @@
 
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProperties, getPropertyReport, getProperty, uploadPropertyImages, deletePropertyImage, getMyOrganization } from "@/lib/api";
+import { getProperties, getPropertyReport, getProperty, uploadPropertyImages, deletePropertyImage, getMyOrganization, getTrustCertificate } from "@/lib/api";
 import { formatArea } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { StatCard, BreakdownBar, ChartCard, BarChart, type Period, type TrendPoint } from "@/components/ui/Charts";
 import type { Property, PropertyImage, PropertyReportData } from "@/types";
+
+// ── Trust Certificate Cell ────────────────────────────────────────────────────
+
+function CertificateCell({ propertyId }: { propertyId: string }) {
+  const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
+
+  async function handleClick() {
+    setLoading(true);
+    try {
+      const res = await getTrustCertificate(propertyId);
+      if (res.status === 202) {
+        setGenerating(true);
+        return;
+      }
+      const url: string = res.data?.certificate_url;
+      if (url) window.open(url, '_blank', 'noopener,noreferrer');
+    } catch {
+      // certificate not ready or not found
+      setGenerating(true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  if (generating) {
+    return <span className="text-xs text-gray-400 italic">Generating…</span>;
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      className="text-xs font-medium text-emerald-600 hover:text-emerald-800 whitespace-nowrap disabled:opacity-50"
+    >
+      {loading ? "Loading…" : "Download"}
+    </button>
+  );
+}
 
 // ── Image Management Modal ────────────────────────────────────────────────────
 
@@ -291,7 +330,7 @@ export default function OrgInventoryPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-gray-100">
-                {["Ref", "Title", "City", "Type", "Price", "AI Score", "Risk", "Legal", "Agent", "Status", "Images"].map((h) => (
+                {["Ref", "Title", "City", "Type", "Price", "AI Score", "Risk", "Legal", "Agent", "Status", "Images", "Certificate"].map((h) => (
                   <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                     {h}
                   </th>
@@ -382,6 +421,13 @@ export default function OrgInventoryPage() {
                       >
                         {p.primary_image ? "View / Edit" : "Upload"}
                       </button>
+                    </td>
+                    <td className="px-5 py-3">
+                      {p.legal_status === "verified" ? (
+                        <CertificateCell propertyId={p.id} />
+                      ) : (
+                        <span className="text-xs text-gray-300">—</span>
+                      )}
                     </td>
                   </tr>
                 ))

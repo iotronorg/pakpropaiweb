@@ -338,6 +338,24 @@ export interface Report {
   ready_at: string | null;
 }
 
+export interface TrustCertificate {
+  property_id: string;
+  certificate_url: string;
+  verified_at: string | null;
+  signal_score: number | null;
+}
+
+export interface MonthlyReport {
+  id: string;
+  organization: string;
+  period_start: string;
+  period_end: string;
+  status: ReportStatus;
+  pdf_url: string | null;
+  created_at: string;
+  ready_at: string | null;
+}
+
 export interface Notification {
   id: string;
   title: string;

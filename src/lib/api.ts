@@ -369,6 +369,12 @@ export const downloadReport = (id: string) =>
 export const getMyReports = () =>
   api.get("/reports/mine/");
 
+export const getMonthlyReports = () =>
+  api.get("/reports/monthly/");
+
+export const getTrustCertificate = (propertyId: string) =>
+  api.get(`/verification/${propertyId}/certificate/`);
+
 export const getAgentPersonalReport = (params?: { period?: "weekly" | "monthly" }) =>
   api.get("/reports/my-stats/", { params });
 
