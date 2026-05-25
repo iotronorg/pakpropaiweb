@@ -49,12 +49,19 @@ export default function AgentAnalyticsPage() {
       </div>
 
       {/* KPI row */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-7 gap-4">
         <StatCard label="Total Leads"    value={stats.total_leads   ?? 0} accent="blue"    icon="📋" />
         <StatCard label="Hot Leads"      value={stats.hot_leads     ?? 0} accent="amber"   icon="🔥" sub={`Avg score ${stats.avg_score ?? 0}`} />
         <StatCard label="Closed Leads"   value={stats.closed_leads  ?? 0} accent="emerald" icon="✅" />
         <StatCard label="My Listings"    value={stats.total_listings ?? 0} accent="violet"  icon="🏠" />
         <StatCard label="Closed Deals"   value={stats.closed_deals  ?? 0} accent="rose"    icon="🔒" />
+        <StatCard
+          label="Response Time"
+          value={stats.avg_response_time_hours != null ? `${stats.avg_response_time_hours}h` : "—"}
+          accent="amber"
+          icon="⚡"
+          sub="Avg assignment-to-contact"
+        />
         <StatCard label="Conversion"     value={`${convRate}%`}           accent="blue"    icon="📈" sub={`Rating ${stats.rating?.toFixed(1) ?? "—"}`} />
       </div>
 

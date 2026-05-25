@@ -61,6 +61,9 @@ const FEATURE_LABELS: Record<string, { label: string; desc: string }> = {
   feature_talk_to_agent:         { label: "Talk to Agent",         desc: "AI routing to connect clients with agents" },
   feature_deal_lock:             { label: "Deal Lock",             desc: "Token payment and inventory reservation system" },
   feature_property_audit:        { label: "Property Audit",        desc: "AI-generated audit reports with investment scores" },
+  feature_voice_messages:        { label: "Voice Messages",        desc: "Transcribe and process voice notes from WhatsApp users" },
+  feature_follow_up_automation:  { label: "Follow-up Automation",  desc: "AI-driven automated follow-up messages for leads" },
+  feature_auto_assign:           { label: "Auto Assign",           desc: "Automatically assign new leads to available agents" },
 };
 
 const SENTINEL = "__configured__";

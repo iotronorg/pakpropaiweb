@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getLeadReport, getAgentReport, getPropertyReport } from "@/lib/api";
+import { getLeadReport, getAgentReport, getPropertyReport, getDealReport } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import {
   StatCard, ChartCard, BarChart, BreakdownBar, LeadPipelineFunnel,
   SectionHeader, type Period, type TrendPoint,
 } from "@/components/ui/Charts";
-import type { AgentPerformanceRow, LeadReportData, PropertyReportData } from "@/types";
+import type { AgentPerformanceRow, LeadReportData, PropertyReportData, DealReportData } from "@/types";
 
 export default function OrgAnalyticsPage() {
   const [leadPeriod, setLeadPeriod] = useState<Period>("weekly");
@@ -27,8 +27,12 @@ export default function OrgAnalyticsPage() {
     queryKey: ["org-analytics-props", propPeriod],
     queryFn: () => getPropertyReport({ period: propPeriod }).then((r) => r.data as PropertyReportData),
   });
+  const { data: dealData, isLoading: l4 } = useQuery({
+    queryKey: ["org-analytics-deals"],
+    queryFn: () => getDealReport().then((r) => r.data as DealReportData),
+  });
 
-  if (l1 || l2 || l3) {
+  if (l1 || l2 || l3 || l4) {
     return (
       <div className="flex items-center justify-center py-32">
         <LoadingSpinner />
@@ -39,6 +43,7 @@ export default function OrgAnalyticsPage() {
   const leads  = leadData  ?? { total: 0, avg_score: 0, hot_leads: 0, by_status: {}, by_intent: {}, by_source: {} };
   const agents = (agentData?.results ?? []) as AgentPerformanceRow[];
   const props  = propData  ?? { total: 0, avg_ai_score: 0, installment_available: 0, by_type: {}, by_legal_status: {}, by_risk_level: {}, by_city: {} };
+  const deals  = dealData  ?? { total_locks: 0, completed: 0, expired: 0, disputed: 0, avg_confirm_hours: null, by_status: {}, by_gateway: {} };
 
   const leadTrend: TrendPoint[] = leadData?.trend  ?? [];
   const propTrend: TrendPoint[] = propData?.trend  ?? [];
@@ -148,6 +153,29 @@ export default function OrgAnalyticsPage() {
               : <p className="text-xs text-gray-400 text-center py-4">No data</p>}
           </div>
         </div>
+      </div>
+
+      {/* Deal Analytics */}
+      <div>
+        <SectionHeader title="Deal Analytics" sub="Deal lock activity for your organization" />
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
+          <StatCard label="Total Locks"  value={deals.total_locks}    accent="blue"    icon="🔒" />
+          <StatCard label="Completed"    value={deals.completed}      accent="emerald" icon="✅" sub="Released" />
+          <StatCard label="Disputed"     value={deals.disputed}       accent="rose"    icon="⚠️" />
+          <StatCard
+            label="Avg Confirm Time"
+            value={deals.avg_confirm_hours !== null ? `${deals.avg_confirm_hours}h` : "—"}
+            accent="violet"
+            icon="⏱"
+            sub="Initiation → payment confirmed"
+          />
+        </div>
+        {Object.keys(deals.by_gateway).length > 0 && (
+          <div className="rounded-xl border border-gray-200 bg-white p-5">
+            <h3 className="text-sm font-semibold text-gray-700 mb-4">By Payment Gateway</h3>
+            <BreakdownBar data={deals.by_gateway} />
+          </div>
+        )}
       </div>
 
       {/* Agent performance */}

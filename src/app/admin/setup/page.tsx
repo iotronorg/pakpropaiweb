@@ -214,6 +214,8 @@ export default function SetupPage() {
     { key: "feature_talk_to_agent",         label: "Talk to Agent",         desc: "Connect users with a verified local agent" },
     { key: "feature_deal_lock",             label: "Deal Lock",             desc: "Token payment to reserve a property for 48 hours" },
     { key: "feature_voice_messages",        label: "Voice Messages",        desc: "Transcribe and process voice notes from WhatsApp users" },
+    { key: "feature_follow_up_automation", label: "Follow-up Automation",  desc: "AI automated follow-up messages for leads" },
+    { key: "feature_auto_assign",          label: "Auto Assign",           desc: "Automatically assign new leads to available agents" },
   ];
 
   return (

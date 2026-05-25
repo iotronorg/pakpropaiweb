@@ -304,6 +304,8 @@ export interface SystemConfig {
   feature_talk_to_agent: string;
   feature_deal_lock: string;
   feature_voice_messages: string;
+  feature_follow_up_automation: string;
+  feature_auto_assign: string;
   scraper_search_enabled: string;
   // Computed
   setup_complete: boolean;
@@ -465,6 +467,16 @@ export interface AgentReportData {
   results: AgentPerformanceRow[];
 }
 
+export interface DealReportData {
+  total_locks: number;
+  completed: number;
+  expired: number;
+  disputed: number;
+  avg_confirm_hours: number | null;
+  by_status: Record<string, number>;
+  by_gateway: Record<string, number>;
+}
+
 export type CampaignStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed';
 export interface BillingDimension {
   used: number;
@@ -510,6 +522,37 @@ export interface Campaign {
   created_by: string | null;
   created_by_name: string | null;
   created_at: string;
+  updated_at: string;
+}
+
+export interface AdminOrganization {
+  id: string;
+  name: string;
+  slug: string;
+  org_type: string;
+  plan: "trial" | "basic" | "professional" | "enterprise";
+  country: string;
+  city: string | null;
+  phone: string | null;
+  email: string | null;
+  website: string | null;
+  is_active: boolean;
+  is_verified: boolean;
+  admin_phone: string | null;
+  agent_count: number;
+  lead_count: number;
+  property_count: number;
+  created_at: string;
+}
+
+export interface AdminOrganizationDetail extends AdminOrganization {
+  address: string;
+  language: string;
+  measurement_system: string;
+  brand_color: string | null;
+  logo: string | null;
+  admin_user: string | null;
+  admin_name: string | null;
   updated_at: string;
 }
 
@@ -584,4 +627,31 @@ export interface AgentRoomEvent {
 export interface TakeControlResponse {
   conversation_mode: ConversationMode
   lock_ttl: number
+}
+
+export interface AgentStats {
+  agent_id: number;
+  name: string;
+  availability_status: "available" | "busy" | "offline";
+  total_leads: number;
+  closed_leads: number;
+  conversion_rate: number;
+  closed_deals: number;
+  avg_response_time_hours: number | null;
+  rating: number;
+  is_verified: boolean;
+  by_status: Record<string, number>;
+  by_source: Record<string, number>;
+  trend?: { period: string; count: number }[];
+}
+
+export interface AgentLeaderboardEntry {
+  rank: number;
+  agent_id: number;
+  name: string;
+  total_leads: number;
+  conversion_rate: number;
+  avg_response_time_hours: number | null;
+  closed_deals: number;
+  rating: number;
 }

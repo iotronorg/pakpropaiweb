@@ -13,7 +13,7 @@ import {
   ClipboardList, AlertTriangle, Calendar, Building2, Building,
   ShieldCheck, Home, GitCompare, BadgeCheck, Lock, AlertOctagon,
   FileBarChart, FileText, FolderOpen, Bell, Settings2, Users, User,
-  LogOut, ChevronRight, SlidersHorizontal, Bot, Megaphone,
+  LogOut, ChevronRight, SlidersHorizontal, Bot, Megaphone, Award,
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
@@ -69,6 +69,7 @@ const NAV_DEFS: Record<string, NavItemDef[]> = {
     { key: "leadAnalytics", href: "/organization/leads",         icon: BarChart3 },
     { key: "dealLocks",     href: "/organization/deals",         icon: Lock },
     { key: "myTeam",        href: "/organization/team",          icon: Users },
+    { key: "agents",        href: "/organization/agents",        icon: Award },
     { key: "campaigns",     href: "/organization/campaigns",     icon: Megaphone },
     { key: "reports",       href: "/organization/reports",       icon: FileBarChart },
     { key: "notifications", href: "/organization/notifications", icon: Bell, badge: true },

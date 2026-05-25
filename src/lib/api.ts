@@ -316,6 +316,14 @@ export const approveAgent = (id: number) =>
 export const rejectAgent = (id: number, rejection_reason: string) =>
   api.post(`/agents/${id}/reject/`, { rejection_reason });
 
+export const getAgentStats = (
+  id: number,
+  params?: { period?: "weekly" | "monthly" },
+) => api.get(`/agents/${id}/stats/`, { params });
+
+export const getAgentLeaderboard = () =>
+  api.get<{ count: number; results: import("@/types").AgentLeaderboardEntry[] }>("/agents/leaderboard/");
+
 // ── Agent Team (developer) ────────────────────────────────────────────────────
 export const getTeam = () =>
   api.get("/agents/team/");
@@ -372,6 +380,9 @@ export const getAgentReport = () =>
 
 export const getPropertyReport = (params?: { period?: "weekly" | "monthly" }) =>
   api.get("/reports/properties/", { params });
+
+export const getDealReport = () =>
+  api.get("/reports/deals/");
 
 export const getRevenueReport = (params?: { period?: "weekly" | "monthly" }) =>
   api.get("/reports/revenue/", { params });
@@ -437,6 +448,34 @@ export const getConfig = () =>
 
 export const updateConfig = (data: Record<string, string>) =>
   api.patch("/config/", data).then((r) => r.data);
+
+// ── Admin: Organizations ───────────────────────────────────────────────────────
+export const getAdminOrgs = (params?: Record<string, unknown>) =>
+  api.get("/organizations/", { params });
+
+export const getAdminOrg = (id: string) =>
+  api.get(`/organizations/${id}/`);
+
+export const createOrg = (data: Record<string, unknown>) =>
+  api.post("/organizations/", data);
+
+export const updateOrg = (id: string, data: Record<string, unknown>) =>
+  api.patch(`/organizations/${id}/`, data);
+
+export const suspendOrg = (id: string) =>
+  api.post(`/organizations/${id}/suspend/`);
+
+export const activateOrg = (id: string) =>
+  api.post(`/organizations/${id}/activate/`);
+
+export const getAdminOrgConfig = (id: string) =>
+  api.get(`/organizations/${id}/config/`).then((r) => r.data);
+
+export const updateAdminOrgConfig = (id: string, data: Record<string, boolean>) =>
+  api.patch(`/organizations/${id}/config/`, data).then((r) => r.data);
+
+export const resetAdminOrgConfigKey = (id: string, key: string) =>
+  api.delete(`/organizations/${id}/config/${key}/`).then((r) => r.data);
 
 // ── Organization ──────────────────────────────────────────────────────────────
 export const getMyOrganization = () =>
