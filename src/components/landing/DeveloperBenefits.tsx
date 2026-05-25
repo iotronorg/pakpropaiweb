@@ -104,10 +104,10 @@ export default function DeveloperBenefits() {
                 <span className="text-xs bg-blue-50 text-blue-700 border border-blue-100 px-2 py-0.5 rounded-full font-medium">Live</span>
               </div>
               {[
-                { name: "Asif Khan", budget: "1.2 Cr", status: "Hot Lead", bar: "w-4/5", color: "bg-blue-600" },
-                { name: "Sana Mirza", budget: "65 Lac", status: "Visiting", bar: "w-3/5", color: "bg-sky-500" },
-                { name: "Omar Farooq", budget: "2.5 Cr", status: "Negotiating", bar: "w-3/4", color: "bg-indigo-500" },
-                { name: "Nadia Sheikh", budget: "90 Lac", status: "New Lead", bar: "w-1/3", color: "bg-slate-400" },
+                { name: "Ahmed Al-Rashid", budget: "$1.2M", status: "Hot Lead", bar: "w-4/5", color: "bg-blue-600" },
+                { name: "Sarah Williams", budget: "$650K", status: "Visiting", bar: "w-3/5", color: "bg-sky-500" },
+                { name: "James Chen", budget: "$2.5M", status: "Negotiating", bar: "w-3/4", color: "bg-indigo-500" },
+                { name: "Priya Patel", budget: "$900K", status: "New Lead", bar: "w-1/3", color: "bg-slate-400" },
               ].map((lead) => (
                 <div key={lead.name} className="bg-white rounded-xl p-3 border border-slate-100">
                   <div className="flex items-center justify-between mb-2">
@@ -168,7 +168,7 @@ export default function DeveloperBenefits() {
             href="/register"
             className="group inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-4 rounded-xl transition-colors duration-150 shadow-sm text-base"
           >
-            Register Your Organisation
+            Book a Demo
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-150" />
           </Link>
         </motion.div>

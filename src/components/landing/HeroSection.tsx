@@ -65,9 +65,9 @@ function DashboardPreview({ dur }: { dur: number }) {
                 <span className="text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full text-[10px]">● AI Active</span>
               </div>
               {[
-                { name: "Imran Siddiqui", budget: "2.8 Cr", pct: "w-5/6", sc: "bg-blue-600" },
-                { name: "Hina Tariq", budget: "95 Lac", pct: "w-3/5", sc: "bg-sky-500" },
-                { name: "Rashid Enterprises", budget: "12 Cr", pct: "w-3/4", sc: "bg-indigo-500" },
+                { name: "Marcus Chen", budget: "$2.8M", pct: "w-5/6", sc: "bg-blue-600" },
+                { name: "Sophia Reyes", budget: "$950K", pct: "w-3/5", sc: "bg-sky-500" },
+                { name: "Vance Capital", budget: "$5.2M", pct: "w-3/4", sc: "bg-indigo-500" },
               ].map((l) => (
                 <div key={l.name} className="bg-slate-50 rounded-lg p-2.5 border border-slate-100 flex items-center gap-3">
                   <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white text-[10px] font-bold shrink-0">
@@ -207,7 +207,7 @@ export default function HeroSection() {
             href="/register"
             className="group inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 shadow-md shadow-blue-200 hover:shadow-blue-300 hover:scale-[1.02] text-base"
           >
-            Get Started Free
+            Book a Demo
             <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform duration-150" />
           </Link>
           <a

@@ -2,41 +2,41 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { AlertTriangle, Ghost, UserX, CheckCircle2 } from "lucide-react";
+import { TableProperties, UserX, BrainCircuit, CheckCircle2 } from "lucide-react";
 
 const problems = [
   {
-    icon: Ghost,
-    title: "Ghost Listings Are Everywhere",
-    stat: "40%",
-    statLabel: "of listings are stale or fake",
+    icon: TableProperties,
+    title: "Sales Operations Still Run on Spreadsheets",
+    stat: "73%",
+    statLabel: "of real estate orgs have no unified sales system",
     description:
-      "You find the perfect property, contact the seller, and discover it was sold months ago — or never existed. Time wasted. Trust broken.",
-    fix: "RealTron AI cross-checks every listing for freshness, duplicates, and ownership validity before you spend a single rupee.",
+      "Leads arrive across email, WhatsApp, portals, and referrals — scattered across tools, lost between handoffs, tracked in spreadsheets no one updates consistently.",
+    fix: "RealTron AI centralizes every inquiry into one AI-powered CRM. Every lead is captured, scored, and routed — automatically, from first message.",
     color: "#EF4444",
     bg: "bg-red-50",
     border: "border-red-100",
   },
   {
-    icon: AlertTriangle,
-    title: "Scams Cost Billions Every Year",
-    stat: "₨ Billions",
-    statLabel: "lost to property fraud annually",
+    icon: UserX,
+    title: "Leads Go Cold Before Agents Respond",
+    stat: "78%",
+    statLabel: "of leads never receive a timely follow-up",
     description:
-      "Paid token money on a plot with no legal title. Transferred funds to an agent who disappeared. These are not rare stories — they happen every day.",
-    fix: "Our AI scam engine checks any listing in 30 seconds. Submit a link, screenshot, or voice note — get a risk score instantly.",
+      "The average real estate organization takes hours to respond to a new inquiry. By then, the buyer has moved on. Speed-to-lead is the single biggest factor in conversion — and most teams are losing it.",
+    fix: "AI qualifies and responds to every lead within seconds — on WhatsApp, 24/7 — and routes hot leads to agents with a full brief before first contact.",
     color: "#F59E0B",
     bg: "bg-amber-50",
     border: "border-amber-100",
   },
   {
-    icon: UserX,
-    title: "No Way to Verify Your Agent",
+    icon: BrainCircuit,
+    title: "No Intelligence Between Inquiry and Transaction",
     stat: "0",
-    statLabel: "centralized agent verification system in Pakistan",
+    statLabel: "AI layer in the typical real estate sales stack",
     description:
-      "Anyone can call themselves a property agent. No KYC. No rating. No accountability. You're trusting a stranger with your life savings.",
-    fix: "Every RealTron agent is KYC-verified, rated by buyers, and accountable through our platform. Verified badge = proven track record.",
+      "Most organizations have no automated qualification, no scoring, no routing intelligence, and no AI follow-up layer. Every step depends on a human doing it manually — which means deals slip through every day.",
+    fix: "RealTron AI is the operating layer between inquiry and transaction — qualifying, verifying, routing, and accelerating every deal automatically.",
     color: "#8B5CF6",
     bg: "bg-violet-50",
     border: "border-violet-100",
@@ -64,13 +64,13 @@ export default function ProblemSection() {
             className="text-4xl sm:text-5xl font-extrabold text-slate-900 leading-tight"
             style={{ fontFamily: "var(--font-cinzel, 'Georgia', serif)" }}
           >
-            Pakistani Real Estate Has
+            Real Estate Sales Is Still
             <br />
-            <span className="text-red-500">a Trust Crisis.</span>
+            <span className="text-red-500">Stuck in Manual Mode.</span>
           </h2>
           <p className="mt-4 text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed">
-            Scams, fake listings, and unverified agents cost buyers, sellers, and agents
-            billions every year. It doesn&apos;t have to be this way.
+            Fragmented tools, slow follow-ups, and zero AI intelligence cost organizations
+            millions in missed deals every year — across every market.
           </p>
         </motion.div>
 
@@ -83,7 +83,6 @@ export default function ProblemSection() {
               transition={{ duration: 0.55, delay: prefersReduced ? 0 : i * 0.15, ease: "easeOut" }}
               className="rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden flex flex-col"
             >
-              {/* Stat header */}
               <div className={`${bg} ${border} border-b px-6 py-5 flex items-center gap-4`}>
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
@@ -101,7 +100,6 @@ export default function ProblemSection() {
                 <h3 className="text-base font-bold text-slate-900 leading-snug">{title}</h3>
                 <p className="text-sm text-slate-500 leading-relaxed">{description}</p>
 
-                {/* Fix */}
                 <div className="mt-auto pt-4 border-t border-slate-100">
                   <p className="text-sm text-emerald-700 font-medium leading-relaxed flex items-start gap-2">
                     <CheckCircle2 size={14} className="text-emerald-500 shrink-0 mt-0.5" />{fix}

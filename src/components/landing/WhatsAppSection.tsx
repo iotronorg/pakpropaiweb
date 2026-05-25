@@ -5,17 +5,17 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 import { CheckCircle2, MessageCircle, Mic, Image, FileText } from "lucide-react";
 
 const conversation = [
-  { from: "user", text: "5 marla house in DHA Lahore under 2 crore, near school" },
-  { from: "ai", text: "Found 7 verified properties matching your criteria. Here are the top 3:" },
-  { from: "ai", isCard: true, title: "DHA Phase 6 — 5M House", detail: "1.85 Cr · 5 marla · 200m from Beacon House", score: 92 },
+  { from: "user", text: "2 bedroom apartment in Dubai Marina under 1.5M AED, sea view preferred" },
+  { from: "ai", text: "Found 9 verified properties matching your criteria. Here are the top 3:" },
+  { from: "ai", isCard: true, title: "Marina View Tower — 2BR", detail: "1.42M AED · 1,250 sqft · Sea view · Vacant", score: 94 },
   { from: "user", text: "Check this listing for me [screenshot]" },
-  { from: "ai", text: "✅ Scam Check Complete — Risk Score: 2/10 (Low Risk)\nOwnership verified. No tampering detected. Trust certificate ready." },
+  { from: "ai", text: "✅ Verification Complete — Risk Score: 2/10 (Low Risk)\nOwnership verified. No tampering detected. Trust certificate ready." },
   { from: "user", text: "Connect me to an agent for this property" },
-  { from: "ai", text: "Matching you with Tariq Shah — KYC-verified, 4.9★, DHA specialist. He'll be with you on WhatsApp in minutes." },
+  { from: "ai", text: "Matching you with James Miller — KYC-verified, 4.9★, Marina specialist. He'll be with you on WhatsApp in minutes." },
 ];
 
 const inputModes = [
-  { icon: MessageCircle, label: "Text", desc: "Plain English or Urdu" },
+  { icon: MessageCircle, label: "Text", desc: "Any language, any format" },
   { icon: Mic, label: "Voice Notes", desc: "AI transcribes & understands" },
   { icon: Image, label: "Screenshots", desc: "Paste any listing image" },
   { icon: FileText, label: "Documents", desc: "Upload for verification" },

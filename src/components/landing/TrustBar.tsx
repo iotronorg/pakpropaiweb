@@ -45,7 +45,7 @@ export default function TrustBar() {
           transition={{ duration: 0.5 }}
           className="text-center text-xs font-semibold uppercase tracking-widest text-slate-400 mb-10"
         >
-          Trusted by Real Estate Organizations Across the Region
+          Trusted by Real Estate Organizations Across 4 Markets
         </motion.p>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
           {stats.map(({ icon: Icon, label, value, suffix, color, bg, border }, i) => (

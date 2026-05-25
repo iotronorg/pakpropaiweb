@@ -9,37 +9,37 @@ const benefits = [
     icon: Search,
     title: "Find Properties in Plain Language",
     description:
-      "Message the AI in Urdu or English. 'Ghar chahiye Lahore mein 50 lakh tak' — it understands and searches for you. No filters, no forms, no app.",
+      "Message the AI in any language. 'I need a 3-bedroom apartment near the business district under $800K' — it understands and surfaces matching verified inventory instantly.",
   },
   {
     icon: ShieldAlert,
-    title: "Scam Check Any Listing in 30 Seconds",
+    title: "Verify Any Listing in 30 Seconds",
     description:
-      "Share a link, screenshot, or address. Get an AI-generated risk score and red flags instantly — before you visit, before you pay anything.",
+      "Share a link, screenshot, or address. Get an AI-generated risk score and red flags instantly — before you visit, before you transfer any funds.",
   },
   {
     icon: FileCheck2,
     title: "Verify Ownership Before You Invest",
     description:
-      "AI reads legal documents, cross-references registry records, and checks title clarity. You get a plain-language report — not legal jargon.",
+      "AI reads legal documents, cross-references ownership records, and checks title clarity. You get a plain-language report — not legal jargon.",
   },
   {
     icon: Calculator,
-    title: "AI Tax & Loan Calculator",
+    title: "AI Tax & Financing Calculator",
     description:
-      "Instantly calculate 7E tax, Capital Gains Tax, Apna Ghar loan eligibility, EMIs, and stamp duty — all personalised to your situation on WhatsApp.",
+      "Instantly calculate capital gains tax, stamp duty, loan eligibility, and monthly repayments — personalised to your market and situation, right on WhatsApp.",
   },
   {
     icon: Lock,
     title: "Deal Lock & Escrow Protection",
     description:
-      "Token money held in Safepay escrow — not by us, not by the agent. 48-hour exclusivity guaranteed. Your money is safe if the deal falls through.",
+      "Token money held in escrow — not by us, not by the agent. 48-hour exclusivity guaranteed. Your funds are protected if the deal falls through.",
   },
   {
     icon: MessageCircle,
     title: "No App. No Account. Just WhatsApp.",
     description:
-      "Everything works on your existing WhatsApp. AI is available 24/7, speaks Urdu and English, and never puts you on hold.",
+      "Everything works on your existing WhatsApp. AI is available 24/7, understands any language, and responds in seconds — never puts you on hold.",
   },
 ];
 
@@ -73,11 +73,11 @@ export default function ClientBenefits() {
           <div>
             <p className="text-xl text-slate-500 leading-relaxed">
               AI-powered property assistant on WhatsApp — guiding you from first search to
-              final deal, protecting you from scams, and making sure you never overpay.
+              final deal, protecting you from fraud, and making sure every decision is informed.
             </p>
             <div className="mt-6 flex items-center gap-3">
               <a
-                href="https://wa.me/923000000000"
+                href="https://wa.me/15550000000"
                 className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1ea85a] text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-150 text-sm"
               >
                 <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4">

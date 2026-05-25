@@ -278,6 +278,19 @@ export default function AgentRegisterPage() {
     <div className="min-h-screen bg-gray-50 py-10 px-4">
       <div className="max-w-2xl mx-auto">
 
+        {/* Org CTA */}
+        <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 flex items-center justify-between gap-4">
+          <p className="text-sm text-blue-800">
+            Registering an agency or brokerage?
+          </p>
+          <a
+            href="/register/organization"
+            className="text-sm font-semibold text-blue-700 hover:text-blue-800 whitespace-nowrap"
+          >
+            Register your organization &rarr;
+          </a>
+        </div>
+
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold text-gray-900">Agent Registration</h1>
