@@ -400,6 +400,17 @@ export const getRevenueReport = (params?: { period?: "weekly" | "monthly" }) =>
 export const getBotReport = (params?: { period?: "weekly" | "monthly" }) =>
   api.get("/reports/bot/", { params });
 
+export const getFunnelAnalytics = () =>
+  api.get<import("@/types").FunnelData>("/reports/funnel/");
+
+export const getWaTokenUsage = () =>
+  api.get<import("@/types").WaTokenData>("/reports/wa-tokens/");
+
+export const getSpeedLeaderboard = (top_n = 10) =>
+  api.get<import("@/types").SpeedLeaderboardEntry[]>("/reports/leaderboard/", {
+    params: { top_n },
+  });
+
 // ── Organization Dashboard ────────────────────────────────────────────────────
 export const getOrgDashboard = () =>
   api.get("/organizations/me/dashboard/");
@@ -529,6 +540,26 @@ export const cancelCampaign = (id: string) =>
 export const scheduleCampaign = (id: string, scheduled_at: string) =>
   api.post(`/campaigns/${id}/schedule/`, { scheduled_at });
 
+export const getCampaignTemplates = (): Promise<import("@/types").MetaTemplate[]> =>
+  api.get("/campaigns/templates/").then(r => r.data);
+
+export const getCampaignProgress = (id: string): Promise<import("@/types").CampaignProgress> =>
+  api.get(`/campaigns/${id}/progress/`).then(r => r.data);
+
+export const createCampaignFull = (data: {
+  name: string;
+  message_template?: string;
+  audience_filter: import("@/types").CampaignAudienceFilter;
+  meta_template_name?: string | null;
+  meta_template_language?: string;
+  meta_template_components?: object[];
+  messaging_tier?: 1 | 2 | 3;
+  budget_min?: number | null;
+  budget_max?: number | null;
+  area_interest?: string | null;
+}): Promise<import("@/types").Campaign> =>
+  api.post("/campaigns/", data).then(r => r.data);
+
 // ── Billing ───────────────────────────────────────────────────────────────────
 export const getBillingUsage = () =>
   api.get("/billing/usage/");
@@ -588,6 +619,9 @@ export const verifyWhatsAppConnection = (): Promise<{ ok: boolean; detail: strin
 
 export const sendWhatsAppTestMessage = (): Promise<{ ok: boolean }> =>
   api.post("/whatsapp/config/test-message/").then((r) => r.data);
+
+export const syncWaProfile = (): Promise<{ status: string; synced_at: string | null }> =>
+  api.post("/whatsapp/config/sync/").then((r) => r.data);
 
 // ── feature_talk_to_agent ──────────────────────────────────────────────────
 

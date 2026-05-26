@@ -495,6 +495,41 @@ export interface DealReportData {
   by_gateway: Record<string, number>;
 }
 
+// ── BI Analytics ─────────────────────────────────────────────────────────────
+
+export interface FunnelStage {
+  stage: string;
+  count: number;
+  conversion: number;
+}
+
+export interface FunnelData {
+  stages: FunnelStage[];
+  total_leads: number;
+  overall_conversion: number;
+}
+
+export interface WaTokenMonth {
+  period: string;
+  tokens: number;
+}
+
+export interface WaTokenData {
+  monthly: WaTokenMonth[];
+  current_period: string;
+  current_month: number;
+  total_6m: number;
+}
+
+export interface SpeedLeaderboardEntry {
+  rank: number;
+  agent_id: number;
+  name: string;
+  avg_response_time_hours: number | null;
+  closed_deals: number;
+  rating: number;
+}
+
 export type CampaignStatus = 'draft' | 'scheduled' | 'sending' | 'sent' | 'cancelled' | 'failed';
 export interface BillingDimension {
   used: number;
@@ -531,6 +566,13 @@ export interface Campaign {
   name: string;
   message_template: string;
   audience_filter: CampaignAudienceFilter;
+  meta_template_name: string | null;
+  meta_template_language: string;
+  meta_template_components: object[];
+  messaging_tier: 1 | 2 | 3;
+  budget_min: number | null;
+  budget_max: number | null;
+  area_interest: string | null;
   scheduled_at: string | null;
   status: CampaignStatus;
   recipient_count: number;
@@ -541,6 +583,22 @@ export interface Campaign {
   created_by_name: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface MetaTemplate {
+  name: string;
+  language: string;
+  category: string;
+  body_preview: string;
+  components: object[];
+}
+
+export interface CampaignProgress {
+  total: number;
+  sent: number;
+  failed: number;
+  pending: number;
+  pct_complete: number;
 }
 
 export interface AdminOrganization {
@@ -612,6 +670,13 @@ export interface OrgWhatsAppConfig {
   ai_enabled: boolean;
   auto_reply_enabled: boolean;
   otp_template_name: string;
+  waba_id: string;
+  // Directory discovery fields
+  directory_keywords: string[];
+  category_tags: string[];
+  localized_greeting: string;
+  support_hours: Record<string, { open: string; close: string; closed: boolean }>;
+  meta_profile_synced_at: string | null;
 }
 
 // ── feature_talk_to_agent ──────────────────────────────────────────────────
