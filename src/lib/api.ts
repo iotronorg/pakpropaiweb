@@ -1,6 +1,8 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api/v1";
+// Server root — used for /public/* endpoints that sit outside /api/v1/
+const SERVER_ROOT = BASE_URL.replace(/\/api\/v1\/?$/, "");
 
 const MUTATING = new Set(["post", "put", "patch", "delete"]);
 
@@ -630,3 +632,185 @@ export const takeControl = (sessionId: string): Promise<import("@/types").TakeCo
 
 export const releaseControl = (sessionId: string): Promise<{ conversation_mode: import("@/types").ConversationMode }> =>
   api.post(`/whatsapp/sessions/${sessionId}/release-control/`).then((r) => r.data);
+
+// ── Observability ──────────────────────────────────────────────────────────
+
+export const getOpsMetrics = (): Promise<import("@/types").OpsMetrics> =>
+  api.get("/observability/metrics/").then((r) => r.data);
+
+export const getTraceStats = (
+  route: string,
+  hours?: number
+): Promise<import("@/types").TraceStats> =>
+  api.get("/observability/traces/", { params: { route, hours } }).then((r) => r.data);
+
+// ── Privacy compliance ─────────────────────────────────────────────────────
+
+export const getPrivacyAuditLog = (params?: {
+  action?: string;
+  jurisdiction?: string;
+}): Promise<import("@/types").PrivacyAuditLogEntry[]> =>
+  api.get("/compliance/privacy-audit/", { params }).then((r) => r.data);
+
+export const initiateRTBF = (
+  phone_e164: string,
+  reason: string
+): Promise<{ request_id: string }> =>
+  api.post("/compliance/rtbf/initiate/", { phone_e164, reason }).then((r) => r.data);
+
+export const getRTBFStatus = (requestId: string): Promise<import("@/types").RTBFRequest> =>
+  api.get(`/compliance/rtbf/${requestId}/`).then((r) => r.data);
+
+export const exportPrivacyAudit = (orgId?: string): Promise<Blob> =>
+  api
+    .get("/compliance/privacy-audit/export/", {
+      params: orgId ? { org: orgId } : undefined,
+      responseType: "blob",
+    })
+    .then((r) => r.data);
+
+export const getPIIDetectionSummary = (): Promise<import("@/types").PIIDetectionSummary> =>
+  api.get("/compliance/pii-detections/summary/").then((r) => r.data);
+
+// ── Token governance ──────────────────────────────────────────────────────────
+
+export interface TokenUsageParams {
+  org?: string;
+  start?: string;
+  end?: string;
+  intent?: string;
+  model?: string;
+}
+
+export const getTokenUsageStats = (params?: TokenUsageParams): Promise<import("@/types").TokenUsageStats> =>
+  api.get("/ai/token-usage/", { params }).then((r) => r.data);
+
+export const getTokenBudget = (orgId?: string): Promise<import("@/types").TokenBudgetStatus> =>
+  api.get("/ai/token-budget/", { params: orgId ? { org: orgId } : undefined }).then((r) => r.data);
+
+// ── Compliance / AML ──────────────────────────────────────────────────────────
+
+export const getComplianceScreenings = (params?: { status?: string; date_from?: string }): Promise<import("@/types").SanctionScreeningResult[]> =>
+  api.get("/compliance/screenings/", { params }).then((r) => r.data);
+
+export const getComplianceSanctions = (): Promise<import("@/types").ComplianceSanctionRecord[]> =>
+  api.get("/compliance/sanctions/").then((r) => r.data);
+
+export const createComplianceSanction = (data: {
+  name: string;
+  id_number?: string;
+  id_type?: string;
+  list_source: string;
+  risk_level: string;
+}): Promise<{ id: string }> =>
+  api.post("/compliance/sanctions/", data).then((r) => r.data);
+
+export const deleteComplianceSanction = (id: string): Promise<void> =>
+  api.delete(`/compliance/sanctions/${id}/`).then((r) => r.data);
+
+export const exportComplianceReport = (orgId?: string): Promise<Blob> =>
+  api.get("/compliance/screenings/export/", {
+    params: orgId ? { org: orgId } : undefined,
+    responseType: "blob",
+  }).then((r) => r.data);
+
+// ── Public (unauthenticated) viral referral endpoints ────────────────────────
+
+const _viralApi = axios.create({
+  baseURL: SERVER_ROOT,
+  headers: { "Content-Type": "application/json" },
+  withCredentials: false,
+});
+
+export interface PublicPlatformStats {
+  total_verifications: number;
+  scams_caught: number;
+  active_orgs: number;
+  leads_generated_today: number;
+}
+
+export interface ReferralConvertResult {
+  org_whatsapp_number: string;
+  org_slug: string;
+}
+
+export const getPublicPlatformStats = (): Promise<PublicPlatformStats> =>
+  _viralApi.get("/public/platform-stats/").then((r) => r.data);
+
+export const submitReferralConversion = (data: {
+  ref: string;
+  phone: string;
+  source?: string;
+}): Promise<ReferralConvertResult> =>
+  _viralApi.post("/public/referral/convert/", data).then((r) => r.data);
+
+// Provisioning
+import type { OrgProvisioningRecord } from "@/types";
+
+export const getProvisioningStatus = (): Promise<OrgProvisioningRecord> =>
+  api.get("/api/v1/provisioning/status/").then((r) => r.data);
+
+export const startProvisioning = (): Promise<{ detail: string }> =>
+  api.post("/api/v1/provisioning/start/").then((r) => r.data);
+
+export const retryProvisioning = (): Promise<{ detail: string }> =>
+  api.post("/api/v1/provisioning/retry/").then((r) => r.data);
+
+// Inventory integrations
+import type {
+  ExternalPlatformConnection,
+  SyncConflictAlert,
+  WebhookDeliveryRecord,
+  ConnectionTestResult,
+} from "@/types";
+
+export const getConnections = (): Promise<ExternalPlatformConnection[]> =>
+  api.get("/api/v1/inventory/connections/").then((r) => r.data.results ?? r.data);
+
+export const createConnection = (
+  data: Partial<ExternalPlatformConnection>
+): Promise<ExternalPlatformConnection> =>
+  api.post("/api/v1/inventory/connections/", data).then((r) => r.data);
+
+export const updateConnection = (
+  id: string,
+  data: Partial<ExternalPlatformConnection>
+): Promise<ExternalPlatformConnection> =>
+  api.patch(`/api/v1/inventory/connections/${id}/`, data).then((r) => r.data);
+
+export const deleteConnection = (id: string): Promise<void> =>
+  api.delete(`/api/v1/inventory/connections/${id}/`).then((r) => r.data);
+
+export const testConnection = (id: string): Promise<ConnectionTestResult> =>
+  api.post(`/api/v1/inventory/connections/${id}/test/`).then((r) => r.data);
+
+export const triggerSync = (id: string): Promise<{ detail: string }> =>
+  api.post(`/api/v1/inventory/connections/${id}/sync/`).then((r) => r.data);
+
+export const getSyncLogs = (id: string): Promise<WebhookDeliveryRecord[]> =>
+  api.get(`/api/v1/inventory/connections/${id}/logs/`).then((r) => r.data);
+
+export const getConflicts = (): Promise<SyncConflictAlert[]> =>
+  api.get("/api/v1/inventory/conflicts/").then((r) => r.data.results ?? r.data);
+
+export const resolveConflict = (
+  id: string,
+  resolution: "internal_wins" | "external_wins" | "manual"
+): Promise<SyncConflictAlert> =>
+  api
+    .patch(`/api/v1/inventory/conflicts/${id}/resolve/`, { resolution })
+    .then((r) => r.data);
+
+// ── SLA / Resilience ────────────────────────────────────────────────────────
+export const getSlaStatus = () =>
+  api.get('/api/v1/sla/status/').then((r) => r.data as import('@/types').SlaStatus)
+
+export const resetCircuit = (service: string) =>
+  api.post(`/api/v1/sla/circuits/${service}/reset/`).then((r) => r.data)
+
+// ── Organization Theme ──────────────────────────────────────────────────────
+export const getOrgTheme = () =>
+  api.get('/api/v1/organizations/me/theme/').then((r) => r.data as import('@/types').OrgTheme)
+
+export const updateOrgTheme = (data: Partial<import('@/types').OrgTheme>) =>
+  api.put('/api/v1/organizations/me/theme/', data).then((r) => r.data as import('@/types').OrgTheme)

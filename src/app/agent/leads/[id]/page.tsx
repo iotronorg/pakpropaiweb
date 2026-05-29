@@ -293,12 +293,20 @@ export default function LeadDetailPage() {
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {lead.wa_session_id && (
-            <button
-              onClick={() => router.push(`/agent/leads/${id}/live-chat`)}
-              className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md transition-colors"
-            >
-              Live Chat
-            </button>
+            <>
+              <button
+                onClick={() => router.push(`/agent/leads/${id}/live-chat`)}
+                className="px-4 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-semibold rounded-md transition-colors"
+              >
+                Live Chat
+              </button>
+              <button
+                onClick={() => router.push(`/agent/leads/${id}/copilot`)}
+                className="px-4 py-1.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold rounded-md transition-colors"
+              >
+                Co-Pilot
+              </button>
+            </>
           )}
           <span className="text-xs text-gray-500">Status:</span>
           {STATUS_OPTIONS.map((s) => (

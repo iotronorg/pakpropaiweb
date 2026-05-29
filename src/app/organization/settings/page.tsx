@@ -6,6 +6,8 @@ import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getO
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { PasswordChangeCard } from "@/components/settings/PasswordChangeCard";
 import { WhatsAppIntegrationCard } from "@/components/settings/WhatsAppIntegrationCard";
+import { ThemeCustomizationCard } from "@/components/settings/ThemeCustomizationCard";
+import { useTokenBudget as _useTokenBudget } from "@/hooks/useTokenBudget";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { PricingModal } from "@/components/ui/PricingModal";
 import { LOCALE_LABELS, locales, type Locale } from "@/i18n/config";
@@ -82,6 +84,70 @@ function SensitiveInput({ value, onChange, placeholder }: { value: string; onCha
       <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600">
         {show ? "Hide" : "Show"}
       </button>
+    </div>
+  );
+}
+
+function OrgTokenBudgetPanel() {
+  const { budget, isLoading } = _useTokenBudget();
+
+  const stateColors: Record<string, string> = {
+    ok: "bg-green-500",
+    warning: "bg-amber-400",
+    throttled: "bg-orange-500",
+    hard_limit: "bg-red-600",
+  };
+  const stateBadge: Record<string, string> = {
+    ok: "bg-green-100 text-green-700",
+    warning: "bg-amber-100 text-amber-700",
+    throttled: "bg-orange-100 text-orange-700",
+    hard_limit: "bg-red-100 text-red-700",
+  };
+
+  const used = budget?.used ?? 0;
+  const limit = budget?.limit ?? 1;
+  const pct = Math.min((used / limit) * 100, 100);
+  const state = budget?.state ?? "ok";
+
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-sm font-semibold text-gray-800">AI Usage</h2>
+        {!isLoading && budget && (
+          <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${stateBadge[state] ?? stateBadge.ok}`}>
+            {state.replace("_", " ")}
+          </span>
+        )}
+      </div>
+
+      {isLoading ? (
+        <div className="animate-pulse rounded-lg bg-gray-100 h-10" />
+      ) : budget ? (
+        <>
+          <div>
+            <div className="flex justify-between text-xs text-gray-500 mb-1">
+              <span>{used.toLocaleString()} tokens used</span>
+              <span>{limit.toLocaleString()} limit / 24h</span>
+            </div>
+            <div className="w-full bg-gray-100 rounded-full h-3">
+              <div
+                className={`h-3 rounded-full transition-all ${stateColors[state] ?? stateColors.ok}`}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <p className="mt-1 text-xs text-gray-400">{budget.percent.toFixed(1)}% of daily budget consumed</p>
+          </div>
+          {state !== "ok" && (
+            <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
+              {state === "warning" && "You have used more than 80% of your daily AI token budget."}
+              {state === "throttled" && "AI responses may be delayed — you have used 95%+ of your daily budget."}
+              {state === "hard_limit" && "Daily AI token budget exhausted. AI responses will use the fallback message until reset."}
+            </p>
+          )}
+        </>
+      ) : (
+        <p className="text-xs text-gray-400">No budget data available.</p>
+      )}
     </div>
   );
 }
@@ -651,6 +717,12 @@ export default function OrgSettingsPage() {
           </div>
         )}
       </div>
+
+      {/* AI Usage */}
+      <OrgTokenBudgetPanel />
+
+      {/* Brand Customization */}
+      <ThemeCustomizationCard />
 
       {/* WhatsApp Integration */}
       <WhatsAppIntegrationCard />

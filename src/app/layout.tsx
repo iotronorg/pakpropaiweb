@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import "./globals.css";
 import { Providers } from "./providers";
 import { defaultLocale, isRTL, LOCALE_COOKIE, locales, type Locale } from "@/i18n/config";
+import { fetchTenantTheme, buildCssVars } from "@/lib/theme";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
@@ -22,6 +23,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const messages = (await import(`@/messages/${locale}.json`)).default;
   const dir = isRTL(locale) ? "rtl" : "ltr";
 
+  const host  = (await headers()).get('host') ?? ''
+  const theme = await fetchTenantTheme(host)
+  const css   = buildCssVars(theme)
+
   return (
     <html
       lang={locale}
@@ -29,6 +34,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       className={`${geistSans.variable} h-full antialiased`}
       data-scroll-behavior="smooth"
     >
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: `:root{${css}}` }} />
+      </head>
       <body className="min-h-full bg-[var(--bg-base)] text-[var(--text-primary)]">
         <Providers locale={locale} messages={messages}>
           {children}

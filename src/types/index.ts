@@ -738,3 +738,247 @@ export interface AgentLeaderboardEntry {
   closed_deals: number;
   rating: number;
 }
+
+export interface OpsMetrics {
+  error_distribution: Record<string, number>;
+  dlq_depth: number;
+  p99_latencies: Record<string, number>;
+  active_connections: {
+    websocket: number;
+    celery_workers: number;
+    redis: number;
+    postgres: number;
+  };
+  as_of: string;
+}
+
+export interface TraceStats {
+  route: string;
+  p50_ms: number;
+  p95_ms: number;
+  p99_ms: number;
+  sample_count: number;
+}
+
+export interface PrivacyAuditLogEntry {
+  id: string;
+  action: 'pii_detected' | 'erasure_initiated' | 'erasure_completed' | 'consent_change' | 'export_generated' | 'data_transfer_checked';
+  actor_id: string | null;
+  subject_identifier: string;
+  jurisdiction: string;
+  regulation: string;
+  details: Record<string, unknown>;
+  is_sensitive: boolean;
+  created_at: string;
+}
+
+export interface RTBFRequest {
+  id: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  regulation: string | null;
+  request_source: 'manual' | 'api' | 'automated';
+  requested_at: string;
+  completed_at: string | null;
+  erasure_scope: Record<string, unknown> | null;
+}
+
+export type PIIDetectionSummary = Record<string, number>;
+
+export interface JurisdictionStatus {
+  org_id: string;
+  regulations: string[];
+  data_residency_region: string;
+  transfer_restrictions: string[];
+}
+
+export interface TokenUsageStats {
+  total_tokens_in: number;
+  total_tokens_out: number;
+  total_calls: number;
+  cache_hits: number;
+  cache_hit_rate: number;
+  estimated_usd_cost: number;
+  estimated_savings_usd: number;
+}
+
+export interface TokenBudgetStatus {
+  used: number;
+  limit: number;
+  percent: number;
+  state: 'ok' | 'warning' | 'throttled' | 'hard_limit';
+}
+
+export interface ComplianceSanctionRecord {
+  id: string;
+  name: string;
+  id_number_prefix: string;
+  id_type: string;
+  list_source: string;
+  risk_level: 'high' | 'medium' | 'low';
+  org_id: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface SanctionScreeningResult {
+  screening_id: string;
+  screened_name: string;
+  id_number_prefix: string;
+  list_source: string;
+  match_type: string;
+  risk_score: number;
+  deal_lock_id: string | null;
+  org_id: string | null;
+  status: 'clear' | 'flagged' | 'blocked';
+  screened_at: string;
+}
+
+export interface FBRTaxResult {
+  country: string;
+  supported: boolean;
+  wht_amount: number;
+  cgt_amount: number;
+  effective_rate: number;
+  breakdown: Record<string, unknown>;
+}
+
+export interface ComplianceStats {
+  total_screenings: number;
+  flagged: number;
+  blocked: number;
+  clear_rate: number;
+}
+
+export type ProvisioningMode = 'sandbox' | 'provisioning' | 'production' | 'failed';
+
+export interface OrgProvisioningRecord {
+  operational_mode: ProvisioningMode;
+  last_step: string;
+  error_detail: string;
+  waba_verified_at: string | null;
+  webhook_verified_at: string | null;
+  templates_approved_at: string | null;
+  data_migrated_at: string | null;
+  sandbox_leads_migrated: number;
+  sandbox_sessions_migrated: number;
+  sandbox_properties_migrated: number;
+  updated_at: string;
+}
+
+export type SyncDirection = 'inbound' | 'outbound' | 'bidirectional';
+export type ConflictResolution = 'internal_wins' | 'external_wins' | 'manual';
+export type SyncStatus = 'idle' | 'syncing' | 'error' | 'paused';
+export type InventoryPlatform = 'zameen' | 'propertyfinder' | 'bayut' | 'rightmove' | 'zillow' | 'custom';
+
+export type FieldMapping = Record<string, string>;
+
+export interface ExternalPlatformConnection {
+  id: string;
+  platform: InventoryPlatform;
+  api_key: string;
+  api_secret: string;
+  base_url: string;
+  is_active: boolean;
+  sync_direction: SyncDirection;
+  conflict_resolution: ConflictResolution;
+  last_synced_at: string | null;
+  sync_status: SyncStatus;
+  error_detail: string;
+  field_mappings: FieldMapping;
+  created_at: string;
+}
+
+export interface SyncConflictAlert {
+  id: string;
+  org: string;
+  connection: string;
+  property: string;
+  external_delta: Record<string, unknown>;
+  internal_state: Record<string, unknown>;
+  resolution: 'pending' | 'internal_wins' | 'external_wins' | 'manual';
+  created_at: string;
+  resolved_at: string | null;
+  resolved_by: string | null;
+}
+
+export interface WebhookDeliveryRecord {
+  id: string;
+  event_type: string;
+  payload: Record<string, unknown>;
+  status: 'pending' | 'delivered' | 'failed';
+  attempt_count: number;
+  delivered_at: string | null;
+  error_detail: string;
+  created_at: string;
+}
+
+export type SyncLog = WebhookDeliveryRecord;
+
+export interface ConnectionTestResult {
+  status: 'connected' | 'error';
+  detail: string;
+}
+
+// ── Co-Pilot ──────────────────────────────────────────────────────────────────
+export type CopilotRecommendationType = 'inventory_card' | 'doc_link' | 'tax_sheet' | 'ai_response'
+
+export interface CopilotInventoryCard {
+  property_id:   string
+  title:         string
+  bedrooms:      number | null
+  price:         number | null
+  currency:      string
+  area_sqm:      number | null
+  thumbnail_url: string | null
+}
+
+export interface CopilotTaxSheet {
+  wht_amount:    number
+  cgt_amount:    number
+  effective_rate: number
+  breakdown:     Record<string, number>
+}
+
+export interface CopilotAIResponse {
+  suggested_reply: string
+  confidence:      number
+}
+
+export interface CopilotDocLink {
+  document_id: string
+  title:       string
+  url:         string
+  doc_type:    string
+}
+
+export interface CopilotRecommendation {
+  id:                  string
+  recommendation_type: CopilotRecommendationType
+  content:             CopilotInventoryCard | CopilotTaxSheet | CopilotAIResponse | CopilotDocLink
+  created_at:          string
+}
+
+// ── Circuit Breaker / SLA ─────────────────────────────────────────────────────
+export type CircuitState = 'CLOSED' | 'OPEN' | 'HALF_OPEN'
+
+export interface CircuitInfo {
+  state: CircuitState
+  error_rate: number
+  is_open: boolean
+  updated_at: string
+}
+
+export interface SlaStatus {
+  circuits: Record<string, CircuitState>
+  outages: Record<string, { is_open: boolean; error_rate: number; updated_at: string }>
+  queue_isolation: { isolated_orgs: string[]; total_monitored: number }
+  as_of: string
+}
+
+export interface OrgTheme {
+  primary_color:   string
+  secondary_color: string
+  accent_color:    string
+  logo_url:        string
+  updated_at:      string | null
+}
