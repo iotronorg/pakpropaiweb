@@ -82,10 +82,10 @@ function LeadPicker({ value, label, onChange }: {
             <button
               key={l.id}
               onClick={() => select(l)}
-              className="w-full text-left px-3 py-2.5 text-sm hover:bg-blue-50 border-b border-gray-50 last:border-0"
+              className="w-full text-start px-3 py-2.5 text-sm hover:bg-blue-50 border-b border-gray-50 last:border-0"
             >
               <span className="font-medium text-gray-800">{l.name || "Unknown"}</span>
-              <span className="ml-2 font-mono text-xs text-gray-400">{l.phone}</span>
+              <span className="ms-2 font-mono text-xs text-gray-400">{l.phone}</span>
             </button>
           ))}
         </div>
@@ -297,7 +297,7 @@ export default function AdminAppointmentsPage() {
         <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
                 <th className="px-6 py-3">Lead</th>
                 <th className="px-6 py-3">Property</th>
                 <th className="px-6 py-3">Agent</th>

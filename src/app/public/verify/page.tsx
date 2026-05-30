@@ -101,7 +101,7 @@ function VerifyContent() {
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+923001234567"
                     required
-                    className="w-full pl-9 pr-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                    className="w-full ps-9 pe-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   />
                 </div>
               </div>

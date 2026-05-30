@@ -444,7 +444,7 @@ function CampaignCard({ campaign, onEdit, onSchedule }: {
         {canDelete && (
           <button onClick={() => { if (confirm("Delete this campaign?")) deleteMut.mutate(); }}
             disabled={deleteMut.isPending}
-            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 disabled:opacity-50 cursor-pointer ml-auto">
+            className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 disabled:opacity-50 cursor-pointer ms-auto">
             Delete
           </button>
         )}

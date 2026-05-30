@@ -119,7 +119,7 @@ export default function MarketTrendsPage() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600">Period</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600">Period</th>
                   <th className="text-right px-4 py-3 font-semibold text-gray-600">Avg Price</th>
                   <th className="text-right px-4 py-3 font-semibold text-gray-600">Listings</th>
                 </tr>

@@ -67,10 +67,10 @@ function SyndicateInventoryTab() {
       <table className="w-full text-sm border rounded-lg overflow-hidden">
         <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
           <tr>
-            <th className="px-4 py-3 text-left">Property</th>
-            <th className="px-4 py-3 text-left">Status</th>
-            <th className="px-4 py-3 text-left">Commission</th>
-            <th className="px-4 py-3 text-left">Scope</th>
+            <th className="px-4 py-3 text-start">Property</th>
+            <th className="px-4 py-3 text-start">Status</th>
+            <th className="px-4 py-3 text-start">Commission</th>
+            <th className="px-4 py-3 text-start">Scope</th>
             <th className="px-4 py-3" />
           </tr>
         </thead>
@@ -172,10 +172,10 @@ function PartnerNetworkTab() {
       <table className="w-full text-sm border rounded-lg overflow-hidden">
         <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
           <tr>
-            <th className="px-4 py-3 text-left">Partner</th>
-            <th className="px-4 py-3 text-left">Status</th>
-            <th className="px-4 py-3 text-left">Commission Override</th>
-            <th className="px-4 py-3 text-left">Joined</th>
+            <th className="px-4 py-3 text-start">Partner</th>
+            <th className="px-4 py-3 text-start">Status</th>
+            <th className="px-4 py-3 text-start">Commission Override</th>
+            <th className="px-4 py-3 text-start">Joined</th>
             <th className="px-4 py-3" />
           </tr>
         </thead>
@@ -249,11 +249,11 @@ function InboundSubmissionsTab() {
     <table className="w-full text-sm border rounded-lg overflow-hidden">
       <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
         <tr>
-          <th className="px-4 py-3 text-left">Lead</th>
-          <th className="px-4 py-3 text-left">Listing</th>
-          <th className="px-4 py-3 text-left">Submitted By</th>
-          <th className="px-4 py-3 text-left">Commission</th>
-          <th className="px-4 py-3 text-left">Status</th>
+          <th className="px-4 py-3 text-start">Lead</th>
+          <th className="px-4 py-3 text-start">Listing</th>
+          <th className="px-4 py-3 text-start">Submitted By</th>
+          <th className="px-4 py-3 text-start">Commission</th>
+          <th className="px-4 py-3 text-start">Status</th>
           <th className="px-4 py-3" />
         </tr>
       </thead>
@@ -318,11 +318,11 @@ function CommissionLedgerTab() {
       <table className="w-full text-sm border rounded-lg overflow-hidden">
         <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
           <tr>
-            <th className="px-4 py-3 text-left">Entry ID</th>
-            <th className="px-4 py-3 text-left">Broker</th>
-            <th className="px-4 py-3 text-left">Commission</th>
-            <th className="px-4 py-3 text-left">Status</th>
-            <th className="px-4 py-3 text-left">Created</th>
+            <th className="px-4 py-3 text-start">Entry ID</th>
+            <th className="px-4 py-3 text-start">Broker</th>
+            <th className="px-4 py-3 text-start">Commission</th>
+            <th className="px-4 py-3 text-start">Status</th>
+            <th className="px-4 py-3 text-start">Created</th>
           </tr>
         </thead>
         <tbody className="divide-y">

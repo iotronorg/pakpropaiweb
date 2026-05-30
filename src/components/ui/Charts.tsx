@@ -214,7 +214,7 @@ export function LeadPipelineFunnel({ data }: { data: FunnelStep[] }) {
             </div>
             <div className="w-full bg-gray-100 rounded-full h-5">
               <div
-                className={`h-5 rounded-full ${step.color} transition-all flex items-center justify-end pr-2`}
+                className={`h-5 rounded-full ${step.color} transition-all flex items-center justify-end pe-2`}
                 style={{ width: `${pct}%` }}
               />
             </div>

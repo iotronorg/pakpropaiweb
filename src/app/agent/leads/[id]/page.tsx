@@ -516,7 +516,7 @@ export default function LeadDetailPage() {
           <Section title="WhatsApp Conversation">
             <div className="flex flex-col h-[500px]">
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto space-y-3 pr-1 mb-4">
+              <div className="flex-1 overflow-y-auto space-y-3 pe-1 mb-4">
                 {msgsLoading ? (
                   <div className="flex justify-center py-8"><LoadingSpinner /></div>
                 ) : messages.length === 0 ? (
@@ -550,7 +550,7 @@ export default function LeadDetailPage() {
                     <button
                       key={i}
                       onClick={() => setMessage(s)}
-                      className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs text-blue-700 hover:bg-blue-100 transition-colors text-left max-w-full truncate"
+                      className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1.5 text-xs text-blue-700 hover:bg-blue-100 transition-colors text-start max-w-full truncate"
                       title={s}
                     >
                       {s}

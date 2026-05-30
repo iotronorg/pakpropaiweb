@@ -279,7 +279,7 @@ export default function OrgAnalyticsPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   {["#", "Agent", "Avg Response", "Closed Deals", "Rating"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
@@ -390,7 +390,7 @@ export default function OrgAnalyticsPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   {["Rank", "Agent", "City", "Leads", "Qualified", "Closed Deals", "Rating", "Verified"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}

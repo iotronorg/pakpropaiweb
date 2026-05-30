@@ -179,7 +179,7 @@ export default function AdminOrganizationsPage() {
         <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
                 <th className="px-5 py-3">Organization</th>
                 <th className="px-5 py-3">Type</th>
                 <th className="px-5 py-3">Plan</th>

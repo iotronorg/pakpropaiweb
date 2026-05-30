@@ -397,7 +397,7 @@ export default function AgentListingsPage() {
             }`}
           >
             {f.charAt(0).toUpperCase() + f.slice(1)}
-            <span className={`ml-1.5 ${filter === f ? "text-blue-200" : "text-gray-400"}`}>
+            <span className={`ms-1.5 ${filter === f ? "text-blue-200" : "text-gray-400"}`}>
               {counts[f]}
             </span>
           </button>

@@ -131,7 +131,7 @@ export default function AgentOverview() {
                       <p className="text-sm font-medium text-gray-900 truncate">{d.property_title}</p>
                       <p className="text-xs text-gray-400">{d.property_city} · {formatCurrency(d.token_amount, d.currency)}</p>
                     </div>
-                    <div className="flex items-center gap-3 flex-shrink-0 ml-4">
+                    <div className="flex items-center gap-3 flex-shrink-0 ms-4">
                       {d.status === "locked" && d.hours_remaining !== null && (
                         <span className={`text-xs font-bold ${d.hours_remaining < 6 ? "text-red-600" : "text-green-600"}`}>
                           {d.hours_remaining.toFixed(1)}h left

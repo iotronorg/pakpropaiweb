@@ -63,7 +63,7 @@ function SensitiveInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={isConfigured ? "Leave blank to keep current value" : placeholder}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-16 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        className="w-full rounded-lg border border-gray-300 px-3 py-2 pe-16 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
       <button
         type="button"
@@ -402,7 +402,7 @@ export default function SetupPage() {
                   key={value}
                   type="button"
                   onClick={() => setBillingGwVal(value)}
-                  className={`rounded-lg border-2 p-4 text-left transition-all ${
+                  className={`rounded-lg border-2 p-4 text-start transition-all ${
                     billingGwVal === value
                       ? "border-blue-500 bg-blue-50"
                       : "border-gray-200 bg-white hover:border-gray-300"
@@ -412,7 +412,7 @@ export default function SetupPage() {
                     <div className={`h-4 w-4 rounded-full border-2 flex-shrink-0 ${billingGwVal === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
                     <span className="text-sm font-semibold text-gray-900">{label}</span>
                   </div>
-                  <p className="text-xs text-gray-500 ml-6">{desc}</p>
+                  <p className="text-xs text-gray-500 ms-6">{desc}</p>
                 </button>
               ))}
             </div>
@@ -582,7 +582,7 @@ export default function SetupPage() {
                   key={value}
                   type="button"
                   onClick={() => setGwVal(value)}
-                  className={`rounded-lg border-2 p-4 text-left transition-all ${
+                  className={`rounded-lg border-2 p-4 text-start transition-all ${
                     gwVal === value
                       ? "border-blue-500 bg-blue-50"
                       : "border-gray-200 bg-white hover:border-gray-300"
@@ -596,7 +596,7 @@ export default function SetupPage() {
                     />
                     <span className="text-sm font-semibold text-gray-900">{label}</span>
                   </div>
-                  <p className="text-xs text-gray-500 ml-6">{desc}</p>
+                  <p className="text-xs text-gray-500 ms-6">{desc}</p>
                 </button>
               ))}
             </div>
@@ -707,7 +707,7 @@ export default function SetupPage() {
                   key={key}
                   className="flex items-start justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3"
                 >
-                  <div className="mr-4">
+                  <div className="me-4">
                     <p className="text-sm font-medium text-gray-800">{label}</p>
                     <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
                   </div>
@@ -724,7 +724,7 @@ export default function SetupPage() {
           <div className="border-t border-gray-100 px-6 py-5">
             <h3 className="text-sm font-semibold text-gray-800 mb-1">Search Settings</h3>
             <div className="flex items-start justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
-              <div className="mr-4">
+              <div className="me-4">
                 <p className="text-sm font-medium text-gray-800">Allow third-party search</p>
                 <p className="text-xs text-gray-500 mt-0.5">
                   When enabled, searches also pull listings from Zameen, Graana, and OLX. When disabled,

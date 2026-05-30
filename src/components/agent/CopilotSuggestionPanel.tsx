@@ -87,7 +87,7 @@ function DocLinkSlot({ doc }: { doc: CopilotDocLink }) {
           href={doc.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-2 shrink-0 rounded bg-gray-200 px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-300"
+          className="ms-2 shrink-0 rounded bg-gray-200 px-2 py-0.5 text-xs text-gray-600 hover:bg-gray-300"
         >
           Open
         </a>

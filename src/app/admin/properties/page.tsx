@@ -71,7 +71,7 @@ function AiAnalysisSection({ analysis }: { analysis: Record<string, unknown> }) 
     <div className="col-span-2 border border-blue-100 rounded-lg bg-blue-50/40 overflow-hidden">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between px-4 py-2.5 text-left"
+        className="w-full flex items-center justify-between px-4 py-2.5 text-start"
       >
         <span className="text-xs font-semibold text-blue-800">AI Analysis (Gemini)</span>
         <span className="text-blue-400 text-xs">{open ? "▲" : "▼"}</span>
@@ -309,7 +309,7 @@ export default function PropertiesPage() {
         <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
                 <th className="px-5 py-3">Ref No</th>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">City</th>
@@ -440,7 +440,7 @@ export default function PropertiesPage() {
       {/* ── Detail Modal ──────────────────────────────────────────────────────── */}
       {detailProp && (
         <Modal title="Property Details" onClose={() => setDetailProp(null)}>
-          <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[70vh] overflow-y-auto pe-1">
             <DetailRow label="Ref No"      value={detailProp.ref_no} mono />
             <DetailRow label="Title"       value={detailProp.title} />
             <DetailRow label="Description" value={detailProp.description} />
@@ -522,7 +522,7 @@ function PropertyForm({
       onChange({ ...form, [key]: e.target.value });
 
   return (
-    <div className="space-y-5 max-h-[75vh] overflow-y-auto pr-1">
+    <div className="space-y-5 max-h-[75vh] overflow-y-auto pe-1">
 
       {/* Basic Info */}
       <Section label="Basic Info">
@@ -695,7 +695,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+        {label}{required && <span className="text-red-500 ms-0.5">*</span>}
       </label>
       {children}
     </div>
@@ -778,7 +778,7 @@ function OwnerPicker({
         <button
           type="button"
           onClick={() => { onSelect(null); setQuery(""); setResults([]); setSearched(false); }}
-          className="text-xs text-red-400 hover:text-red-600 font-medium ml-4"
+          className="text-xs text-red-400 hover:text-red-600 font-medium ms-4"
         >
           Remove
         </button>
@@ -819,16 +819,16 @@ function OwnerPicker({
               key={u.id}
               type="button"
               onClick={() => { onSelect(u); setResults([]); setSearched(false); }}
-              className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-50 text-left transition-colors"
+              className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-50 text-start transition-colors"
             >
               <div>
                 <span className="text-sm font-medium text-gray-800">{u.name || "(no name)"}</span>
-                <span className="ml-2">
+                <span className="ms-2">
                   <Badge label={ROLE_LABEL[u.role] ?? u.role} variant={ROLE_VARIANT[u.role] ?? "gray"} />
                 </span>
                 <p className="text-xs font-mono text-gray-500">{u.phone}</p>
               </div>
-              <span className="text-xs text-blue-600 font-medium ml-3">Select</span>
+              <span className="text-xs text-blue-600 font-medium ms-3">Select</span>
             </button>
           ))}
         </div>

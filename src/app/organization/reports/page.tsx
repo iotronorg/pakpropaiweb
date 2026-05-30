@@ -102,7 +102,7 @@ export default function OrgReportsPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   {["Period", "Status", "Generated On", "Download"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
@@ -153,7 +153,7 @@ export default function OrgReportsPage() {
             key={opt.type}
             onClick={() => genMutation.mutate(opt.type)}
             disabled={genMutation.isPending}
-            className="rounded-xl border border-gray-200 bg-white p-5 text-left hover:border-blue-200 hover:bg-blue-50/30 transition-colors group disabled:opacity-50"
+            className="rounded-xl border border-gray-200 bg-white p-5 text-start hover:border-blue-200 hover:bg-blue-50/30 transition-colors group disabled:opacity-50"
           >
             <p className="font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">
               {opt.label}
@@ -184,7 +184,7 @@ export default function OrgReportsPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   {["Type", "Status", "Created", "Ready At", "Action"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide">
                       {h}
                     </th>
                   ))}

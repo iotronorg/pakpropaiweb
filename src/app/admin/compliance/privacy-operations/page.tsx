@@ -200,27 +200,27 @@ export default function PrivacyOperationsPage() {
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold text-gray-800">Privacy Audit Log</h2>
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <table className="w-full text-start text-sm">
             <thead>
               <tr className="border-b text-xs uppercase tracking-wider text-gray-500">
-                <th className="pb-2 pr-4">Action</th>
-                <th className="pb-2 pr-4">Subject Hash</th>
-                <th className="pb-2 pr-4">Jurisdiction</th>
-                <th className="pb-2 pr-4">Regulation</th>
+                <th className="pb-2 pe-4">Action</th>
+                <th className="pb-2 pe-4">Subject Hash</th>
+                <th className="pb-2 pe-4">Jurisdiction</th>
+                <th className="pb-2 pe-4">Regulation</th>
                 <th className="pb-2">Date</th>
               </tr>
             </thead>
             <tbody>
               {auditLog.slice(0, 50).map((entry) => (
                 <tr key={entry.id} className="border-b last:border-0 hover:bg-gray-50">
-                  <td className="py-2 pr-4">
+                  <td className="py-2 pe-4">
                     <StatusBadge status={entry.action.replace(/_/g, " ")} />
                   </td>
-                  <td className="py-2 pr-4 font-mono text-xs text-gray-500">
+                  <td className="py-2 pe-4 font-mono text-xs text-gray-500">
                     {entry.subject_identifier.slice(0, 12)}…
                   </td>
-                  <td className="py-2 pr-4 text-gray-700">{entry.jurisdiction || "—"}</td>
-                  <td className="py-2 pr-4 text-gray-700">{entry.regulation || "—"}</td>
+                  <td className="py-2 pe-4 text-gray-700">{entry.jurisdiction || "—"}</td>
+                  <td className="py-2 pe-4 text-gray-700">{entry.regulation || "—"}</td>
                   <td className="py-2 text-gray-500">
                     {new Date(entry.created_at).toLocaleDateString()}
                   </td>

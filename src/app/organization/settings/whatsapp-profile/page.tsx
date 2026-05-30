@@ -125,7 +125,7 @@ export default function WhatsAppProfilePage() {
               {kw}
               <button
                 onClick={() => setKeywords((p) => p.filter((k) => k !== kw))}
-                className="ml-1 text-blue-400 hover:text-blue-700"
+                className="ms-1 text-blue-400 hover:text-blue-700"
               >
                 ×
               </button>

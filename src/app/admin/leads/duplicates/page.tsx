@@ -118,7 +118,7 @@ export default function AdminDuplicateLeadsPage() {
               </div>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left text-xs font-semibold uppercase tracking-wider text-gray-400 border-b border-amber-100">
+                  <tr className="text-start text-xs font-semibold uppercase tracking-wider text-gray-400 border-b border-amber-100">
                     <th className="px-5 py-2">Lead ID</th>
                     <th className="px-5 py-2">Phone (raw)</th>
                     <th className="px-5 py-2">Status</th>

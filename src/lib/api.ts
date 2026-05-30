@@ -267,11 +267,16 @@ export const cancelDealLock = (id: string, reason?: string) =>
   api.patch(`/deals/lock/${id}/cancel/`, { reason });
 
 // ── Payments ──────────────────────────────────────────────────────────────────
-export const createCheckout = (dealId: string, gateway: "safepay" | "bsecure") =>
+export const createCheckout = (dealId: string, gateway: "safepay" | "bsecure" | "stripe") =>
   api.post(`/payments/checkout/${dealId}/`, { gateway });
 
 export const getPayments = () =>
   api.get("/payments/");
+
+export const initiateSepaPayment = (
+  dealId: string,
+  data: { iban: string; account_name: string; mandate_accepted: true }
+) => api.post(`/payments/sepa/${dealId}/`, data);
 
 // ── Agents ────────────────────────────────────────────────────────────────────
 export const getAgentProfile = () =>

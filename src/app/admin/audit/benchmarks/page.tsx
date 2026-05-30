@@ -144,7 +144,7 @@ function BenchmarkForm({
       <td className="px-3 py-2">
         <div className="relative">
           <select
-            className={`${INPUT} appearance-none pr-6`}
+            className={`${INPUT} appearance-none pe-6`}
             value={draft.approved === null ? "null" : String(draft.approved)}
             onChange={(e) => onChange({ approved: parseApproved(e.target.value) })}
           >
@@ -288,7 +288,7 @@ export default function BenchmarksPage() {
           >
             {c === "all" ? "All Cities" : c}
             {c !== "all" && (
-              <span className="ml-1.5 opacity-60">
+              <span className="ms-1.5 opacity-60">
                 ({benchmarks.filter((b) => b.city === c).length})
               </span>
             )}
@@ -302,7 +302,7 @@ export default function BenchmarksPage() {
         <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-gray-100 text-start text-[10px] font-semibold uppercase tracking-wider text-gray-400">
                 <th className="px-3 py-3">City</th>
                 <th className="px-3 py-3">Location Key</th>
                 <th className="px-3 py-3">PPM Min</th>

@@ -77,7 +77,7 @@ export default function OrgCompliancePage() {
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
         <button
           onClick={() => toggle("pii")}
-          className="flex w-full items-center justify-between px-5 py-4 text-left"
+          className="flex w-full items-center justify-between px-5 py-4 text-start"
         >
           <SectionHeader title="PII Detection Feed (last 24h)" />
           <span className="text-gray-400">{openSection === "pii" ? "▲" : "▼"}</span>
@@ -116,7 +116,7 @@ export default function OrgCompliancePage() {
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
         <button
           onClick={() => toggle("rtbf")}
-          className="flex w-full items-center justify-between px-5 py-4 text-left"
+          className="flex w-full items-center justify-between px-5 py-4 text-start"
         >
           <SectionHeader title="Right-to-Be-Forgotten Request" />
           <span className="text-gray-400">{openSection === "rtbf" ? "▲" : "▼"}</span>
@@ -169,7 +169,7 @@ export default function OrgCompliancePage() {
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
         <button
           onClick={() => toggle("audit")}
-          className="flex w-full items-center justify-between px-5 py-4 text-left"
+          className="flex w-full items-center justify-between px-5 py-4 text-start"
         >
           <SectionHeader title="Privacy Audit Log" />
           <span className="text-gray-400">{openSection === "audit" ? "▲" : "▼"}</span>
@@ -196,7 +196,7 @@ export default function OrgCompliancePage() {
                           <span className="font-medium capitalize text-gray-700">
                             {entry.action.replace(/_/g, " ")}
                           </span>
-                          <span className="ml-2 text-xs text-gray-400">{entry.jurisdiction}</span>
+                          <span className="ms-2 text-xs text-gray-400">{entry.jurisdiction}</span>
                         </div>
                         <span className="text-xs text-gray-400">
                           {new Date(entry.created_at).toLocaleDateString()}
@@ -214,7 +214,7 @@ export default function OrgCompliancePage() {
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
         <button
           onClick={() => toggle("aml")}
-          className="flex w-full items-center justify-between px-5 py-4 text-left"
+          className="flex w-full items-center justify-between px-5 py-4 text-start"
         >
           <SectionHeader title="AML Screening" />
           <span className="text-gray-400">{openSection === "aml" ? "▲" : "▼"}</span>
@@ -250,23 +250,23 @@ export default function OrgCompliancePage() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b text-left text-xs text-gray-500">
-                          <th className="pb-2 pr-4">Name</th>
-                          <th className="pb-2 pr-4">List</th>
-                          <th className="pb-2 pr-4">Match</th>
-                          <th className="pb-2 pr-4">Risk</th>
-                          <th className="pb-2 pr-4">Status</th>
+                        <tr className="border-b text-start text-xs text-gray-500">
+                          <th className="pb-2 pe-4">Name</th>
+                          <th className="pb-2 pe-4">List</th>
+                          <th className="pb-2 pe-4">Match</th>
+                          <th className="pb-2 pe-4">Risk</th>
+                          <th className="pb-2 pe-4">Status</th>
                           <th className="pb-2">Date</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100">
                         {screenings.slice(0, 20).map((sr) => (
                           <tr key={sr.screening_id}>
-                            <td className="py-2 pr-4 font-medium text-gray-800">{sr.screened_name}</td>
-                            <td className="py-2 pr-4 text-gray-600">{sr.list_source || "—"}</td>
-                            <td className="py-2 pr-4 text-gray-600 capitalize">{sr.match_type || "—"}</td>
-                            <td className="py-2 pr-4 text-gray-600">{sr.risk_score}</td>
-                            <td className="py-2 pr-4">
+                            <td className="py-2 pe-4 font-medium text-gray-800">{sr.screened_name}</td>
+                            <td className="py-2 pe-4 text-gray-600">{sr.list_source || "—"}</td>
+                            <td className="py-2 pe-4 text-gray-600 capitalize">{sr.match_type || "—"}</td>
+                            <td className="py-2 pe-4 text-gray-600">{sr.risk_score}</td>
+                            <td className="py-2 pe-4">
                               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor(sr.status)}`}>
                                 {sr.status}
                               </span>

@@ -9,10 +9,12 @@ const plans = [
   {
     name: "Trial",
     badge: null,
+    price: "Free",
+    priceNote: "No credit card required",
     description: "Get your first pipeline live in 24 hours. No payment required.",
     highlight: false,
     features: [
-      "Up to 3 agents",
+      "Up to 2 agents",
       "100 AI-qualified leads / month",
       "WhatsApp automation (limited)",
       "Basic analytics",
@@ -23,33 +25,37 @@ const plans = [
     ctaVariant: "outline",
   },
   {
-    name: "Growth",
+    name: "Professional",
     badge: "Most Popular",
-    description: "Full AI pipeline for growing sales teams — no limits on inventory.",
+    price: "From $99/mo",
+    priceNote: "Billed monthly · cancel anytime",
+    description: "Full AI pipeline for growing sales teams. Unlimited inventory.",
     highlight: true,
     features: [
-      "Unlimited agents",
+      "Up to 50 agents",
       "Unlimited AI-qualified leads",
       "Full WhatsApp automation",
       "Deal Lock & Escrow",
       "Advanced analytics + AI insights",
       "Priority support",
     ],
-    cta: "Book a Demo",
+    cta: "Start Free Trial",
     href: "/register/organization",
     ctaVariant: "primary",
   },
   {
     name: "Enterprise",
     badge: null,
+    price: "Custom pricing",
+    priceNote: "Talk to our team",
     description: "Multi-market, multi-currency, custom compliance — built for scale.",
     highlight: false,
     features: [
-      "Everything in Growth",
+      "Everything in Professional",
       "Multi-market + multi-currency",
       "Custom compliance modules",
       "Dedicated AI training on your inventory",
-      "White-label options",
+      "White-label theming",
       "Dedicated account manager",
     ],
     cta: "Talk to Sales",
@@ -93,7 +99,7 @@ export default function PricingTeaser() {
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-6 items-start">
-          {plans.map(({ name, badge, description, highlight, features, cta, href, ctaVariant }, i) => (
+          {plans.map(({ name, badge, price, priceNote, description, highlight, features, cta, href, ctaVariant }, i) => (
             <motion.div
               key={name}
               initial={prefersReduced ? false : { opacity: 0, y: 24 }}
@@ -116,6 +122,12 @@ export default function PricingTeaser() {
               <div>
                 <div className={`text-xs font-bold uppercase tracking-widest mb-2 ${highlight ? "text-blue-200" : "text-slate-400"}`}>
                   {name}
+                </div>
+                <div className={`text-2xl font-extrabold mb-0.5 ${highlight ? "text-white" : "text-slate-900"}`}>
+                  {price}
+                </div>
+                <div className={`text-xs mb-3 ${highlight ? "text-blue-200" : "text-slate-400"}`}>
+                  {priceNote}
                 </div>
                 <p className={`text-sm leading-relaxed ${highlight ? "text-blue-100" : "text-slate-500"}`}>
                   {description}

@@ -266,7 +266,7 @@ export default function CostGovernancePage() {
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
                 {["Metric", "Value"].map((h) => (
-                  <th key={h} className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th key={h} className="px-5 py-3 text-start text-xs font-semibold uppercase tracking-wider text-gray-500">
                     {h}
                   </th>
                 ))}

@@ -104,7 +104,7 @@ export function PricingModal({ currentPlan, onClose }: Props) {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors text-xl font-light ml-4 mt-1"
+            className="text-gray-400 hover:text-gray-600 transition-colors text-xl font-light ms-4 mt-1"
             aria-label="Close"
           >
             ✕

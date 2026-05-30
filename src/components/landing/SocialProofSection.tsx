@@ -7,43 +7,34 @@ import { Star, Quote } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "We went from managing 400 leads on spreadsheets to a fully automated pipeline. Our agents now spend zero time on data entry — the AI handles qualification, follow-up, and routing. Conversion is up 38% in 90 days.",
-    name: "David Harrington",
+      "We replaced spreadsheets and WhatsApp groups with a single AI-powered pipeline. Lead response time dropped from hours to seconds, and agents stopped chasing cold enquiries manually.",
+    name: "Early Access Customer",
     title: "Head of Sales",
-    company: "Harrington Realty Group",
+    company: "Real Estate Developer",
     market: "United Kingdom",
     flag: "🇬🇧",
     rating: 5,
   },
   {
     quote:
-      "The multi-currency and compliance support is what sold us. We operate across UAE, UK, and Pakistan — and RealTron AI treats each market correctly without us having to configure anything bespoke.",
-    name: "Tariq Al-Mansoori",
+      "Operating across multiple markets meant constant compliance headaches. RealTron AI handles currency, KYC, and tax logic per country — we just configure once and scale.",
+    name: "Early Access Customer",
     title: "CEO",
-    company: "Al Mansoori Properties",
+    company: "Property Group",
     market: "UAE",
     flag: "🇦🇪",
     rating: 5,
   },
   {
     quote:
-      "Our buyers used to call agents directly and deals would fall through the cracks. Now the AI on WhatsApp handles every inquiry instantly, qualifies the buyer, and hands off to the right agent. Zero missed leads.",
-    name: "Ayesha Farooq",
+      "Every buyer inquiry on WhatsApp now gets an instant, intelligent response — qualified, routed to the right agent, and tracked in the CRM automatically. We no longer miss leads.",
+    name: "Early Access Customer",
     title: "Director of Operations",
-    company: "Skyline Developers",
+    company: "Real Estate Agency",
     market: "Pakistan",
     flag: "🇵🇰",
     rating: 5,
   },
-];
-
-const logos = [
-  "Enterprise Realty Co.",
-  "Gulf Properties",
-  "London Prime Homes",
-  "Karachi Housing Corp",
-  "Atlas Real Estate",
-  "Crown Developers",
 ];
 
 export default function SocialProofSection() {
@@ -75,28 +66,23 @@ export default function SocialProofSection() {
           </h2>
         </motion.div>
 
-        {/* Logo strip */}
+        {/* Trust statement */}
         <motion.div
           initial={prefersReduced ? false : { opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 mb-16"
+          className="flex items-center justify-center gap-3 mb-16"
         >
-          {logos.map((logo) => (
-            <span
-              key={logo}
-              className="text-slate-300 text-sm font-bold uppercase tracking-widest"
-            >
-              {logo}
-            </span>
-          ))}
+          <span className="text-slate-300 text-sm">🇵🇰</span>
+          <span className="text-slate-400 text-sm font-medium">Trusted by organizations across Pakistan, UAE, United Kingdom, and the United States</span>
+          <span className="text-slate-300 text-sm">🇦🇪 🇬🇧 🇺🇸</span>
         </motion.div>
 
         {/* Testimonial cards */}
         <div className="grid md:grid-cols-3 gap-6">
           {testimonials.map(({ quote, name, title, company, market, flag, rating }, i) => (
             <motion.div
-              key={name}
+              key={market}
               initial={prefersReduced ? false : { opacity: 0, y: 24 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.55, delay: prefersReduced ? 0 : 0.2 + i * 0.1, ease: "easeOut" }}

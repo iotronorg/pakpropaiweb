@@ -278,7 +278,7 @@ export function WhatsAppIntegrationCard() {
         <button
           type="button"
           onClick={() => setGuideOpen((o) => !o)}
-          className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 w-full text-left"
+          className="flex items-center gap-2 text-sm font-medium text-gray-700 hover:text-blue-600 w-full text-start"
         >
           <span>{guideOpen ? "▼" : "▶"}</span>
           How to Connect Your WhatsApp Business Account

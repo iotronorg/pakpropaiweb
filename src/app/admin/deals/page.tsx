@@ -193,7 +193,7 @@ export default function AdminDealsPage() {
                 <thead className="bg-gray-50 text-xs uppercase text-gray-500">
                   <tr>
                     {["Buyer", "Amount", "Gateway", "Status", "Reference", "Deal", "Date"].map(h => (
-                      <th key={h} className="px-4 py-3 text-left font-medium">{h}</th>
+                      <th key={h} className="px-4 py-3 text-start font-medium">{h}</th>
                     ))}
                   </tr>
                 </thead>
@@ -270,7 +270,7 @@ export default function AdminDealsPage() {
               </div>
 
               {/* Amount + gateway */}
-              <div className="text-right sm:text-left sm:min-w-[140px]">
+              <div className="text-right sm:text-start sm:min-w-[140px]">
                 <p className="text-lg font-bold text-gray-900">{formatCurrency(deal.token_amount, deal.currency)}</p>
                 <p className="text-xs text-gray-500">{GATEWAYS[deal.payment_gateway] ?? deal.payment_gateway}</p>
                 {deal.payment_ref && (

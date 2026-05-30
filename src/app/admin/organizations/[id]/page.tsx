@@ -291,7 +291,7 @@ export default function AdminOrgDetailPage({ params }: { params: { id: string } 
             const isOverride = overrides.includes(key);
             return (
               <div key={key} className="flex items-center justify-between px-6 py-3">
-                <div className="flex-1 min-w-0 pr-4">
+                <div className="flex-1 min-w-0 pe-4">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-gray-900">{label}</p>
                     {isOverride && (

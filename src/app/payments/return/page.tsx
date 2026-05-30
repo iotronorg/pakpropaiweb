@@ -72,7 +72,7 @@ function PaymentReturnContent() {
         </h1>
 
         {deal && (
-          <div className="bg-gray-50 rounded-xl p-4 my-5 text-left space-y-2">
+          <div className="bg-gray-50 rounded-xl p-4 my-5 text-start space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-500">Property</span>
               <span className="font-medium text-gray-900">{deal.property_title}</span>

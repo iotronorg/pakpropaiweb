@@ -93,10 +93,10 @@ export default function AgentMarketplacePage() {
             <table className="w-full text-sm">
               <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
                 <tr>
-                  <th className="px-4 py-3 text-left">Listing</th>
-                  <th className="px-4 py-3 text-left">Lead</th>
-                  <th className="px-4 py-3 text-left">Commission</th>
-                  <th className="px-4 py-3 text-left">Status</th>
+                  <th className="px-4 py-3 text-start">Listing</th>
+                  <th className="px-4 py-3 text-start">Lead</th>
+                  <th className="px-4 py-3 text-start">Commission</th>
+                  <th className="px-4 py-3 text-start">Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y">

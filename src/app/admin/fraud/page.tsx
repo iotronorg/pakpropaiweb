@@ -243,7 +243,7 @@ function FlaggedUsersTab() {
         <thead className="bg-gray-50 text-xs uppercase text-gray-500">
           <tr>
             {["Phone", "Risk", "Reason", "Flags", "Last Seen"].map(h => (
-              <th key={h} className="px-4 py-3 text-left font-medium">{h}</th>
+              <th key={h} className="px-4 py-3 text-start font-medium">{h}</th>
             ))}
           </tr>
         </thead>
@@ -368,7 +368,7 @@ function BlacklistTab() {
             <thead className="bg-gray-50 text-xs uppercase text-gray-500">
               <tr>
                 {["Token", "Reason", "Added By", "Expires", "Added", ""].map(h => (
-                  <th key={h} className="px-4 py-3 text-left font-medium">{h}</th>
+                  <th key={h} className="px-4 py-3 text-start font-medium">{h}</th>
                 ))}
               </tr>
             </thead>

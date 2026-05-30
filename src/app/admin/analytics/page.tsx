@@ -220,7 +220,7 @@ export default function AdminAnalyticsPage() {
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
                   <th className="px-5 py-3">Agent</th>
                   <th className="px-5 py-3">City</th>
                   <th className="px-5 py-3">Status</th>

@@ -68,7 +68,7 @@ export default function OrgOnboardingPage() {
                 {i < step ? "✓" : i + 1}
               </div>
               <span className={`text-sm ${i === step ? "text-white" : "text-gray-500"}`}>{s}</span>
-              {i < steps.length - 1 && <div className="flex-1 h-px bg-gray-800 ml-2" />}
+              {i < steps.length - 1 && <div className="flex-1 h-px bg-gray-800 ms-2" />}
             </div>
           ))}
         </div>
@@ -85,7 +85,7 @@ export default function OrgOnboardingPage() {
                 <button
                   key={code}
                   onClick={() => applyMarketDefaults(code)}
-                  className={`p-4 rounded-xl border text-left transition-colors
+                  className={`p-4 rounded-xl border text-start transition-colors
                     ${market === code ? "border-blue-500 bg-blue-500/10" : "border-gray-700 hover:border-gray-600"}`}
                 >
                   <p className="font-medium text-white">{cfg.label}</p>

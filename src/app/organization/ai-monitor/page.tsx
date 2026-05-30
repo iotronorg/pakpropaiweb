@@ -265,7 +265,7 @@ export default function AIMonitorPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   {["Agent", "City", "Leads", "Qualified", "Deals", "Rating", "Status"].map((h) => (
-                    <th key={h} className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <th key={h} className="px-6 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide">
                       {h}
                     </th>
                   ))}

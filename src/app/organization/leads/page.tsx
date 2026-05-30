@@ -117,7 +117,7 @@ export default function OrgLeadsPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   {["Lead", "City / Budget", "Score", "Status", "Intent", "Source", "Agent", "Actions", ""].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}

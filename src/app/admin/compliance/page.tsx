@@ -126,25 +126,25 @@ export default function AdminCompliancePage() {
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-left text-xs text-gray-500">
-                  <th className="pb-2 pr-4">Name</th>
-                  <th className="pb-2 pr-4">Org</th>
-                  <th className="pb-2 pr-4">List</th>
-                  <th className="pb-2 pr-4">Match</th>
-                  <th className="pb-2 pr-4">Risk</th>
-                  <th className="pb-2 pr-4">Status</th>
+                <tr className="border-b text-start text-xs text-gray-500">
+                  <th className="pb-2 pe-4">Name</th>
+                  <th className="pb-2 pe-4">Org</th>
+                  <th className="pb-2 pe-4">List</th>
+                  <th className="pb-2 pe-4">Match</th>
+                  <th className="pb-2 pe-4">Risk</th>
+                  <th className="pb-2 pe-4">Status</th>
                   <th className="pb-2">Date</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {screenings.map((sr) => (
                   <motion.tr key={sr.screening_id} variants={item}>
-                    <td className="py-2 pr-4 font-medium text-gray-800">{sr.screened_name}</td>
-                    <td className="py-2 pr-4 font-mono text-xs text-gray-500">{sr.org_id?.slice(0, 8) || "—"}</td>
-                    <td className="py-2 pr-4 text-gray-600">{sr.list_source || "—"}</td>
-                    <td className="py-2 pr-4 capitalize text-gray-600">{sr.match_type || "—"}</td>
-                    <td className="py-2 pr-4 text-gray-600">{sr.risk_score}</td>
-                    <td className="py-2 pr-4">
+                    <td className="py-2 pe-4 font-medium text-gray-800">{sr.screened_name}</td>
+                    <td className="py-2 pe-4 font-mono text-xs text-gray-500">{sr.org_id?.slice(0, 8) || "—"}</td>
+                    <td className="py-2 pe-4 text-gray-600">{sr.list_source || "—"}</td>
+                    <td className="py-2 pe-4 capitalize text-gray-600">{sr.match_type || "—"}</td>
+                    <td className="py-2 pe-4 text-gray-600">{sr.risk_score}</td>
+                    <td className="py-2 pe-4">
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor(sr.status)}`}>
                         {sr.status}
                       </span>
@@ -227,21 +227,21 @@ export default function AdminCompliancePage() {
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-left text-xs text-gray-500">
-                  <th className="pb-2 pr-4">Name</th>
-                  <th className="pb-2 pr-4">Type</th>
-                  <th className="pb-2 pr-4">List</th>
-                  <th className="pb-2 pr-4">Risk</th>
+                <tr className="border-b text-start text-xs text-gray-500">
+                  <th className="pb-2 pe-4">Name</th>
+                  <th className="pb-2 pe-4">Type</th>
+                  <th className="pb-2 pe-4">List</th>
+                  <th className="pb-2 pe-4">Risk</th>
                   <th className="pb-2">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {sanctions.map((rec) => (
                   <motion.tr key={rec.id} variants={item}>
-                    <td className="py-2 pr-4 font-medium text-gray-800">{rec.name}</td>
-                    <td className="py-2 pr-4 uppercase text-xs text-gray-500">{rec.id_type || "—"}</td>
-                    <td className="py-2 pr-4 text-gray-600">{rec.list_source}</td>
-                    <td className={`py-2 pr-4 font-semibold text-sm ${riskColor(rec.risk_level)}`}>
+                    <td className="py-2 pe-4 font-medium text-gray-800">{rec.name}</td>
+                    <td className="py-2 pe-4 uppercase text-xs text-gray-500">{rec.id_type || "—"}</td>
+                    <td className="py-2 pe-4 text-gray-600">{rec.list_source}</td>
+                    <td className={`py-2 pe-4 font-semibold text-sm ${riskColor(rec.risk_level)}`}>
                       {rec.risk_level}
                     </td>
                     <td className="py-2">

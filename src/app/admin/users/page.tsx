@@ -123,7 +123,7 @@ export default function UsersPage() {
         <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
                 <th className="px-6 py-3">Phone</th>
                 <th className="px-6 py-3">Name</th>
                 <th className="px-6 py-3">Role</th>

@@ -252,7 +252,7 @@ export default function AgentsPage() {
             <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+                  <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
                     <th className="px-5 py-3">Name</th>
                     <th className="px-5 py-3">Phone</th>
                     <th className="px-5 py-3">Type</th>
@@ -360,7 +360,7 @@ export default function AgentsPage() {
         <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
                 <th className="px-5 py-3">ID</th>
                 <th className="px-5 py-3">Name</th>
                 <th className="px-5 py-3">Phone</th>
@@ -520,7 +520,7 @@ export default function AgentsPage() {
       {/* ── Details Modal ─────────────────────────────────────────────────────── */}
       {detailAgent && (
         <Modal title={`Agent Details — #${detailAgent.id}`} onClose={() => setDetailAgent(null)}>
-          <div className="space-y-2 max-h-[70vh] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[70vh] overflow-y-auto pe-1">
             {/* ID callout */}
             <div className="flex items-center justify-between rounded-lg bg-gray-50 border border-gray-200 px-4 py-3 mb-3">
               <div>
@@ -623,7 +623,7 @@ function AgentFormBody({
   };
 
   return (
-    <div className="space-y-5 max-h-[75vh] overflow-y-auto pr-1">
+    <div className="space-y-5 max-h-[75vh] overflow-y-auto pe-1">
 
       {/* Identity */}
       <Section label="Identity">
@@ -786,7 +786,7 @@ function Field({ label, required, children }: { label: string; required?: boolea
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+        {label}{required && <span className="text-red-500 ms-0.5">*</span>}
       </label>
       {children}
     </div>

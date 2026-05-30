@@ -81,7 +81,7 @@ export default function PropertyComparePage() {
                   key={p.id}
                   onClick={() => toggle(p.id)}
                   disabled={disabled}
-                  className={`text-left px-3 py-2 rounded-md border text-sm transition-colors ${
+                  className={`text-start px-3 py-2 rounded-md border text-sm transition-colors ${
                     selected
                       ? "border-blue-500 bg-blue-50 text-blue-900"
                       : disabled
@@ -109,9 +109,9 @@ export default function PropertyComparePage() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-left px-4 py-3 font-semibold text-gray-600 w-36">Field</th>
+                  <th className="text-start px-4 py-3 font-semibold text-gray-600 w-36">Field</th>
                   {compareData.map((p) => (
-                    <th key={p.id} className="text-left px-4 py-3 font-semibold text-gray-900">
+                    <th key={p.id} className="text-start px-4 py-3 font-semibold text-gray-900">
                       <span className="block truncate max-w-44">{p.title}</span>
                       <span className="block text-xs font-mono font-normal text-gray-400">{p.ref_no}</span>
                       <span className="text-xs font-normal text-gray-500">{p.city}</span>

@@ -24,10 +24,12 @@ const cinzel = Cinzel({
   display: "swap",
 });
 
+const _TITLE = "RealTron AI — AI Sales Infrastructure for Real Estate";
+const _DESC  = "Enterprise AI platform for real estate developers, agencies, and brokerages. AI lead qualification, WhatsApp automation, CRM intelligence, and deal orchestration — across Pakistan, UAE, UK, and the US.";
+
 export const metadata = {
-  title: "RealTron AI — AI Sales Infrastructure for Real Estate",
-  description:
-    "Enterprise AI platform for real estate developers, agencies, and brokerages. AI lead qualification, WhatsApp automation, CRM intelligence, and deal orchestration.",
+  title:       _TITLE,
+  description: _DESC,
   keywords: [
     "AI real estate platform",
     "real estate CRM",
@@ -37,11 +39,54 @@ export const metadata = {
     "AI lead qualification",
     "real estate sales infrastructure",
   ],
+  openGraph: {
+    title:       _TITLE,
+    description: _DESC,
+    url:         "https://realtron.ai",
+    siteName:    "RealTron AI",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "RealTron AI platform" }],
+    type:        "website",
+    locale:      "en_US",
+  },
+  twitter: {
+    card:        "summary_large_image",
+    title:       _TITLE,
+    description: _DESC,
+    images:      ["/og-image.png"],
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "RealTron AI",
+  applicationCategory: "BusinessApplication",
+  operatingSystem: "Web",
+  description: _DESC,
+  url: "https://realtron.ai",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+    description: "Free trial available",
+  },
+  featureList: [
+    "AI lead qualification",
+    "WhatsApp automation",
+    "CRM intelligence",
+    "Deal lock & escrow",
+    "AML compliance screening",
+    "Multi-market support (PK, AE, GB, US)",
+  ],
 };
 
 export default function LandingPage() {
   return (
     <div className={`${cinzel.variable}`}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
       <main>
         <HeroSection />

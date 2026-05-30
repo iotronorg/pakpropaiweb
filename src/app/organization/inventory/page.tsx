@@ -288,7 +288,7 @@ export default function OrgInventoryPage() {
       {/* Filters + Table */}
       <div className="rounded-xl border border-gray-200 bg-white">
         <div className="border-b border-gray-100 px-6 py-4 flex flex-wrap items-center gap-3">
-          <h2 className="text-sm font-semibold text-gray-800 mr-auto">All Listings</h2>
+          <h2 className="text-sm font-semibold text-gray-800 me-auto">All Listings</h2>
 
           {/* Search */}
           <input
@@ -331,7 +331,7 @@ export default function OrgInventoryPage() {
             <thead>
               <tr className="border-b border-gray-100">
                 {["Ref", "Title", "City", "Type", "Price", "AI Score", "Risk", "Legal", "Agent", "Status", "Images", "Certificate"].map((h) => (
-                  <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                  <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                     {h}
                   </th>
                 ))}

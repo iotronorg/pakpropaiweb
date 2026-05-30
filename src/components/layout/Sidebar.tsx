@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth";
 import { logout, getNotifications } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -120,18 +121,26 @@ function NavLink({ item, label, active, unreadCount = 0 }: { item: NavItemDef; l
           )}
         />
         {showBadge && (
-          <span className="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500 ring-1 ring-white" />
+          <span className="absolute -top-1 -end-1 h-2 w-2 rounded-full bg-red-500 ring-1 ring-white" />
         )}
       </span>
       <span className="relative z-10 truncate">{label}</span>
       {showBadge && !active && (
-        <span className="relative z-10 ml-auto rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
+        <span className="relative z-10 ms-auto rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
           {unreadCount > 99 ? "99+" : unreadCount}
         </span>
       )}
-      {active && <ChevronRight size={12} className="relative z-10 ml-auto text-[var(--primary)]/50" />}
+      {active && <ChevronRight size={12} className="relative z-10 ms-auto text-[var(--primary)]/50 rtl:rotate-180" />}
     </Link>
   );
+}
+
+function useIsRTL() {
+  const [rtl, setRtl] = useState(false);
+  useEffect(() => {
+    setRtl(document.documentElement.dir === 'rtl');
+  }, []);
+  return rtl;
 }
 
 export function Sidebar() {
@@ -139,6 +148,7 @@ export function Sidebar() {
   const router   = useRouter();
   const tNav     = useTranslations("nav");
   const tRoles   = useTranslations("roles");
+  const isRTL    = useIsRTL();
   const { user, clearAuth } = useAuthStore();
   const role  = user?.role ?? "admin";
   const defs  = NAV_DEFS[role] ?? [];
@@ -168,10 +178,10 @@ export function Sidebar() {
 
   return (
     <motion.aside
-      initial={{ x: -16, opacity: 0 }}
+      initial={{ x: isRTL ? 16 : -16, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.25, ease: "easeOut" }}
-      className="flex h-screen w-60 shrink-0 flex-col border-r border-[var(--border)] bg-[var(--bg-surface)]"
+      className="flex h-screen w-60 shrink-0 flex-col border-e border-[var(--border)] bg-[var(--bg-surface)]"
     >
       {/* Logo */}
       <div className="flex items-center gap-2.5 border-b border-[var(--border)] px-5 py-4">

@@ -18,12 +18,12 @@ const links = {
   "For Agents & Clients": [
     { label: "Join as Agent", href: "/register" },
     { label: "For Buyers & Investors", href: "#clients" },
-    { label: "Try on WhatsApp", href: "https://wa.me/923000000000" },
+    { label: "Try on WhatsApp", href: `https://wa.me/${process.env.NEXT_PUBLIC_WA_DEMO_NUMBER ?? ""}` },
   ],
   Account: [
     { label: "Sign In", href: "/login" },
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
+    { label: "Privacy Policy", href: "/privacy-policy" },
+    { label: "Terms of Service", href: "/terms" },
   ],
 };
 
@@ -47,7 +47,7 @@ export default function LandingFooter() {
               Automate leads, qualify buyers, and close deals via WhatsApp.
             </p>
             <a
-              href="https://wa.me/923000000000"
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_DEMO_NUMBER ?? ""}`}
               className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl px-4 py-2.5 text-sm font-semibold hover:bg-emerald-100 transition-colors duration-150"
             >
               <MessageCircle size={15} />
@@ -80,7 +80,7 @@ export default function LandingFooter() {
 
         <div className="border-t border-slate-200 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-slate-400">
-            © {new Date().getFullYear()} RealTron AI. All rights reserved. Powered by IOTRON
+            © {new Date().getFullYear()} RealTron AI. All rights reserved.
           </p>
           <p className="text-xs text-slate-400">
             Enterprise AI Sales Infrastructure · WhatsApp-First · Global-Ready

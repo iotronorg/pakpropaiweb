@@ -79,7 +79,7 @@ function SensitiveInput({ value, onChange, placeholder }: { value: string; onCha
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 pr-14 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        className="w-full rounded-lg border border-gray-300 px-3 py-2 pe-14 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
       <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600">
         {show ? "Hide" : "Show"}
@@ -369,7 +369,7 @@ export default function OrgSettingsPage() {
 
             return (
               <div key={key} className="flex items-center justify-between px-6 py-4">
-                <div className="flex-1 min-w-0 pr-4">
+                <div className="flex-1 min-w-0 pe-4">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-gray-900">{label}</p>
                     {isOverride && (
@@ -431,7 +431,7 @@ export default function OrgSettingsPage() {
               <button
                 key={value}
                 onClick={() => setOrgLang(value)}
-                className={`rounded-lg border px-3 py-2.5 text-sm font-medium text-left transition-colors ${
+                className={`rounded-lg border px-3 py-2.5 text-sm font-medium text-start transition-colors ${
                   orgLang === value
                     ? "border-blue-500 bg-blue-50 text-blue-700"
                     : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
@@ -471,7 +471,7 @@ export default function OrgSettingsPage() {
               <button
                 key={loc}
                 onClick={() => setDashLocale(loc)}
-                className={`rounded-lg border px-3 py-2.5 text-sm font-medium text-left transition-colors ${
+                className={`rounded-lg border px-3 py-2.5 text-sm font-medium text-start transition-colors ${
                   dashLocale === loc
                     ? "border-blue-500 bg-blue-50 text-blue-700"
                     : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
@@ -511,7 +511,7 @@ export default function OrgSettingsPage() {
               <button
                 key={value}
                 onClick={() => setMeasurementSystem(value)}
-                className={`rounded-lg border-2 p-3 text-left transition-all ${
+                className={`rounded-lg border-2 p-3 text-start transition-all ${
                   measurementSystem === value
                     ? "border-blue-500 bg-blue-50"
                     : "border-gray-200 bg-white hover:border-gray-300"
@@ -521,7 +521,7 @@ export default function OrgSettingsPage() {
                   <div className={`h-3.5 w-3.5 rounded-full border-2 shrink-0 ${measurementSystem === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
                   <span className="text-sm font-semibold text-gray-900">{label}</span>
                 </div>
-                <p className="text-xs text-gray-500 ml-5">{desc}</p>
+                <p className="text-xs text-gray-500 ms-5">{desc}</p>
               </button>
             ))}
           </div>
@@ -558,7 +558,7 @@ export default function OrgSettingsPage() {
                 key={value}
                 type="button"
                 onClick={() => setPsGateway(value)}
-                className={`rounded-lg border-2 p-3 text-left transition-all ${
+                className={`rounded-lg border-2 p-3 text-start transition-all ${
                   psGateway === value ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white hover:border-gray-300"
                 }`}
               >
@@ -566,7 +566,7 @@ export default function OrgSettingsPage() {
                   <div className={`h-3.5 w-3.5 rounded-full border-2 shrink-0 ${psGateway === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
                   <span className="text-sm font-semibold text-gray-900">{label}</span>
                 </div>
-                <p className="text-xs text-gray-500 ml-5">{desc}</p>
+                <p className="text-xs text-gray-500 ms-5">{desc}</p>
               </button>
             ))}
           </div>

@@ -53,7 +53,7 @@ const categories = [
     label: "Verification & Trust",
     color: "#7C3AED",
     features: [
-      { icon: ShieldCheck, title: "Document Verification", desc: "OCR + AI validates ownership documents, detects tampering, and cross-checks records. Shareable trust certificate." },
+      { icon: ShieldCheck, title: "AML Screening & Compliance", desc: "Every deal-lock buyer screened against OFAC, UN, and EU sanction lists in real time. Blocked transactions are cancelled automatically with full audit trail." },
       { icon: FileSearch, title: "Scam Detection", desc: "AI-generated risk scores on any listing within 30 seconds. Red flags, fraud indicators, and trust analysis." },
       { icon: Lock, title: "Secure Deal Lock", desc: "Token payments held in escrow. 48-hour exclusivity. Full audit trails. Neither party can dispute the chain." },
     ],

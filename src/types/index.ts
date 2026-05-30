@@ -286,7 +286,7 @@ export interface SystemConfig {
   bsecure_client_id: string;
   bsecure_client_secret: string;
   // Deal-lock payment gateway (org-to-client payments)
-  active_payment_gateway: "safepay" | "bsecure" | "manual";
+  active_payment_gateway: "safepay" | "bsecure" | "stripe" | "manual";
   // SaaS billing gateway (org plan upgrades)
   billing_gateway: "stripe" | "safepay" | "bsecure" | "manual";
   stripe_secret_key: string;

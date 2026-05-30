@@ -350,7 +350,7 @@ export default function AgentRegisterPage() {
                   value={form.password}
                   onChange={(e) => set("password", e.target.value)}
                   placeholder="Create a password"
-                  className={input(errors.password) + " pr-10"}
+                  className={input(errors.password) + " pe-10"}
                   required
                 />
                 <button
@@ -398,7 +398,7 @@ export default function AgentRegisterPage() {
                   value={form.confirmPassword}
                   onChange={(e) => set("confirmPassword", e.target.value)}
                   placeholder="Repeat your password"
-                  className={input(errors.confirmPassword) + " pr-10"}
+                  className={input(errors.confirmPassword) + " pe-10"}
                   required
                 />
                 <button
@@ -437,7 +437,7 @@ export default function AgentRegisterPage() {
                     set("agent_type", t.value);
                     set("parent_organization", "");
                   }}
-                  className={`rounded-xl border-2 p-4 text-left transition-colors ${
+                  className={`rounded-xl border-2 p-4 text-start transition-colors ${
                     form.agent_type === t.value
                       ? "border-blue-500 bg-blue-50"
                       : "border-gray-200 bg-white hover:border-gray-300"
@@ -642,7 +642,7 @@ function Field({
   return (
     <div>
       <label className="block text-xs font-medium text-gray-600 mb-1">
-        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+        {label}{required && <span className="text-red-500 ms-0.5">*</span>}
       </label>
       {children}
       {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}

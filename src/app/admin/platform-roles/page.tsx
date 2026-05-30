@@ -33,8 +33,8 @@ export default function PlatformRolesPage() {
         <table className="w-full text-sm">
           <thead className="bg-gray-50 border-b">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Admin User</th>
-              <th className="text-left px-4 py-3 font-medium text-gray-600">Platform Role</th>
+              <th className="text-start px-4 py-3 font-medium text-gray-600">Admin User</th>
+              <th className="text-start px-4 py-3 font-medium text-gray-600">Platform Role</th>
             </tr>
           </thead>
           <tbody>

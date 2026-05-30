@@ -47,7 +47,7 @@ export default function OrgAgentsPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   {["Rank", "Agent", "Leads", "Conversion", "Avg Response", "Closed Deals", "Rating", "action"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold uppercase tracking-wide text-gray-500 whitespace-nowrap">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold uppercase tracking-wide text-gray-500 whitespace-nowrap">
                       {h !== "action" ? h : ""}
                     </th>
                   ))}

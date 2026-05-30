@@ -42,6 +42,18 @@ const benefits = [
     description:
       "Strict org-level isolation. Your inventory, leads, and analytics are invisible to other organisations on the platform. Complete data privacy.",
   },
+  {
+    icon: LineChart,
+    title: "AI Voice Channel — Phone Calls, Automated",
+    description:
+      "AI handles inbound and outbound property calls. Agents can barge in for live deals in under 100ms. Calls transcribed and synced to CRM automatically.",
+  },
+  {
+    icon: Building,
+    title: "Property Syndication & Broker Network",
+    description:
+      "List inventory across multiple platforms and partner brokerages in one click. Track leads submitted by partner brokers and manage commission ledgers automatically.",
+  },
 ];
 
 const metrics = [

@@ -202,7 +202,7 @@ export default function ConnectionDetailPage() {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-left text-gray-500 border-b">
+              <tr className="text-start text-gray-500 border-b">
                 <th className="pb-2 font-medium">RealTron Field</th>
                 <th className="pb-2 font-medium">External Field Name</th>
                 <th className="pb-2" />
@@ -211,7 +211,7 @@ export default function ConnectionDetailPage() {
             <tbody>
               {mappingRows.map(([internal, external], i) => (
                 <tr key={i} className="border-b border-gray-100">
-                  <td className="py-2 pr-3">
+                  <td className="py-2 pe-3">
                     <input
                       value={internal}
                       onChange={e => {
@@ -222,7 +222,7 @@ export default function ConnectionDetailPage() {
                       className="border border-gray-300 rounded px-2 py-1 w-full text-sm"
                     />
                   </td>
-                  <td className="py-2 pr-3">
+                  <td className="py-2 pe-3">
                     <input
                       value={external}
                       onChange={e => {
@@ -256,7 +256,7 @@ export default function ConnectionDetailPage() {
         )}
         <button
           onClick={() => saveMutation.mutate()}
-          className="mt-3 ml-4 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-200"
+          className="mt-3 ms-4 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-200"
         >
           Save Mappings
         </button>

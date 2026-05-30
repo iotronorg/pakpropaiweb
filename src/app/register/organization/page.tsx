@@ -236,7 +236,7 @@ export default function OrgRegisterPage() {
                   key={t.value}
                   type="button"
                   onClick={() => set("org_type", t.value)}
-                  className={`rounded-xl border-2 p-4 text-left transition-colors ${
+                  className={`rounded-xl border-2 p-4 text-start transition-colors ${
                     form.org_type === t.value
                       ? "border-blue-500 bg-blue-50"
                       : "border-gray-200 bg-white hover:border-gray-300"
@@ -326,7 +326,7 @@ export default function OrgRegisterPage() {
                   value={form.password}
                   onChange={(e) => set("password", e.target.value)}
                   placeholder="Create a password"
-                  className={inp(errors.password) + " pr-10"}
+                  className={inp(errors.password) + " pe-10"}
                   required
                 />
                 <EyeToggle show={showPw} onToggle={() => setShowPw((v) => !v)} />
@@ -350,7 +350,7 @@ export default function OrgRegisterPage() {
                   value={form.confirm}
                   onChange={(e) => set("confirm", e.target.value)}
                   placeholder="Repeat your password"
-                  className={inp(errors.confirm) + " pr-10"}
+                  className={inp(errors.confirm) + " pe-10"}
                   required
                 />
                 <EyeToggle show={showCf} onToggle={() => setShowCf((v) => !v)} />
@@ -419,7 +419,7 @@ function Field({
   return (
     <div>
       <label className="block text-xs font-medium text-gray-600 mb-1">
-        {label}{required && <span className="text-red-500 ml-0.5">*</span>}
+        {label}{required && <span className="text-red-500 ms-0.5">*</span>}
       </label>
       {children}
       {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}

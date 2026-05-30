@@ -171,7 +171,7 @@ export default function AdminAuditLogPage() {
           </button>
         )}
 
-        <div className="ml-auto text-xs text-gray-400">
+        <div className="ms-auto text-xs text-gray-400">
           {isFetching ? "Loading…" : `${total.toLocaleString()} entr${total !== 1 ? "ies" : "y"}`}
         </div>
       </div>
@@ -191,7 +191,7 @@ export default function AdminAuditLogPage() {
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-left text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
                 <th className="px-4 py-3 w-[160px]">Timestamp</th>
                 <th className="px-4 py-3 w-[130px]">Actor</th>
                 <th className="px-4 py-3 w-[90px]">Action</th>

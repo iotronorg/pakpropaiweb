@@ -57,7 +57,7 @@ export function ProvisioningStepIndicator({ label, state, timestamp }: Props) {
         <span className="flex-shrink-0">{icon}</span>
         <span className="font-medium text-sm">{label}</span>
         {timestamp && (
-          <span className="ml-auto text-xs text-gray-400">
+          <span className="ms-auto text-xs text-gray-400">
             {new Date(timestamp).toLocaleTimeString()}
           </span>
         )}

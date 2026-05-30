@@ -213,7 +213,7 @@ export default function OrgOverviewPage() {
                     <p className="text-sm font-medium text-gray-900 truncate">
                       {c.lead_name ?? c.lead_phone}
                     </p>
-                    <span className="text-xs text-gray-400 shrink-0 ml-3">
+                    <span className="text-xs text-gray-400 shrink-0 ms-3">
                       {new Date(c.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>

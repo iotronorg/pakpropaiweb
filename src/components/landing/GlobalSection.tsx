@@ -8,7 +8,7 @@ const markets = [
   { code: "PK", name: "Pakistan",       currency: "PKR", flag: "🇵🇰", status: "Live" },
   { code: "AE", name: "UAE",            currency: "AED", flag: "🇦🇪", status: "Live" },
   { code: "GB", name: "United Kingdom", currency: "GBP", flag: "🇬🇧", status: "Live" },
-  { code: "US", name: "United States",  currency: "USD", flag: "🇺🇸", status: "Coming Soon" },
+  { code: "US", name: "United States",  currency: "USD", flag: "🇺🇸", status: "Live" },
 ];
 
 const capabilities = [

@@ -147,7 +147,7 @@ export default function OrgTeamPage() {
               <thead>
                 <tr className="border-b border-gray-100">
                   {["Agent", "Phone", "Type", "Status", "Verified", "Leads", "Deals", "Rating", "Actions"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}

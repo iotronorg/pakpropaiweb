@@ -72,7 +72,13 @@ export default function WhatsAppSection() {
           </div>
 
           <div className="flex flex-col gap-2">
-            {["No app download required", "Works on any device", "AI available 24/7"].map((p) => (
+            {[
+              "No app download required",
+              "Works on any device",
+              "AI available 24/7",
+              "Broadcast campaigns with AI re-engagement",
+              "Live agent handover in one tap",
+            ].map((p) => (
               <div key={p} className="flex items-center gap-2 text-sm text-slate-600">
                 <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
                 {p}

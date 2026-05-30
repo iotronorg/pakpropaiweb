@@ -202,7 +202,7 @@ export default function LeadDetailPage() {
           ) : (
             <button
               onClick={() => setStatusEdit(lead.status)}
-              className="text-xs text-blue-600 hover:underline text-left"
+              className="text-xs text-blue-600 hover:underline text-start"
             >Edit status</button>
           )}
         </div>

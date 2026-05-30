@@ -65,7 +65,7 @@ export function NotificationsInbox() {
           <p className="mt-1 text-sm text-gray-500">
             {total > 0 ? `${total} total` : "No notifications"}
             {unread > 0 && (
-              <span className="ml-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
+              <span className="ms-2 inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
                 {unread} unread
               </span>
             )}

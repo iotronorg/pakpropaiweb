@@ -112,7 +112,7 @@ export default function PropertyAnalyticsPage() {
           <select
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="ml-auto rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            className="ms-auto rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-100"
           >
             <option value="">All Cities</option>
             {uniqueCities.map((c) => (

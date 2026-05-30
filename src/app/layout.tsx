@@ -5,6 +5,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { defaultLocale, isRTL, LOCALE_COOKIE, locales, type Locale } from "@/i18n/config";
 import { fetchTenantTheme, buildCssVars } from "@/lib/theme";
+import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
@@ -40,6 +41,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="min-h-full bg-[var(--bg-base)] text-[var(--text-primary)]">
         <Providers locale={locale} messages={messages}>
           {children}
+          <CookieConsentBanner />
         </Providers>
       </body>
     </html>

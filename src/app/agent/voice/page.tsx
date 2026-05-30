@@ -100,7 +100,7 @@ export default function VoicePage() {
                   </span>
 
                   {latencyChip[call.call_sid] && (
-                    <span className="ml-2 text-xs text-green-600">
+                    <span className="ms-2 text-xs text-green-600">
                       {latencyChip[call.call_sid].toFixed(0)}ms
                     </span>
                   )}
