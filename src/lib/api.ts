@@ -814,3 +814,69 @@ export const getOrgTheme = () =>
 
 export const updateOrgTheme = (data: Partial<import('@/types').OrgTheme>) =>
   api.put('/api/v1/organizations/me/theme/', data).then((r) => r.data as import('@/types').OrgTheme)
+
+// ── Voice Channel ──────────────────────────────────────────────────────────────
+export const getVoiceCalls = (params?: Record<string, string>) =>
+  api.get('/voice/calls/', { params }).then((r) => r.data as import('@/types').VoiceCallSession[])
+
+export const getVoiceCallDetail = (callSid: string) =>
+  api.get(`/voice/calls/${callSid}/`).then((r) => r.data as import('@/types').VoiceCallSession)
+
+export const initiateVoiceCall = (leadId: string) =>
+  api.post('/voice/calls/initiate/', { lead_id: leadId }).then((r) => r.data as { call_sid: string })
+
+export const executeBargeIn = (callSid: string) =>
+  api.post<import('@/types').BargeInResult>(`/voice/calls/${callSid}/barge-in/`).then((r) => r.data)
+
+export const getVoiceConfig = () =>
+  api.get('/voice/config/').then((r) => r.data as import('@/types').OrgVoiceConfig)
+
+export const updateVoiceConfig = (data: Partial<import('@/types').OrgVoiceConfig>) =>
+  api.patch<import('@/types').OrgVoiceConfig>('/voice/config/', data).then((r) => r.data)
+
+// ── Marketplace / Syndication ─────────────────────────────────────────────────
+
+export const getSyndicationListings = (params?: Record<string, string>) =>
+  api.get('/marketplace/listings/', { params }).then((r) => r.data as import('@/types').SyndicationListing[])
+
+export const createSyndicationListing = (data: Partial<import('@/types').SyndicationListing>) =>
+  api.post<import('@/types').SyndicationListing>('/marketplace/listings/', data).then((r) => r.data)
+
+export const syndicateListing = (id: string) =>
+  api.post<import('@/types').SyndicationListing>(`/marketplace/listings/${id}/syndicate/`).then((r) => r.data)
+
+export const withdrawListing = (id: string) =>
+  api.post<import('@/types').SyndicationListing>(`/marketplace/listings/${id}/withdraw/`).then((r) => r.data)
+
+export const browseSyndicatedInventory = () =>
+  api.get('/marketplace/browse/').then((r) => r.data as import('@/types').SyndicationListing[])
+
+export const getPartnerships = (params?: Record<string, string>) =>
+  api.get('/marketplace/partnerships/', { params }).then((r) => r.data as import('@/types').BrokerNetworkPartnership[])
+
+export const invitePartner = (data: Record<string, unknown>) =>
+  api.post<import('@/types').BrokerNetworkPartnership>('/marketplace/partnerships/invite/', data).then((r) => r.data)
+
+export const acceptPartnership = (id: string) =>
+  api.post<import('@/types').BrokerNetworkPartnership>(`/marketplace/partnerships/${id}/accept/`).then((r) => r.data)
+
+export const revokePartnership = (id: string) =>
+  api.post<import('@/types').BrokerNetworkPartnership>(`/marketplace/partnerships/${id}/revoke/`).then((r) => r.data)
+
+export const getSubmissions = (params?: Record<string, string>) =>
+  api.get('/marketplace/submissions/', { params }).then((r) => r.data as import('@/types').SyndicationLeadSubmission[])
+
+export const createSubmission = (data: { listing: string; lead: string; notes?: string }) =>
+  api.post<import('@/types').SyndicationLeadSubmission>('/marketplace/submissions/', data).then((r) => r.data)
+
+export const acceptSubmission = (id: string) =>
+  api.post<import('@/types').SyndicationLeadSubmission>(`/marketplace/submissions/${id}/accept/`).then((r) => r.data)
+
+export const rejectSubmission = (id: string) =>
+  api.post<import('@/types').SyndicationLeadSubmission>(`/marketplace/submissions/${id}/reject/`).then((r) => r.data)
+
+export const getLedger = (params?: Record<string, string>) =>
+  api.get('/marketplace/ledger/', { params }).then((r) => r.data as import('@/types').CommissionLedgerEntry[])
+
+export const verifyLedgerChain = (orgId: string) =>
+  api.get<import('@/types').LedgerChainVerification>('/marketplace/ledger/verify-chain/', { params: { org: orgId } }).then((r) => r.data)

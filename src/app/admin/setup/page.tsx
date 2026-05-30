@@ -136,6 +136,12 @@ export default function SetupPage() {
       billing_price_basic_pkr:          config.billing_price_basic_pkr ?? "13000",
       billing_price_professional_pkr:   config.billing_price_professional_pkr ?? "40000",
       billing_price_enterprise_pkr:     config.billing_price_enterprise_pkr ?? "120000",
+      billing_price_basic_aed:          config.billing_price_basic_aed ?? "299",
+      billing_price_professional_aed:   config.billing_price_professional_aed ?? "899",
+      billing_price_enterprise_aed:     config.billing_price_enterprise_aed ?? "2699",
+      billing_price_basic_usd:          config.billing_price_basic_usd ?? "49",
+      billing_price_professional_usd:   config.billing_price_professional_usd ?? "149",
+      billing_price_enterprise_usd:     config.billing_price_enterprise_usd ?? "449",
       // Safepay/bSecure keys reused from deal-lock section
       safepay_merchant_key:  config.safepay_merchant_key === SENTINEL ? "" : (config.safepay_merchant_key ?? ""),
       safepay_secret_key:    config.safepay_secret_key === SENTINEL ? "" : (config.safepay_secret_key ?? ""),
@@ -750,22 +756,48 @@ function BillingPkrPrices({
 }) {
   return (
     <div className="border-t border-gray-200 pt-3 space-y-2">
-      <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Plan Prices (PKR / month)</p>
-      {[
-        { key: "billing_price_basic_pkr",        label: "Basic",        placeholder: "13000" },
-        { key: "billing_price_professional_pkr", label: "Professional", placeholder: "40000" },
-        { key: "billing_price_enterprise_pkr",   label: "Enterprise",   placeholder: "120000" },
-      ].map(({ key, label, placeholder }) => (
-        <div key={key} className="flex items-center gap-3">
-          <label className="w-28 text-xs text-gray-600 shrink-0">{label}</label>
-          <input
-            type="number"
-            min={0}
-            value={vals[key] ?? ""}
-            onChange={(e) => onChange(key, e.target.value)}
-            placeholder={placeholder}
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-mono outline-none focus:border-blue-500"
-          />
+      <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Plan Prices (per market / month)</p>
+      {([
+        {
+          market: "🇵🇰 Pakistan (PKR)",
+          rows: [
+            { key: "billing_price_basic_pkr",        label: "Basic",        placeholder: "13000" },
+            { key: "billing_price_professional_pkr", label: "Professional", placeholder: "40000" },
+            { key: "billing_price_enterprise_pkr",   label: "Enterprise",   placeholder: "120000" },
+          ],
+        },
+        {
+          market: "🇦🇪 UAE (AED)",
+          rows: [
+            { key: "billing_price_basic_aed",        label: "Basic",        placeholder: "299" },
+            { key: "billing_price_professional_aed", label: "Professional", placeholder: "899" },
+            { key: "billing_price_enterprise_aed",   label: "Enterprise",   placeholder: "2699" },
+          ],
+        },
+        {
+          market: "🌐 Global (USD)",
+          rows: [
+            { key: "billing_price_basic_usd",        label: "Basic",        placeholder: "49" },
+            { key: "billing_price_professional_usd", label: "Professional", placeholder: "149" },
+            { key: "billing_price_enterprise_usd",   label: "Enterprise",   placeholder: "449" },
+          ],
+        },
+      ] as const).map(({ market, rows }) => (
+        <div key={market} className="pt-1">
+          <p className="text-xs text-gray-400 mb-1.5">{market}</p>
+          {rows.map(({ key, label, placeholder }) => (
+            <div key={key} className="flex items-center gap-3 mb-1.5">
+              <label className="w-28 text-xs text-gray-600 shrink-0">{label}</label>
+              <input
+                type="number"
+                min={0}
+                value={vals[key] ?? ""}
+                onChange={(e) => onChange(key, e.target.value)}
+                placeholder={placeholder}
+                className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-mono outline-none focus:border-blue-500"
+              />
+            </div>
+          ))}
         </div>
       ))}
     </div>

@@ -81,7 +81,7 @@ export default function FreelanceOnboardingPage() {
               Your freelance profile is pending verification. You can now join organizations.
             </p>
             <button
-              onClick={() => router.push('/agent/dashboard')}
+              onClick={() => router.push('/agent')}
               className="w-full py-3 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors"
             >
               Go to Dashboard

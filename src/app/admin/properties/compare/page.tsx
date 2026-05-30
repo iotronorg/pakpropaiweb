@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { compareProperties, getProperties } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
-import { formatArea } from "@/lib/utils";
+import { formatArea, formatCurrency } from "@/lib/utils";
 import { Property } from "@/types";
 
 const MAX_COMPARE = 4;
@@ -16,7 +16,7 @@ const ROWS: { label: string; key: keyof Property; format?: (v: unknown) => strin
   { label: "Location",       key: "location" },
   { label: "Type",           key: "property_type" },
   { label: "Area",            key: "area_sqm",    format: (v) => formatArea(v as number | null) },
-  { label: "Price (PKR)",    key: "price",   format: (v) => v != null ? `₨ ${Number(v).toLocaleString()}` : "—" },
+  { label: "Price",           key: "price" },
   { label: "Construction",   key: "construction_status" },
   { label: "Furnished",      key: "furnished_status" },
   { label: "Legal Status",   key: "legal_status" },
@@ -148,6 +148,10 @@ export default function PropertyComparePage() {
                                 : "gray"
                               }
                             />
+                          ) : key === "price" ? (
+                            raw != null
+                              ? formatCurrency(Number(raw), p.currency)
+                              : "—"
                           ) : (
                             String(display)
                           )}

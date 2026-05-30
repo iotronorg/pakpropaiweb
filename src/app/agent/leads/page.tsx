@@ -227,7 +227,7 @@ export default function AgentLeadsPage() {
                       </td>
                       <td className="px-6 py-3 text-gray-600 text-xs">
                         <p>{l.location_interest || "—"}</p>
-                        <p className="text-gray-400">{l.budget_max ? formatCurrency(l.budget_max) : "Budget unknown"}</p>
+                        <p className="text-gray-400">{l.budget_max ? formatCurrency(l.budget_max, l.budget_currency ?? "PKR") : "Budget unknown"}</p>
                       </td>
                       <td className="px-6 py-3">
                         {l.intent_score !== null ? (

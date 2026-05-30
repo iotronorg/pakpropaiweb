@@ -92,7 +92,7 @@ export default function AgentOverview() {
                     <p className="text-sm font-medium text-gray-900">{l.name || l.phone}</p>
                     <p className="text-xs text-gray-400">
                       {l.location_interest ?? "No location"} ·{" "}
-                      {l.budget_max ? formatCurrency(l.budget_max) : "Budget unknown"} ·{" "}
+                      {l.budget_max ? formatCurrency(l.budget_max, l.budget_currency ?? "PKR") : "Budget unknown"} ·{" "}
                       {formatDate(l.created_at)}
                     </p>
                   </div>
@@ -129,7 +129,7 @@ export default function AgentOverview() {
                   <div key={d.id} className="flex items-center justify-between px-6 py-3">
                     <div className="min-w-0">
                       <p className="text-sm font-medium text-gray-900 truncate">{d.property_title}</p>
-                      <p className="text-xs text-gray-400">{d.property_city} · {formatCurrency(d.token_amount)}</p>
+                      <p className="text-xs text-gray-400">{d.property_city} · {formatCurrency(d.token_amount, d.currency)}</p>
                     </div>
                     <div className="flex items-center gap-3 flex-shrink-0 ml-4">
                       {d.status === "locked" && d.hours_remaining !== null && (

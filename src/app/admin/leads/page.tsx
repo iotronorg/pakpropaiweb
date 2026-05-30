@@ -323,7 +323,7 @@ export default function AdminLeadsPage() {
                       )}
                     </td>
                     <td className="px-6 py-3 text-gray-600">
-                      {l.budget_max ? formatCurrency(l.budget_max) : "—"}
+                      {l.budget_max ? formatCurrency(l.budget_max, l.budget_currency ?? "PKR") : "—"}
                     </td>
                     <td className="px-6 py-3 text-gray-600">
                       {l.location_interest || "—"}

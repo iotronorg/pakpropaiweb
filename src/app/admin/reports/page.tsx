@@ -151,7 +151,7 @@ function GenerateReportCard() {
         {selectedType === "loan_eligibility" && (
           <>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Monthly Income (PKR)</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Monthly Income</label>
               <input
                 type="number" placeholder="e.g. 150000"
                 value={monthlyIncome} onChange={(e) => setMonthlyIncome(e.target.value)}
@@ -159,7 +159,7 @@ function GenerateReportCard() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Property Value (PKR)</label>
+              <label className="block text-xs font-medium text-gray-500 mb-1">Property Value</label>
               <input
                 type="number" placeholder="e.g. 10000000"
                 value={propertyValue} onChange={(e) => setPropertyValue(e.target.value)}

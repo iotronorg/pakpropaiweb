@@ -13,8 +13,20 @@ export function cn(...inputs: ClassValue[]) {
  * - US / CA: thousands / millions in USD / CAD ($)
  * - default: locale-formatted number
  */
-export function formatCurrency(amount: number, country: string = 'PK'): string {
-  switch (country.toUpperCase()) {
+/**
+ * Accepts either an ISO 3166-1 alpha-2 country code (PK, AE, GB, US)
+ * or an ISO 4217 currency code (PKR, AED, GBP, USD) — both work.
+ */
+export function formatCurrency(amount: number, countryOrCurrency: string = 'PK'): string {
+  // Normalise ISO 4217 currency codes → country codes so callers can pass
+  // either form (e.g. formatCurrency(amount, deal.currency) works directly).
+  const _CURRENCY_TO_COUNTRY: Record<string, string> = {
+    PKR: 'PK', AED: 'AE', GBP: 'GB', USD: 'US', CAD: 'CA', EUR: 'EU',
+  };
+  const key = countryOrCurrency.toUpperCase();
+  const country = _CURRENCY_TO_COUNTRY[key] ?? key;
+
+  switch (country) {
     case 'PK':
       if (amount >= 10_000_000) return `PKR ${(amount / 10_000_000).toFixed(2)} Crore`;
       if (amount >= 100_000)    return `PKR ${(amount / 100_000).toFixed(2)} Lac`;

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getBenchmarks, createBenchmark, updateBenchmark, deleteBenchmark } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { formatCurrency } from "@/lib/utils";
 import { Plus, Pencil, Trash2, Check, X, ChevronDown } from "lucide-react";
 
 interface Benchmark {
@@ -36,11 +37,9 @@ const EMPTY_DRAFT: Draft = {
   is_active: true,
 };
 
-function formatPKR(n: number | null | undefined): string {
+function fmtBenchmarkPrice(n: number | null | undefined): string {
   if (n == null || isNaN(n)) return '—';
-  if (n >= 10_000_000) return `${(n / 10_000_000).toFixed(1)} Cr`;
-  if (n >= 100_000) return `${(n / 100_000).toFixed(0)} L`;
-  return n.toLocaleString();
+  return formatCurrency(n);
 }
 
 function approvedLabel(v: boolean | null) {
@@ -306,8 +305,8 @@ export default function BenchmarksPage() {
               <tr className="border-b border-gray-100 text-left text-[10px] font-semibold uppercase tracking-wider text-gray-400">
                 <th className="px-3 py-3">City</th>
                 <th className="px-3 py-3">Location Key</th>
-                <th className="px-3 py-3">PPM Min (PKR)</th>
-                <th className="px-3 py-3">PPM Max (PKR)</th>
+                <th className="px-3 py-3">PPM Min</th>
+                <th className="px-3 py-3">PPM Max</th>
                 <th className="px-3 py-3">Yield %</th>
                 <th className="px-3 py-3">Appr. %</th>
                 <th className="px-3 py-3">Liq. Months</th>
@@ -346,8 +345,8 @@ export default function BenchmarksPage() {
                   >
                     <td className="px-3 py-2.5 font-medium text-gray-800 capitalize">{b.city}</td>
                     <td className="px-3 py-2.5 font-mono text-gray-700">{b.location_key}</td>
-                    <td className="px-3 py-2.5 text-gray-600">{formatPKR(b.ppm_min)}</td>
-                    <td className="px-3 py-2.5 text-gray-600">{formatPKR(b.ppm_max)}</td>
+                    <td className="px-3 py-2.5 text-gray-600">{fmtBenchmarkPrice(b.ppm_min)}</td>
+                    <td className="px-3 py-2.5 text-gray-600">{fmtBenchmarkPrice(b.ppm_max)}</td>
                     <td className="px-3 py-2.5 text-blue-700 font-medium">{b.yield_pct}%</td>
                     <td className="px-3 py-2.5 text-green-700 font-medium">{b.appr_pct}%</td>
                     <td className="px-3 py-2.5 text-gray-600">{b.liq_months} mo</td>

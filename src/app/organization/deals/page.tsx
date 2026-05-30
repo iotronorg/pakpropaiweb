@@ -7,6 +7,7 @@ import { getDealLocks, confirmDealLock, cancelDealLock, releaseDealLock, dispute
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import type { DealLock, DealLockStatus } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 const STATUS_TABS = ["all", "initiated", "locked", "released", "cancelled", "disputed", "expired"] as const;
 
@@ -137,7 +138,7 @@ export default function OrgDealsPage() {
                         {deal.buyer_phone}
                       </td>
                       <td className="px-5 py-3 font-semibold tabular-nums text-gray-800">
-                        PKR {deal.token_amount.toLocaleString()}
+                        {formatCurrency(deal.token_amount, deal.currency)}
                       </td>
                       <td className="px-5 py-3 text-xs capitalize text-gray-500">
                         {deal.payment_gateway.replace(/_/g, " ")}
@@ -290,7 +291,7 @@ export default function OrgDealsPage() {
                 <br />
                 Amount:{" "}
                 <span className="font-medium text-gray-700">
-                  PKR {confirmDeal.token_amount.toLocaleString()}
+                  {formatCurrency(confirmDeal.token_amount, confirmDeal.currency)}
                 </span>
               </p>
               <label className="mb-1 block text-xs font-medium text-gray-600">

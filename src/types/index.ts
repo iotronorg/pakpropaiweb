@@ -37,6 +37,7 @@ export interface Property {
   area_unit: string;
   area_sqm: number | null;
   price: number | null;
+  currency: string;
   property_type: string;
   construction_status: string | null;
   furnished_status: string | null;
@@ -187,6 +188,8 @@ export interface AgentProfile {
   total_listings: number;
   closed_deals: number;
   rating: number | null;
+  national_id_number: string;
+  tax_id_number: string;
   user_phone: string | null;
   user_email: string | null;
   parent_organization: number | null;
@@ -253,7 +256,8 @@ export interface StatsOverview {
 export interface Payment {
   id: string;
   user: string;
-  amount_pkr: number;
+  amount: number;
+  currency: string;
   purpose: string;
   gateway: string;
   status: "pending" | "completed" | "failed" | "refunded";
@@ -293,6 +297,12 @@ export interface SystemConfig {
   billing_price_basic_pkr: string;
   billing_price_professional_pkr: string;
   billing_price_enterprise_pkr: string;
+  billing_price_basic_aed: string;
+  billing_price_professional_aed: string;
+  billing_price_enterprise_aed: string;
+  billing_price_basic_usd: string;
+  billing_price_professional_usd: string;
+  billing_price_enterprise_usd: string;
   // Feature toggles ("true" | "false" strings)
   feature_property_search: string;
   feature_property_listing: string;
@@ -981,4 +991,153 @@ export interface OrgTheme {
   accent_color:    string
   logo_url:        string
   updated_at:      string | null
+}
+
+// ── Voice Channel ──────────────────────────────────────────────────────────────
+
+export type VoiceCallStatus =
+  | 'ringing'
+  | 'ai_handling'
+  | 'agent_joined'
+  | 'completed'
+  | 'failed'
+
+export interface VoiceCallSession {
+  id:               string
+  call_sid:         string
+  from_phone:       string
+  to_phone:         string
+  direction:        'inbound' | 'outbound'
+  status:           VoiceCallStatus
+  barge_in_at:      string | null
+  transcript:       string
+  recording_url:    string
+  started_at:       string | null
+  ended_at:         string | null
+  duration_seconds: number | null
+  created_at:       string
+}
+
+export interface VoiceTranscriptionEvent {
+  event:     'transcription'
+  call_sid:  string
+  text:      string
+  role:      'caller' | 'ai' | 'agent'
+  timestamp: string
+}
+
+export interface VoiceBargeInEvent {
+  event:      'barge_in'
+  call_sid:   string
+  agent_name: string
+  timestamp:  string
+}
+
+export interface VoiceCallStatusEvent {
+  event:    'call_status'
+  call_sid: string
+  status:   VoiceCallStatus
+  duration: number
+}
+
+export type VoiceRoomEvent =
+  | VoiceTranscriptionEvent
+  | VoiceBargeInEvent
+  | VoiceCallStatusEvent
+
+export interface BargeInResult {
+  latency_ms: number
+}
+
+export interface OrgVoiceConfig {
+  account_sid:   string
+  auth_token:    string
+  phone_number:  string
+  is_active:     boolean
+  record_calls:  boolean
+  ai_voice_name: string
+}
+
+// ── Marketplace / Syndication ──────────────────────────────────────────────
+
+export type SyndicationStatus = 'draft' | 'syndicated' | 'withdrawn'
+export type CommissionType = 'fixed' | 'percentage'
+export type SyndicationScope = 'platform_wide' | 'selected_partners'
+export type PartnershipStatus = 'invited' | 'active' | 'suspended' | 'revoked'
+export type SubmissionStatus = 'pending' | 'accepted' | 'rejected' | 'converted'
+export type LedgerStatus = 'pending' | 'confirmed' | 'paid' | 'disputed'
+
+export interface SyndicationListing {
+  id: string
+  property: string
+  property_title: string
+  developer_org: string
+  developer_org_name: string
+  status: SyndicationStatus
+  commission_type: CommissionType
+  commission_value: string
+  commission_currency: string
+  syndication_scope: SyndicationScope
+  description: string
+  expires_at: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface BrokerNetworkPartnership {
+  id: string
+  developer_org: string
+  developer_org_name: string
+  broker_org: string | null
+  broker_org_name: string | null
+  broker_agent: string | null
+  broker_agent_name: string | null
+  status: PartnershipStatus
+  commission_override_type: CommissionType | null
+  commission_override_value: string | null
+  invited_at: string
+  activated_at: string | null
+  notes: string
+}
+
+export interface SyndicationLeadSubmission {
+  id: string
+  listing: string
+  listing_title: string
+  lead: string
+  lead_name: string
+  submitted_by_org: string | null
+  submitted_by_org_name: string | null
+  submitted_by_agent: string | null
+  status: SubmissionStatus
+  commission_calculated: string | null
+  commission_currency: string
+  deal_lock: string | null
+  submitted_at: string
+  reviewed_at: string | null
+  reviewed_by: string | null
+}
+
+export interface CommissionLedgerEntry {
+  entry_id: string
+  listing: string
+  submission: string
+  deal_lock: string | null
+  developer_org: string
+  developer_org_name: string
+  broker_org: string | null
+  broker_org_name: string | null
+  broker_agent: string | null
+  commission_amount: string
+  commission_currency: string
+  commission_type: CommissionType
+  source_chain_hash: string
+  prev_entry_hash: string
+  status: LedgerStatus
+  created_at: string
+}
+
+export interface LedgerChainVerification {
+  valid: boolean
+  errors: string[]
 }

@@ -355,13 +355,13 @@ export default function LeadDetailPage() {
               <div className="flex justify-between">
                 <span className="text-xs text-gray-500">Budget Min</span>
                 <span className="text-xs font-medium text-gray-700">
-                  {lead.budget_min ? formatCurrency(lead.budget_min) : "—"}
+                  {lead.budget_min ? formatCurrency(lead.budget_min, lead.budget_currency ?? "PKR") : "—"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-xs text-gray-500">Budget Max</span>
                 <span className="text-xs font-medium text-gray-700">
-                  {lead.budget_max ? formatCurrency(lead.budget_max) : "—"}
+                  {lead.budget_max ? formatCurrency(lead.budget_max, lead.budget_currency ?? "PKR") : "—"}
                 </span>
               </div>
               <div className="flex justify-between">

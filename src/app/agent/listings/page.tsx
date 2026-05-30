@@ -451,7 +451,7 @@ export default function AgentListingsPage() {
               {/* Price + area */}
               <div className="flex items-baseline justify-between">
                 <p className="text-lg font-bold text-blue-700">
-                  {p.price ? formatCurrency(p.price) : "Price TBD"}
+                  {p.price ? formatCurrency(p.price, p.currency) : "Price TBD"}
                 </p>
                 {p.area_sqm && (
                   <span className="text-sm text-gray-500">{formatArea(p.area_sqm)}</span>

@@ -1,0 +1,17 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install dependencies into the image layer.
+# Source files are mounted via volume at runtime for hot reload.
+# The named volume in docker-compose.yml (frontend_nm:/app/node_modules)
+# preserves this layer's node_modules so the host mount doesn't overwrite them.
+COPY package.json package-lock.json ./
+RUN npm ci
+
+ENV NEXT_TELEMETRY_DISABLED=1 \
+    NODE_ENV=development
+
+EXPOSE 3000
+
+CMD ["npm", "run", "dev"]

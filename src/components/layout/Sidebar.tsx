@@ -13,7 +13,7 @@ import {
   ClipboardList, AlertTriangle, Calendar, Building2, Building,
   ShieldCheck, Home, GitCompare, BadgeCheck, Lock, AlertOctagon,
   FileBarChart, FileText, FolderOpen, Bell, Settings2, Users, User,
-  LogOut, ChevronRight, SlidersHorizontal, Bot, Megaphone, Award,
+  LogOut, ChevronRight, SlidersHorizontal, Bot, Megaphone, Award, Phone,
 } from "lucide-react";
 
 type LucideIcon = React.ComponentType<{ size?: number; className?: string }>;
@@ -58,6 +58,8 @@ const NAV_DEFS: Record<string, NavItemDef[]> = {
     { key: "myLeads",       href: "/agent/leads",         icon: ClipboardList, exact: true },
     { key: "appointments",  href: "/agent/appointments",  icon: Calendar },
     { key: "myListings",    href: "/agent/listings",      icon: Home },
+    { key: "voice",         href: "/agent/voice",         icon: Phone },
+    { key: "marketplace",   href: "/agent/marketplace",   icon: FolderOpen },
     { key: "myProfile",     href: "/agent/profile",       icon: User },
     { key: "notifications", href: "/agent/notifications", icon: Bell, badge: true },
   ],
@@ -71,6 +73,7 @@ const NAV_DEFS: Record<string, NavItemDef[]> = {
     { key: "myTeam",        href: "/organization/team",          icon: Users },
     { key: "agents",        href: "/organization/agents",        icon: Award },
     { key: "campaigns",     href: "/organization/campaigns",     icon: Megaphone },
+    { key: "marketplace",   href: "/organization/marketplace",   icon: GitCompare },
     { key: "reports",       href: "/organization/reports",       icon: FileBarChart },
     { key: "notifications", href: "/organization/notifications", icon: Bell, badge: true },
     { key: "settings",      href: "/organization/settings",      icon: Settings2 },
