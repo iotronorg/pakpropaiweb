@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { Eye, EyeOff, Smartphone, ArrowLeft, Loader2 } from "lucide-react";
 import { registerAgent, getAgentsList, verifyRegistrationOtp, sendOtp } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import type { AgentProfile } from "@/types";
@@ -210,26 +212,23 @@ export default function AgentRegisterPage() {
   // ── OTP step UI ──────────────────────────────────────────────────────────────
   if (otpStep) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 max-w-md w-full">
+      <div className="min-h-dvh bg-[var(--bg-base)] flex items-center justify-center p-4">
+        <div className="bg-[var(--bg-surface)] rounded-2xl shadow-sm border border-[var(--border)] p-10 max-w-md w-full">
           <div className="text-center mb-6">
-            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
+            <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+              <Smartphone size={28} className="text-blue-600" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Verify your phone number</h2>
-            <p className="mt-2 text-sm text-gray-500">
+            <h2 className="text-xl font-bold text-[var(--text-primary)]">Verify your phone number</h2>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">
               We sent a 6-digit code to your WhatsApp at{" "}
-              <span className="font-medium text-gray-700">{otpPhone}</span>
+              <span className="font-medium text-[var(--text-primary)]">{otpPhone}</span>
             </p>
           </div>
 
           <form onSubmit={handleVerifyOtp} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">
-                Verification Code <span className="text-red-500">*</span>
+              <label htmlFor="agent-otp-code" className="block text-xs font-medium text-[var(--text-muted)] mb-1">
+                Verification code <span className="text-red-500" aria-hidden="true">*</span><span className="sr-only"> (required)</span>
               </label>
               <input
                 type="text"
@@ -240,14 +239,16 @@ export default function AgentRegisterPage() {
                   setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6));
                   setOtpError("");
                 }}
-                placeholder="123456"
-                className={`w-full rounded-lg border px-4 py-3 text-lg tracking-widest text-center font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                placeholder="• • • • • •"
+                id="agent-otp-code"
+                autoComplete="one-time-code"
+                className={`w-full rounded-lg border px-4 py-3 text-lg tracking-[0.35em] text-center font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
                   otpError ? "border-red-400 bg-red-50" : "border-gray-200 bg-white"
                 }`}
                 required
                 autoFocus
               />
-              {otpError && <p className="mt-1 text-xs text-red-500">{otpError}</p>}
+              {otpError && <p role="alert" className="mt-1 text-xs text-red-600">{otpError}</p>}
             </div>
 
             <button
@@ -275,11 +276,25 @@ export default function AgentRegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-dvh bg-[var(--bg-base)] py-10 px-4">
       <div className="max-w-2xl mx-auto">
 
+        {/* Back + Logo */}
+        <div className="flex items-center justify-between mb-6">
+          <Link href="/" className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors group">
+            <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform duration-150" aria-hidden="true" />
+            Back to home
+          </Link>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-sm" aria-hidden="true">
+              <span className="text-white font-bold text-xs">R</span>
+            </div>
+            <span className="font-bold text-[var(--text-primary)]">RealTron<span className="text-blue-600"> AI</span></span>
+          </Link>
+        </div>
+
         {/* Org CTA */}
-        <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 flex items-center justify-between gap-4">
+        <div className="mb-6 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 flex items-center justify-between gap-4" role="note">
           <p className="text-sm text-blue-800">
             Registering an agency or brokerage?
           </p>
@@ -293,8 +308,8 @@ export default function AgentRegisterPage() {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Agent Registration</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Agent Registration</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             Register as an agent on RealTron AI. Your application will be reviewed before activation.
           </p>
         </div>
@@ -306,6 +321,7 @@ export default function AgentRegisterPage() {
             <Field label="Full Name" required error={errors.name}>
               <input
                 type="text"
+                autoComplete="name"
                 value={form.name}
                 onChange={(e) => set("name", e.target.value)}
                 placeholder="Muhammad Ali"
@@ -313,12 +329,13 @@ export default function AgentRegisterPage() {
                 required
               />
             </Field>
-            <Field label="Phone Number" required error={errors.phone} hint="+92XXXXXXXXXX">
+            <Field label="Phone Number (WhatsApp)" required error={errors.phone} hint="E.164 format — e.g. +1 555 123 4567">
               <input
                 type="tel"
+                autoComplete="tel"
                 value={form.phone}
                 onChange={(e) => set("phone", e.target.value)}
-                placeholder="+923001234567"
+                placeholder="+1 555 123 4567"
                 className={input(errors.phone)}
                 required
               />
@@ -326,18 +343,20 @@ export default function AgentRegisterPage() {
             <Field label="Email Address" error={errors.email}>
               <input
                 type="email"
+                autoComplete="email"
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
                 placeholder="agent@example.com"
                 className={input(errors.email)}
               />
             </Field>
-            <Field label="WhatsApp Number" error={errors.whatsapp_number} hint="Leave blank if same as phone">
+            <Field label="WhatsApp Number" error={errors.whatsapp_number} hint="Leave blank if same as phone. E.164 format.">
               <input
                 type="tel"
+                autoComplete="tel"
                 value={form.whatsapp_number}
                 onChange={(e) => set("whatsapp_number", e.target.value)}
-                placeholder="+923001234567"
+                placeholder="+1 555 123 4567"
                 className={input(errors.whatsapp_number)}
               />
             </Field>
@@ -347,6 +366,7 @@ export default function AgentRegisterPage() {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   value={form.password}
                   onChange={(e) => set("password", e.target.value)}
                   placeholder="Create a password"
@@ -361,17 +381,9 @@ export default function AgentRegisterPage() {
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
+                    <EyeOff size={15} aria-hidden="true" />
                   ) : (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                    <Eye size={15} aria-hidden="true" />
                   )}
                 </button>
               </div>
@@ -395,6 +407,7 @@ export default function AgentRegisterPage() {
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
+                  autoComplete="new-password"
                   value={form.confirmPassword}
                   onChange={(e) => set("confirmPassword", e.target.value)}
                   placeholder="Repeat your password"
@@ -409,17 +422,9 @@ export default function AgentRegisterPage() {
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
                   {showConfirmPassword ? (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                    </svg>
+                    <EyeOff size={15} aria-hidden="true" />
                   ) : (
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
+                    <Eye size={15} aria-hidden="true" />
                   )}
                 </button>
               </div>
@@ -437,13 +442,14 @@ export default function AgentRegisterPage() {
                     set("agent_type", t.value);
                     set("parent_organization", "");
                   }}
+                  aria-pressed={form.agent_type === t.value}
                   className={`rounded-xl border-2 p-4 text-start transition-colors ${
                     form.agent_type === t.value
                       ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      : "border-[var(--border)] bg-[var(--bg-surface)] hover:border-blue-200"
                   }`}
                 >
-                  <p className={`text-sm font-semibold ${form.agent_type === t.value ? "text-blue-700" : "text-gray-800"}`}>
+                  <p className={`text-sm font-semibold ${form.agent_type === t.value ? "text-blue-700" : "text-[var(--text-primary)]"}`}>
                     {t.label}
                   </p>
                 </button>
@@ -494,7 +500,7 @@ export default function AgentRegisterPage() {
                   className={input(errors.designation)}
                 />
               </Field>
-              <Field label="License Number" error={errors.license_number} hint="REAP / PBTE / local authority">
+              <Field label="License Number" error={errors.license_number} hint="Your real estate license or registration number">
                 <input
                   type="text"
                   value={form.license_number}
@@ -584,7 +590,7 @@ export default function AgentRegisterPage() {
 
           {/* Global error */}
           {errors.detail && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+            <p role="alert" className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
               {errors.detail}
             </p>
           )}
@@ -594,17 +600,18 @@ export default function AgentRegisterPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="flex-1 rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
             >
-              {submitting ? "Submitting..." : "Submit Application"}
+              {submitting
+                ? <><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Submitting…</>
+                : "Submit Application"}
             </button>
-            <button
-              type="button"
-              onClick={() => router.push("/login")}
-              className="rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            <Link
+              href="/login"
+              className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-6 py-3 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors"
             >
-              Back to Login
-            </button>
+              Sign in
+            </Link>
           </div>
 
         </form>
@@ -616,15 +623,15 @@ export default function AgentRegisterPage() {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function input(err?: string) {
-  return `w-full rounded-lg border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-    err ? "border-red-400 bg-red-50" : "border-gray-200 bg-white"
+  return `w-full rounded-lg border px-3 py-2.5 text-sm bg-[var(--bg-surface)] text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+    err ? "border-red-400 bg-red-50" : "border-[var(--border-strong)]"
   }`;
 }
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <h2 className="text-sm font-semibold text-gray-700 mb-4">{title}</h2>
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+      <h2 className="text-sm font-semibold text-[var(--text-primary)] mb-4">{title}</h2>
       <div className="space-y-4">{children}</div>
     </div>
   );
@@ -641,12 +648,12 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-600 mb-1">
+      <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
         {label}{required && <span className="text-red-500 ms-0.5">*</span>}
       </label>
       {children}
-      {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {hint && !error && <p className="mt-1 text-xs text-[var(--text-muted)]">{hint}</p>}
+      {error && <p role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 }

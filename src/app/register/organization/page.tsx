@@ -2,7 +2,9 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { registerOrganization, verifyOrgRegistrationOtp } from "@/lib/api";
+import Link from "next/link";
+import { registerOrganization, verifyOrgRegistrationOtp, sendOtp } from "@/lib/api";
+import { Eye, EyeOff, Smartphone, ArrowLeft, Loader2 } from "lucide-react";
 
 const ORG_TYPES = [
   { value: "developer",  label: "Real Estate Developer", desc: "Residential & commercial projects" },
@@ -84,6 +86,7 @@ export default function OrgRegisterPage() {
   const [otpCode, setOtpCode] = useState("");
   const [otpError, setOtpError] = useState("");
   const [otpSubmitting, setOtpSubmitting] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const pwStrength = form.password ? getPasswordStrength(form.password) : null;
 
@@ -95,7 +98,6 @@ export default function OrgRegisterPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErrors({});
-
     if (form.password !== form.confirm) {
       setErrors({ confirm: "Passwords do not match." });
       return;
@@ -104,7 +106,6 @@ export default function OrgRegisterPage() {
       setErrors({ country: "Please select a country." });
       return;
     }
-
     setSubmitting(true);
     try {
       const res = await registerOrganization({
@@ -151,52 +152,81 @@ export default function OrgRegisterPage() {
     }
   }
 
+  async function handleResendOtp() {
+    setResending(true);
+    setOtpError("");
+    try {
+      await sendOtp(otpPhone, "registration_verify");
+    } catch {
+      setOtpError("Failed to resend code. Please try again.");
+    } finally {
+      setResending(false);
+    }
+  }
+
   // ── OTP step ──────────────────────────────────────────────────────────────────
   if (otpStep) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-10 max-w-md w-full">
+      <div className="min-h-dvh bg-[var(--bg-base)] flex items-center justify-center p-4">
+        <div className="bg-[var(--bg-surface)] rounded-2xl shadow-sm border border-[var(--border)] p-10 max-w-md w-full">
           <div className="text-center mb-6">
-            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
-              <svg className="w-7 h-7 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
+            <div className="w-14 h-14 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center mx-auto mb-4" aria-hidden="true">
+              <Smartphone size={28} className="text-blue-600" />
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Verify your phone</h2>
-            <p className="mt-2 text-sm text-gray-500">
+            <h2 className="text-xl font-bold text-[var(--text-primary)]">Verify your phone</h2>
+            <p className="mt-2 text-sm text-[var(--text-muted)]">
               We sent a 6-digit code to your WhatsApp at{" "}
-              <span className="font-medium text-gray-700">{otpPhone}</span>
+              <span className="font-medium text-[var(--text-primary)]">{otpPhone}</span>
             </p>
           </div>
 
           <form onSubmit={handleVerifyOtp} className="space-y-4">
-            <input
-              type="text"
-              inputMode="numeric"
-              maxLength={6}
-              value={otpCode}
-              onChange={(e) => {
-                setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6));
-                setOtpError("");
-              }}
-              placeholder="123456"
-              className={`w-full rounded-lg border px-4 py-3 text-lg tracking-widest text-center font-mono focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                otpError ? "border-red-400 bg-red-50" : "border-gray-200"
-              }`}
-              required
-              autoFocus
-            />
-            {otpError && <p className="text-xs text-red-500">{otpError}</p>}
+            <div>
+              <label htmlFor="org-otp-code" className="block text-xs font-medium text-[var(--text-muted)] mb-1.5">
+                Verification code <span className="text-red-500">*</span>
+              </label>
+              <input
+                id="org-otp-code"
+                type="text"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                maxLength={6}
+                value={otpCode}
+                onChange={(e) => {
+                  setOtpCode(e.target.value.replace(/\D/g, "").slice(0, 6));
+                  setOtpError("");
+                }}
+                placeholder="• • • • • •"
+                className={`w-full rounded-lg border px-4 py-3 text-lg tracking-[0.35em] text-center font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+                  otpError ? "border-red-400 bg-red-50" : "border-[var(--border-strong)] bg-white"
+                }`}
+                required
+                autoFocus
+              />
+              {otpError && <p role="alert" className="mt-1 text-xs text-red-600">{otpError}</p>}
+            </div>
 
             <button
               type="submit"
               disabled={otpSubmitting || otpCode.length < 6}
-              className="w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
             >
-              {otpSubmitting ? "Verifying..." : "Verify & Continue to Setup"}
+              {otpSubmitting
+                ? <><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Verifying…</>
+                : "Verify & Continue to Setup"}
             </button>
           </form>
+
+          <div className="mt-4 text-center">
+            <button
+              type="button"
+              onClick={handleResendOtp}
+              disabled={resending}
+              className="text-sm text-blue-600 hover:text-blue-700 disabled:opacity-50 font-medium transition-colors"
+            >
+              {resending ? "Sending…" : "Resend OTP"}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -204,24 +234,30 @@ export default function OrgRegisterPage() {
 
   // ── Registration form ─────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gray-50 py-10 px-4">
+    <div className="min-h-dvh bg-[var(--bg-base)] py-10 px-4">
       <div className="max-w-2xl mx-auto">
 
-        {/* Back link */}
-        <a
-          href="/register"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700 mb-6"
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          Agent registration
-        </a>
+        {/* Back + Logo */}
+        <div className="flex items-center justify-between mb-8">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors group"
+          >
+            <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform duration-150" aria-hidden="true" />
+            Back to home
+          </Link>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-sm" aria-hidden="true">
+              <span className="text-white font-bold text-xs">R</span>
+            </div>
+            <span className="font-bold text-[var(--text-primary)]">RealTron<span className="text-blue-600"> AI</span></span>
+          </Link>
+        </div>
 
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Register your organization</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Register your organization</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             Set up your workspace on RealTron AI. You&apos;ll be up and running in under 2 minutes.
           </p>
         </div>
@@ -230,22 +266,23 @@ export default function OrgRegisterPage() {
 
           {/* Org type selector */}
           <Block title="Organization Type">
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3" role="group" aria-label="Select organization type">
               {ORG_TYPES.map((t) => (
                 <button
                   key={t.value}
                   type="button"
                   onClick={() => set("org_type", t.value)}
+                  aria-pressed={form.org_type === t.value}
                   className={`rounded-xl border-2 p-4 text-start transition-colors ${
                     form.org_type === t.value
                       ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      : "border-[var(--border)] bg-[var(--bg-surface)] hover:border-blue-200"
                   }`}
                 >
-                  <p className={`text-sm font-semibold ${form.org_type === t.value ? "text-blue-700" : "text-gray-800"}`}>
+                  <p className={`text-sm font-semibold ${form.org_type === t.value ? "text-blue-700" : "text-[var(--text-primary)]"}`}>
                     {t.label}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">{t.desc}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">{t.desc}</p>
                 </button>
               ))}
             </div>
@@ -256,6 +293,7 @@ export default function OrgRegisterPage() {
             <Field label="Organization Name" required error={errors.org_name}>
               <input
                 type="text"
+                autoComplete="organization"
                 value={form.org_name}
                 onChange={(e) => set("org_name", e.target.value)}
                 placeholder="Apex Realty Group"
@@ -284,6 +322,7 @@ export default function OrgRegisterPage() {
             <Field label="Your Full Name" required error={errors.admin_name}>
               <input
                 type="text"
+                autoComplete="name"
                 value={form.admin_name}
                 onChange={(e) => set("admin_name", e.target.value)}
                 placeholder="Alice Smith"
@@ -295,6 +334,7 @@ export default function OrgRegisterPage() {
             <Field label="Business Email" required error={errors.email}>
               <input
                 type="email"
+                autoComplete="email"
                 value={form.email}
                 onChange={(e) => set("email", e.target.value)}
                 placeholder="alice@apexrealty.com"
@@ -311,6 +351,7 @@ export default function OrgRegisterPage() {
             >
               <input
                 type="tel"
+                autoComplete="tel"
                 value={form.phone}
                 onChange={(e) => set("phone", e.target.value)}
                 placeholder="+441234567890"
@@ -323,6 +364,7 @@ export default function OrgRegisterPage() {
               <div className="relative">
                 <input
                   type={showPw ? "text" : "password"}
+                  autoComplete="new-password"
                   value={form.password}
                   onChange={(e) => set("password", e.target.value)}
                   placeholder="Create a password"
@@ -333,7 +375,7 @@ export default function OrgRegisterPage() {
               </div>
               {form.password && pwStrength && (
                 <div className="mt-2">
-                  <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+                  <div className="h-1.5 w-full bg-[var(--bg-subtle)] rounded-full overflow-hidden">
                     <div className={`h-full rounded-full transition-all duration-300 ${STRENGTH[pwStrength].bar}`} />
                   </div>
                   <p className={`mt-1 text-xs font-medium ${STRENGTH[pwStrength].text}`}>
@@ -347,6 +389,7 @@ export default function OrgRegisterPage() {
               <div className="relative">
                 <input
                   type={showCf ? "text" : "password"}
+                  autoComplete="new-password"
                   value={form.confirm}
                   onChange={(e) => set("confirm", e.target.value)}
                   placeholder="Repeat your password"
@@ -358,35 +401,35 @@ export default function OrgRegisterPage() {
             </Field>
           </Block>
 
-          {/* Global error */}
           {errors.detail && (
-            <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
+            <p role="alert" className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
               {errors.detail}
             </p>
           )}
 
-          {/* Submit */}
           <div className="flex items-center gap-4 pt-2">
             <button
               type="submit"
               disabled={submitting}
-              className="flex-1 rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="flex-1 rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
             >
-              {submitting ? "Creating workspace..." : "Create Workspace"}
+              {submitting
+                ? <><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Creating workspace…</>
+                : "Create Workspace"}
             </button>
-            <a
+            <Link
               href="/login"
-              className="rounded-xl border border-gray-200 bg-white px-6 py-3 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-6 py-3 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors"
             >
               Sign in
-            </a>
+            </Link>
           </div>
 
-          <p className="text-center text-xs text-gray-400">
+          <p className="text-center text-xs text-[var(--text-muted)]">
             By registering you agree to the{" "}
-            <a href="/terms" className="underline hover:text-gray-600">Terms of Service</a>
+            <a href="/terms" className="underline hover:text-[var(--text-primary)]">Terms of Service</a>
             {" "}and{" "}
-            <a href="/privacy" className="underline hover:text-gray-600">Privacy Policy</a>.
+            <a href="/privacy-policy" className="underline hover:text-[var(--text-primary)]">Privacy Policy</a>.
           </p>
         </form>
       </div>
@@ -397,15 +440,15 @@ export default function OrgRegisterPage() {
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 function inp(err?: string) {
-  return `w-full rounded-lg border px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-    err ? "border-red-400 bg-red-50" : "border-gray-200 bg-white"
+  return `w-full rounded-lg border px-3 py-2.5 text-sm bg-[var(--bg-surface)] text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
+    err ? "border-red-400 bg-red-50" : "border-[var(--border-strong)]"
   }`;
 }
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <h2 className="text-sm font-semibold text-gray-700 mb-4">{title}</h2>
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+      <h2 className="text-sm font-semibold text-[var(--text-primary)] mb-4">{title}</h2>
       <div className="space-y-4">{children}</div>
     </div>
   );
@@ -418,12 +461,13 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-xs font-medium text-gray-600 mb-1">
-        {label}{required && <span className="text-red-500 ms-0.5">*</span>}
+      <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">
+        {label}{required && <span className="text-red-500 ms-0.5" aria-hidden="true">*</span>}
+        {required && <span className="sr-only"> (required)</span>}
       </label>
       {children}
-      {hint && !error && <p className="mt-1 text-xs text-gray-400">{hint}</p>}
-      {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+      {hint && !error && <p className="mt-1 text-xs text-[var(--text-muted)]">{hint}</p>}
+      {error && <p role="alert" className="mt-1 text-xs text-red-600">{error}</p>}
     </div>
   );
 }
@@ -435,20 +479,9 @@ function EyeToggle({ show, onToggle }: { show: boolean; onToggle: () => void }) 
       onClick={onToggle}
       tabIndex={-1}
       aria-label={show ? "Hide password" : "Show password"}
-      className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600"
+      className="absolute end-0 inset-y-0 flex items-center px-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
     >
-      {show ? (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-        </svg>
-      ) : (
-        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-      )}
+      {show ? <EyeOff size={15} aria-hidden="true" /> : <Eye size={15} aria-hidden="true" />}
     </button>
   );
 }

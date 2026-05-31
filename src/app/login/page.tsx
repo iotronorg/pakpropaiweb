@@ -3,7 +3,7 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { sendOtp, verifyOtp, loginWithPassword } from "@/lib/api";
 import { useAuthStore } from "@/store/auth";
 import { roleHomePath } from "@/lib/utils";
@@ -30,15 +30,14 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { setAuth } = useAuthStore();
+  const prefersReduced = useReducedMotion();
 
   const [mode, setMode] = useState<Mode>("password");
 
-  // Password form state
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword]     = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // OTP flow state
   const [otpPhone, setOtpPhone] = useState("");
   const [otpCode,  setOtpCode]  = useState("");
 
@@ -101,19 +100,21 @@ function LoginForm() {
     }
   }
 
+  const dur = prefersReduced ? 0 : 0.25;
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[var(--bg-base)] px-4">
+    <div className="flex min-h-dvh items-center justify-center bg-[var(--bg-base)] px-4">
       <div className="w-full max-w-sm">
 
         {/* Back link */}
         <motion.div
-          initial={{ opacity: 0, y: -6 }}
+          initial={prefersReduced ? false : { opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25 }}
+          transition={{ duration: dur }}
         >
           <Link
             href="/"
-            className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors group"
+            className="mb-6 inline-flex items-center gap-1.5 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] rounded"
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-0.5 transition-transform duration-150" />
             Back to home
@@ -122,23 +123,25 @@ function LoginForm() {
 
         {/* Logo */}
         <motion.div
-          initial={{ opacity: 0, y: -6 }}
+          initial={prefersReduced ? false : { opacity: 0, y: -6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, delay: 0.05 }}
+          transition={{ duration: dur, delay: prefersReduced ? 0 : 0.05 }}
           className="mb-8 text-center"
         >
           <div className="mb-3 flex items-center justify-center gap-2">
-            <span className="text-3xl font-bold text-[var(--text-primary)]">RealTron</span>
-            <span className="rounded-md bg-sky-50 px-2 py-1 text-sm font-semibold text-sky-600 border border-sky-200">AI</span>
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-sm">
+              <span className="text-white font-bold text-sm" aria-hidden="true">R</span>
+            </div>
+            <span className="text-2xl font-bold text-[var(--text-primary)]">RealTron<span className="text-blue-600"> AI</span></span>
           </div>
           <p className="text-sm text-[var(--text-muted)]">AI Sales Infrastructure for Real Estate</p>
         </motion.div>
 
         {/* Card */}
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={prefersReduced ? false : { opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          transition={{ duration: prefersReduced ? 0 : 0.3, delay: prefersReduced ? 0 : 0.1 }}
           className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-sm"
         >
           {/* Registered success banner */}
@@ -149,6 +152,7 @@ function LoginForm() {
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
                 className="flex items-center gap-2 border-b border-green-100 bg-green-50 px-6 py-3 text-sm text-green-700"
+                role="status"
               >
                 <CheckCircle2 size={15} className="shrink-0 text-green-600" />
                 Account created. Please sign in.
@@ -163,11 +167,11 @@ function LoginForm() {
               <motion.div
                 key="no-access"
                 variants={stepVariants} initial="enter" animate="center" exit="exit"
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                transition={{ duration: prefersReduced ? 0 : 0.2, ease: "easeOut" }}
                 className="p-8 text-center space-y-5"
               >
                 <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-teal-50 border border-teal-200">
-                  <MessageSquare size={22} className="text-teal-600" />
+                  <MessageSquare size={22} className="text-teal-600" aria-hidden="true" />
                 </div>
                 <div>
                   <h1 className="text-lg font-semibold text-[var(--text-primary)]">Use WhatsApp to continue</h1>
@@ -176,7 +180,8 @@ function LoginForm() {
                   </p>
                 </div>
                 <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                  whileHover={prefersReduced ? undefined : { scale: 1.01 }}
+                  whileTap={prefersReduced ? undefined : { scale: 0.98 }}
                   onClick={() => switchMode("password")}
                   className="w-full rounded-lg border border-[var(--border)] py-2.5 text-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors cursor-pointer"
                 >
@@ -185,12 +190,12 @@ function LoginForm() {
               </motion.div>
             )}
 
-            {/* Password mode (default) */}
+            {/* Password mode */}
             {mode === "password" && (
               <motion.form
                 key="password"
                 variants={stepVariants} initial="enter" animate="center" exit="exit"
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                transition={{ duration: prefersReduced ? 0 : 0.2, ease: "easeOut" }}
                 onSubmit={onPasswordLogin}
                 className="space-y-5 p-8"
               >
@@ -199,29 +204,39 @@ function LoginForm() {
                   <div className="mt-1 h-px bg-[var(--border)]" />
                 </div>
 
-                {/* Identifier */}
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">
+                  <label htmlFor="identifier" className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">
                     Email or phone
                   </label>
                   <input
+                    id="identifier"
                     type="text"
+                    autoComplete="username"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    placeholder="you@example.com or +92 300 123 4567"
+                    placeholder="you@example.com or +1 555 123 4567"
                     required
                     className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                   />
                 </div>
 
-                {/* Password */}
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">
-                    Password
-                  </label>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <label htmlFor="password" className="text-xs font-medium text-[var(--text-muted)]">
+                      Password
+                    </label>
+                    <Link
+                      href="/forgot-password"
+                      className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                    >
+                      Forgot password?
+                    </Link>
+                  </div>
                   <div className="relative">
                     <input
+                      id="password"
                       type={showPassword ? "text" : "password"}
+                      autoComplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
@@ -231,7 +246,7 @@ function LoginForm() {
                     <button
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                      className="absolute end-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                       aria-label={showPassword ? "Hide password" : "Show password"}
                     >
                       {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -239,10 +254,10 @@ function LoginForm() {
                   </div>
                 </div>
 
-                {/* Error */}
                 <AnimatePresence>
                   {error && (
                     <motion.p
+                      role="alert"
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
@@ -253,33 +268,31 @@ function LoginForm() {
                   )}
                 </AnimatePresence>
 
-                {/* Submit */}
                 <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                  whileHover={prefersReduced ? undefined : { scale: 1.01 }}
+                  whileTap={prefersReduced ? undefined : { scale: 0.98 }}
                   type="submit"
                   disabled={loading}
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 py-2.5 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-50 transition-colors cursor-pointer"
                 >
                   {loading
-                    ? <><Loader2 size={15} className="animate-spin" /> Signing in…</>
+                    ? <><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Signing in…</>
                     : "Sign In →"}
                 </motion.button>
 
-                {/* Secondary actions */}
                 <div className="flex items-center justify-between text-xs">
-                  <button
-                    type="button"
-                    className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-                    onClick={() => {/* TODO: forgot password flow */}}
+                  <Link
+                    href="/register"
+                    className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   >
-                    Forgot password?
-                  </button>
+                    No account? Register →
+                  </Link>
                   <button
                     type="button"
                     onClick={() => switchMode("otp-phone")}
                     className="text-sky-600 hover:text-sky-700 font-medium transition-colors cursor-pointer"
                   >
-                    Continue with OTP &rarr;
+                    Sign in with OTP &rarr;
                   </button>
                 </div>
               </motion.form>
@@ -290,7 +303,7 @@ function LoginForm() {
               <motion.form
                 key="otp-phone"
                 variants={stepVariants} initial="enter" animate="center" exit="exit"
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                transition={{ duration: prefersReduced ? 0 : 0.2, ease: "easeOut" }}
                 onSubmit={onSendOtp}
                 className="space-y-5 p-8"
               >
@@ -300,9 +313,11 @@ function LoginForm() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">Phone number</label>
+                  <label htmlFor="otp-phone" className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">Phone number</label>
                   <input
+                    id="otp-phone"
                     type="tel"
+                    autoComplete="tel"
                     value={otpPhone}
                     onChange={(e) => setOtpPhone(e.target.value)}
                     placeholder="+1 555 123 4567"
@@ -314,6 +329,7 @@ function LoginForm() {
                 <AnimatePresence>
                   {error && (
                     <motion.p
+                      role="alert"
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
@@ -325,13 +341,14 @@ function LoginForm() {
                 </AnimatePresence>
 
                 <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                  whileHover={prefersReduced ? undefined : { scale: 1.01 }}
+                  whileTap={prefersReduced ? undefined : { scale: 0.98 }}
                   type="submit"
                   disabled={loading}
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-sky-600 py-2.5 text-sm font-semibold text-white hover:bg-sky-700 disabled:opacity-50 transition-colors cursor-pointer"
                 >
                   {loading
-                    ? <><Loader2 size={15} className="animate-spin" /> Sending…</>
+                    ? <><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Sending…</>
                     : "Send OTP →"}
                 </motion.button>
 
@@ -340,7 +357,7 @@ function LoginForm() {
                   onClick={() => switchMode("password")}
                   className="flex w-full items-center justify-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
                 >
-                  <ArrowLeft size={12} />
+                  <ArrowLeft size={12} aria-hidden="true" />
                   Back to password login
                 </button>
               </motion.form>
@@ -351,12 +368,12 @@ function LoginForm() {
               <motion.form
                 key="otp-code"
                 variants={stepVariants} initial="enter" animate="center" exit="exit"
-                transition={{ duration: 0.2, ease: "easeOut" }}
+                transition={{ duration: prefersReduced ? 0 : 0.2, ease: "easeOut" }}
                 onSubmit={onVerifyOtp}
                 className="space-y-5 p-8"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 border border-teal-200">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 border border-teal-200" aria-hidden="true">
                     <Shield size={18} className="text-teal-600" />
                   </div>
                   <div>
@@ -368,10 +385,12 @@ function LoginForm() {
                 </div>
 
                 <div>
-                  <label className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">6-digit code</label>
+                  <label htmlFor="otp-code" className="mb-1.5 block text-xs font-medium text-[var(--text-muted)]">6-digit code</label>
                   <input
+                    id="otp-code"
                     type="text"
                     inputMode="numeric"
+                    autoComplete="one-time-code"
                     maxLength={6}
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value)}
@@ -384,6 +403,7 @@ function LoginForm() {
                 <AnimatePresence>
                   {error && (
                     <motion.p
+                      role="alert"
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
@@ -395,13 +415,14 @@ function LoginForm() {
                 </AnimatePresence>
 
                 <motion.button
-                  whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                  whileHover={prefersReduced ? undefined : { scale: 1.01 }}
+                  whileTap={prefersReduced ? undefined : { scale: 0.98 }}
                   type="submit"
                   disabled={loading}
                   className="flex w-full items-center justify-center gap-2 rounded-lg bg-teal-600 py-2.5 text-sm font-semibold text-white hover:bg-teal-700 disabled:opacity-50 transition-colors cursor-pointer"
                 >
                   {loading
-                    ? <><Loader2 size={15} className="animate-spin" /> Verifying…</>
+                    ? <><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Verifying…</>
                     : "Verify & Sign in"}
                 </motion.button>
 
@@ -419,9 +440,9 @@ function LoginForm() {
         </motion.div>
 
         <motion.p
-          initial={{ opacity: 0 }}
+          initial={prefersReduced ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.35, duration: 0.3 }}
+          transition={{ delay: prefersReduced ? 0 : 0.35, duration: prefersReduced ? 0 : 0.3 }}
           className="mt-6 text-center text-xs text-[var(--text-faint)]"
         >
           Dashboard access for agents, developers &amp; admins only
