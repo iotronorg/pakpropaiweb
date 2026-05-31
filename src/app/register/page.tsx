@@ -243,7 +243,7 @@ export default function AgentRegisterPage() {
                 id="agent-otp-code"
                 autoComplete="one-time-code"
                 className={`w-full rounded-lg border px-4 py-3 text-lg tracking-[0.35em] text-center font-bold outline-none focus:ring-2 focus:ring-blue-500 transition-all ${
-                  otpError ? "border-red-400 bg-red-50" : "border-gray-200 bg-white"
+                  otpError ? "border-red-400 bg-red-50" : "border-[var(--border-strong)] bg-[var(--bg-surface)]"
                 }`}
                 required
                 autoFocus
@@ -324,7 +324,7 @@ export default function AgentRegisterPage() {
                 autoComplete="name"
                 value={form.name}
                 onChange={(e) => set("name", e.target.value)}
-                placeholder="Muhammad Ali"
+                placeholder="Alex Johnson"
                 className={input(errors.name)}
                 required
               />
@@ -376,7 +376,7 @@ export default function AgentRegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   tabIndex={-1}
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
@@ -417,7 +417,7 @@ export default function AgentRegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword((v) => !v)}
-                  className="absolute inset-y-0 right-0 flex items-center px-3 text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 flex items-center px-3 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   tabIndex={-1}
                   aria-label={showConfirmPassword ? "Hide password" : "Show password"}
                 >
@@ -487,7 +487,7 @@ export default function AgentRegisterPage() {
                   type="text"
                   value={form.company_name}
                   onChange={(e) => set("company_name", e.target.value)}
-                  placeholder="Ali Real Estate"
+                  placeholder="Apex Realty Group"
                   className={input(errors.company_name)}
                 />
               </Field>
@@ -505,7 +505,7 @@ export default function AgentRegisterPage() {
                   type="text"
                   value={form.license_number}
                   onChange={(e) => set("license_number", e.target.value)}
-                  placeholder="REAP-2024-XXXX"
+                  placeholder="e.g. RERA-12345"
                   className={input(errors.license_number)}
                 />
               </Field>
@@ -525,7 +525,7 @@ export default function AgentRegisterPage() {
                 rows={3}
                 value={form.bio}
                 onChange={(e) => set("bio", e.target.value)}
-                placeholder="Experienced property consultant specializing in DHA Lahore residential and commercial plots..."
+                placeholder="Experienced property consultant specialising in residential and commercial real estate across the city..."
                 className={input(errors.bio)}
               />
             </Field>
@@ -539,7 +539,7 @@ export default function AgentRegisterPage() {
                   type="text"
                   value={form.primary_city}
                   onChange={(e) => set("primary_city", e.target.value)}
-                  placeholder="Lahore"
+                  placeholder="Dubai"
                   className={input(errors.primary_city)}
                 />
               </Field>
@@ -548,7 +548,7 @@ export default function AgentRegisterPage() {
                   type="text"
                   value={form.cities}
                   onChange={(e) => set("cities", e.target.value)}
-                  placeholder="Lahore, Islamabad, Rawalpindi"
+                  placeholder="Dubai, Abu Dhabi, Sharjah"
                   className={input(errors.cities)}
                 />
               </Field>
@@ -558,7 +558,7 @@ export default function AgentRegisterPage() {
                 type="text"
                 value={form.areas}
                 onChange={(e) => set("areas", e.target.value)}
-                placeholder="DHA Phase 5, Gulberg III, Bahria Town"
+                placeholder="Marina, Downtown, Business Bay"
                 className={input(errors.areas)}
               />
             </Field>
@@ -573,7 +573,7 @@ export default function AgentRegisterPage() {
                   className={`flex items-center gap-2 rounded-lg border px-3 py-2.5 cursor-pointer transition-colors ${
                     form.specializations.includes(s.value)
                       ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      : "border-[var(--border)] bg-[var(--bg-surface)] hover:border-[var(--border-strong)]"
                   }`}
                 >
                   <input
@@ -582,7 +582,7 @@ export default function AgentRegisterPage() {
                     onChange={() => toggleSpec(s.value)}
                     className="accent-blue-600"
                   />
-                  <span className="text-xs font-medium text-gray-700">{s.label}</span>
+                  <span className="text-xs font-medium text-[var(--text-secondary)]">{s.label}</span>
                 </label>
               ))}
             </div>
@@ -613,6 +613,13 @@ export default function AgentRegisterPage() {
               Sign in
             </Link>
           </div>
+
+          <p className="text-center text-xs text-[var(--text-muted)]">
+            By registering you agree to the{" "}
+            <a href="/terms" className="underline hover:text-[var(--text-primary)]">Terms of Service</a>
+            {" "}and{" "}
+            <a href="/privacy-policy" className="underline hover:text-[var(--text-primary)]">Privacy Policy</a>.
+          </p>
 
         </form>
       </div>

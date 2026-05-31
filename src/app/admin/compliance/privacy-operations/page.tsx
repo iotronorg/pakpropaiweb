@@ -177,7 +177,7 @@ export default function PrivacyOperationsPage() {
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-semibold text-[var(--text-primary)]">PII Detections (24h)</h2>
-            <button onClick={handleExport} className="text-xs text-indigo-600 hover:underline">
+            <button type="button" onClick={handleExport} className="text-xs text-indigo-600 hover:underline">
               Export CSV
             </button>
           </div>

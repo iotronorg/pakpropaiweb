@@ -124,7 +124,7 @@ function PaymentReturnContent() {
           className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
             isSuccess
               ? "bg-emerald-600 text-white hover:bg-emerald-700"
-              : "bg-slate-800 text-white hover:bg-slate-900"
+              : "bg-[var(--bg-subtle)] text-[var(--text-primary)] hover:bg-[var(--bg-muted)]"
           }`}
         >
           Go to Dashboard

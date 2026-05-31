@@ -12,13 +12,15 @@ const links = {
   ],
   "For Organizations": [
     { label: "Developers & Agencies", href: "#developers" },
-    { label: "Sales Teams", href: "#agents" },
-    { label: "Register Organization", href: "/register" },
+    { label: "Sales Teams", href: "#developers" },
+    { label: "Register Organization", href: "/register/organization" },
   ],
   "For Agents & Clients": [
     { label: "Join as Agent", href: "/register" },
-    { label: "For Buyers & Investors", href: "#clients" },
-    { label: "Try on WhatsApp", href: `https://wa.me/${process.env.NEXT_PUBLIC_WA_DEMO_NUMBER ?? ""}` },
+    { label: "For Buyers & Investors", href: "#whatsapp" },
+    ...(process.env.NEXT_PUBLIC_WA_DEMO_NUMBER
+      ? [{ label: "Try on WhatsApp", href: `https://wa.me/${process.env.NEXT_PUBLIC_WA_DEMO_NUMBER}` }]
+      : []),
   ],
   Account: [
     { label: "Sign In", href: "/login" },
@@ -46,13 +48,15 @@ export default function LandingFooter() {
               AI Sales Infrastructure for Real Estate Developers, Agencies, and Brokerages.
               Automate leads, qualify buyers, and close deals via WhatsApp.
             </p>
-            <a
-              href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_DEMO_NUMBER ?? ""}`}
-              className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl px-4 py-2.5 text-sm font-semibold hover:bg-emerald-100 transition-colors duration-150"
-            >
-              <MessageCircle size={15} />
-              Try on WhatsApp
-            </a>
+            {process.env.NEXT_PUBLIC_WA_DEMO_NUMBER && (
+              <a
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_DEMO_NUMBER}`}
+                className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl px-4 py-2.5 text-sm font-semibold hover:bg-emerald-100 transition-colors duration-150"
+              >
+                <MessageCircle size={15} />
+                Try on WhatsApp
+              </a>
+            )}
           </div>
 
           {/* Link groups */}

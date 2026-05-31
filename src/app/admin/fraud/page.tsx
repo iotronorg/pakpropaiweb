@@ -249,7 +249,7 @@ function FlaggedUsersTab() {
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody className="divide-y divide-[var(--border)]">
           {users.map(u => (
             <tr key={u.phone} className="hover:bg-[var(--bg-muted)]">
               <td className="px-4 py-3 font-mono text-xs">{u.phone}</td>

@@ -5,6 +5,8 @@ import { motion, useInView, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Building2, Users, MessageCircle } from "lucide-react";
 
+const WA_NUMBER = process.env.NEXT_PUBLIC_WA_DEMO_NUMBER ?? ""
+
 const tracks = [
   {
     icon: Building2,
@@ -46,7 +48,7 @@ const tracks = [
     heading: "Find, Verify & Transact on WhatsApp",
     body: "Search verified properties, run scam checks, get investment analysis, and connect with KYC-verified agents — all on WhatsApp with no app needed.",
     cta: "Try on WhatsApp",
-    href: `https://wa.me/${process.env.NEXT_PUBLIC_WA_DEMO_NUMBER ?? ""}`,
+    href: WA_NUMBER ? `https://wa.me/${WA_NUMBER}` : "",
     accentColor: "#25D366",
     badgeBg: "bg-emerald-50",
     badgeText: "text-emerald-700",
@@ -112,7 +114,16 @@ export default function CtaSection() {
                 <h3 className="text-lg font-bold text-slate-900 mb-3 leading-snug">{heading}</h3>
                 <p className="text-slate-500 text-sm leading-relaxed">{body}</p>
               </div>
-              {href.startsWith("http") ? (
+              {href === "" ? (
+                <button
+                  type="button"
+                  disabled
+                  className={`inline-flex items-center justify-center gap-2 ${ctaClass} text-white font-semibold px-6 py-3.5 rounded-xl text-sm opacity-50 cursor-not-allowed`}
+                >
+                  {cta}
+                  <ArrowRight size={15} />
+                </button>
+              ) : href.startsWith("http") ? (
                 <a
                   href={href}
                   className={`group inline-flex items-center justify-center gap-2 ${ctaClass} text-white font-semibold px-6 py-3.5 rounded-xl transition-all duration-150 text-sm cursor-pointer`}

@@ -137,16 +137,16 @@ export default function OrgLeadsPage() {
                   </tr>
                 ) : (
                   leads.map((lead) => (
-                    <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={lead.id} className="hover:bg-[var(--bg-muted)] transition-colors">
                       <td className="px-5 py-3">
                         <p className="font-medium text-[var(--text-primary)]">{lead.name ?? lead.phone}</p>
                         {lead.name && <p className="text-xs text-[var(--text-muted)]">{lead.phone}</p>}
                       </td>
                       <td className="px-5 py-3 text-[var(--text-muted)] text-xs">
                         <p>{lead.location_interest ?? "—"}</p>
-                        {lead.budget_max && (
+                        {lead.budget_max && lead.budget_currency && (
                           <p className="text-[var(--text-muted)]">
-                            {formatCurrency(lead.budget_max, lead.budget_currency ?? "PKR")}
+                            {formatCurrency(lead.budget_max, lead.budget_currency)}
                           </p>
                         )}
                       </td>

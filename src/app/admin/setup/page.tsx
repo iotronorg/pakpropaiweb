@@ -763,7 +763,7 @@ function BillingPlanPrices({
       <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Plan Prices (per market / month)</p>
       {([
         {
-          market: "Pakistan (PKR)",
+          market: "Pakistan — PKR",
           rows: [
             { key: "billing_price_basic_pkr",        label: "Basic",        placeholder: "13000" },
             { key: "billing_price_professional_pkr", label: "Professional", placeholder: "40000" },

@@ -143,7 +143,7 @@ export default function DeveloperBenefits() {
               </div>
               <div>
                 <div className="text-xs font-bold text-slate-800">AI Routed</div>
-                <div className="text-[10px] text-slate-400">12 leads today</div>
+                <div className="text-[10px] text-slate-400">34 leads today</div>
               </div>
             </div>
           </motion.div>

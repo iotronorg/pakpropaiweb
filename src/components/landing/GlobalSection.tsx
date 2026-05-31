@@ -25,7 +25,7 @@ const capabilities = [
   {
     icon: ShieldCheck,
     title: "Multi-Tenant Isolation",
-    desc: "Every organization's data is strictly isolated. An organization in Dubai never shares data with one in Karachi — by architecture, not by policy.",
+    desc: "Every organization's data is strictly isolated. An organization in Dubai never shares data with one in London — by architecture, not by policy.",
   },
   {
     icon: Layers,

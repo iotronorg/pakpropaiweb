@@ -84,7 +84,7 @@ export default function OrgAgentDetailPage({
         <div>
           <Link
             href="/organization/agents"
-            className="mb-2 inline-flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-gray-600"
+            className="mb-2 inline-flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
           >
             ← Back to Agent Performance
           </Link>

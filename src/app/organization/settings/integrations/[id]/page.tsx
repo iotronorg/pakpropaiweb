@@ -276,7 +276,7 @@ export default function ConnectionDetailPage() {
         )}
         <button
           onClick={() => saveMutation.mutate()}
-          className="mt-3 ms-4 bg-[var(--bg-subtle)] text-[var(--text-muted)] px-3 py-1.5 rounded-lg text-sm hover:bg-gray-200"
+          className="mt-3 ms-4 bg-[var(--bg-subtle)] text-[var(--text-muted)] px-3 py-1.5 rounded-lg text-sm hover:bg-[var(--bg-muted)]"
         >
           Save Mappings
         </button>

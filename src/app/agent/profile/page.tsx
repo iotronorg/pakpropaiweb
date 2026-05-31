@@ -161,9 +161,9 @@ export default function AgentProfilePage() {
             {(["available", "busy", "offline"] as const).map((s) => {
               const active = (p.availability_status ?? "available") === s;
               const colors: Record<string, string> = {
-                available: active ? "bg-emerald-600 text-white" : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-gray-200",
-                busy:      active ? "bg-amber-500 text-white"   : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-gray-200",
-                offline:   active ? "bg-gray-600 text-white"    : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-gray-200",
+                available: active ? "bg-emerald-600 text-white" : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)]",
+                busy:      active ? "bg-amber-500 text-white"   : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)]",
+                offline:   active ? "bg-gray-600 text-white"    : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)]",
               };
               return (
                 <button

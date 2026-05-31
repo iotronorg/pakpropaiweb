@@ -664,7 +664,7 @@ function PropertyForm({
       )}
 
       <div className="flex justify-end gap-3 pt-2 border-t border-[var(--border)]">
-        <button onClick={onCancel} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
+        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
           Cancel
         </button>
         <button
@@ -813,7 +813,7 @@ function OwnerPicker({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          placeholder="+923001234567 or name…"
+          placeholder="+1 555 123 4567 or name…"
           className={`${inputCls} flex-1`}
         />
         <button

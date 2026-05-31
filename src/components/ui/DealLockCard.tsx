@@ -181,6 +181,7 @@ export function DealLockCard({ dealId }: DealLockCardProps) {
       {canPay && !showSepa && (
         <div className="space-y-2">
           <motion.button
+            type="button"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={handlePay}
@@ -197,7 +198,7 @@ export function DealLockCard({ dealId }: DealLockCardProps) {
             <button
               type="button"
               onClick={() => setShowSepa(true)}
-              className="w-full border border-[var(--border-strong)] hover:border-gray-400 text-[var(--text-muted)] font-medium py-3 rounded-xl transition-colors text-sm cursor-pointer"
+              className="w-full border border-[var(--border-strong)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-muted)] text-[var(--text-muted)] font-medium py-3 rounded-xl transition-colors text-sm cursor-pointer"
             >
               Pay via SEPA Direct Debit
             </button>
@@ -261,6 +262,7 @@ export function DealLockCard({ dealId }: DealLockCardProps) {
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={() => sepaMutation.mutate()}
                 disabled={!iban || !accountName || !mandateAccepted || sepaMutation.isPending}
                 className="flex-1 rounded-lg bg-blue-600 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"

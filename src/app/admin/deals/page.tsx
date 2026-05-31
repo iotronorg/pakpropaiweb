@@ -209,7 +209,7 @@ export default function AdminDealsPage() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-[var(--border)]">
                   {payments.map(p => (
                     <tr key={p.id} className="hover:bg-[var(--bg-muted)]">
                       <td className="px-4 py-3 font-mono text-xs">{p.user}</td>
@@ -388,7 +388,7 @@ export default function AdminDealsPage() {
             <h3 className="font-semibold mb-2">Cancel Deal Lock?</h3>
             <p className="text-sm text-[var(--text-muted)] mb-4">This cannot be undone.</p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setCancelId(null)} className="px-4 py-2 text-sm text-[var(--text-muted)]">Keep</button>
+              <button type="button" onClick={() => setCancelId(null)} className="px-4 py-2 text-sm text-[var(--text-muted)]">Keep</button>
               <button
                 onClick={() => cancelMutation.mutate(cancelId)}
                 disabled={cancelMutation.isPending}

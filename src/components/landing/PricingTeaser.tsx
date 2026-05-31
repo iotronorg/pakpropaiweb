@@ -58,7 +58,7 @@ const plans = [
       "White-label theming",
       "Dedicated account manager",
     ],
-    cta: "Talk to Sales",
+    cta: "Get Started",
     href: "/register/organization",
     ctaVariant: "outline",
   },
@@ -170,10 +170,7 @@ export default function PricingTeaser() {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="text-center text-sm text-slate-400 mt-8"
         >
-          All plans include full AI capabilities. No per-seat fees for WhatsApp conversations.{" "}
-          <a href="#pricing" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
-            Compare all features →
-          </a>
+          All plans include full AI capabilities. No per-seat fees for WhatsApp conversations.
         </motion.p>
       </div>
     </section>

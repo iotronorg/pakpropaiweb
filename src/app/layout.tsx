@@ -10,6 +10,7 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "https://realtron.ai"),
   title: "RealTron AI",
   description: "AI Sales Infrastructure for Real Estate Developers & Agencies",
 };

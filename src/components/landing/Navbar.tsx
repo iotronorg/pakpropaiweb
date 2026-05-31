@@ -68,7 +68,7 @@ export default function Navbar() {
             Sign In
           </Link>
           <Link
-            href="/register"
+            href="/register/organization"
             className="text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 px-5 py-2.5 rounded-lg transition-all duration-150 shadow-sm"
           >
             Get Started Free
@@ -111,7 +111,7 @@ export default function Navbar() {
             Sign In
           </Link>
           <Link
-            href="/register"
+            href="/register/organization"
             onClick={() => setMenuOpen(false)}
             className="text-sm font-semibold text-white bg-blue-600 px-4 py-3 rounded-lg text-center block"
           >

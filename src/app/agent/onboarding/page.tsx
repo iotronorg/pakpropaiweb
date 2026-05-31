@@ -87,17 +87,17 @@ export default function FreelanceOnboardingPage() {
               className="space-y-5"
             >
               <div>
-                <h1 className="text-xl font-bold text-[var(--text-primary)] mb-1">Welcome, Freelance Agent</h1>
+                <h1 className="text-xl font-bold text-[var(--text-primary)] mb-1">Welcome to RealTron AI</h1>
                 <p className="text-sm text-[var(--text-muted)]">
-                  Create your global profile to work with multiple organizations on RealTron AI.
+                  Set up your agent profile to start receiving AI-qualified leads and managing your pipeline.
                 </p>
               </div>
 
               <div className="space-y-3">
                 {[
                   { icon: BadgeCheck, text: "Earn a Verified badge — buyers trust you 3× more" },
-                  { icon: Users,      text: "Receive AI-qualified leads from any organization" },
-                  { icon: Zap,        text: "Manage all your leads in one place, across orgs" },
+                  { icon: Users,      text: "Receive AI-qualified leads from connected organizations" },
+                  { icon: Zap,        text: "Manage all your leads and listings in one place" },
                 ].map(({ icon: Icon, text }) => (
                   <div key={text} className="flex items-start gap-3 p-3.5 rounded-xl bg-[var(--bg-muted)] border border-[var(--border)]">
                     <Icon size={16} className="text-[var(--primary)] mt-0.5 shrink-0" aria-hidden="true" />

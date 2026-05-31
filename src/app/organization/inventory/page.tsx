@@ -359,12 +359,12 @@ export default function OrgInventoryPage() {
                 </tr>
               ) : (
                 filtered.map((p) => (
-                  <tr key={p.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={p.id} className="hover:bg-[var(--bg-muted)] transition-colors">
                     <td className="px-5 py-3 font-mono text-xs text-[var(--text-muted)] whitespace-nowrap">{p.ref_no}</td>
                     <td className="px-5 py-3 max-w-[200px]">
                       <p className="font-medium text-[var(--text-primary)] truncate">{p.title}</p>
                       {p.area_sqm && (
-                        <p className="text-xs text-[var(--text-muted)]">{formatArea(p.area_sqm, orgProfile?.measurement_system ?? 'pk_traditional')}</p>
+                        <p className="text-xs text-[var(--text-muted)]">{formatArea(p.area_sqm, orgProfile?.measurement_system ?? 'metric')}</p>
                       )}
                     </td>
                     <td className="px-5 py-3 text-[var(--text-muted)] whitespace-nowrap">{p.city}</td>
@@ -374,7 +374,7 @@ export default function OrgInventoryPage() {
                     <td className="px-5 py-3 whitespace-nowrap tabular-nums">
                       {p.price
                         ? <span className="font-medium text-[var(--text-primary)]">
-                            {formatCurrency(p.price, p.currency ?? "PKR")}
+                            {p.currency ? formatCurrency(p.price, p.currency) : "—"}
                           </span>
                         : <span className="text-[var(--text-muted)]">—</span>}
                     </td>

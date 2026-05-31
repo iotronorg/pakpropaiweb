@@ -66,6 +66,8 @@ export default function ForgotPasswordPage() {
     try {
       await requestPasswordReset(phone);
       setStep("confirm");
+    } catch {
+      setError("Could not send reset code. Check the phone number and try again.");
     } finally {
       setLoading(false);
     }
@@ -176,7 +178,7 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+1 555 123 4567"
                     required
-                    className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                    className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                   />
                 </div>
 
@@ -260,7 +262,7 @@ export default function ForgotPasswordPage() {
                     onChange={(e) => setCode(e.target.value)}
                     placeholder="• • • • • •"
                     required
-                    className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-center text-lg font-bold tracking-[0.35em] text-[var(--text-primary)] placeholder:text-slate-300 placeholder:tracking-normal outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                    className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]px-4 py-2.5 text-center text-lg font-bold tracking-[0.35em] text-[var(--text-primary)] placeholder:text-slate-300 placeholder:tracking-normal outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                   />
                 </div>
 
@@ -278,7 +280,7 @@ export default function ForgotPasswordPage() {
                       onChange={(e) => setNewPwd(e.target.value)}
                       placeholder="••••••••"
                       required
-                      className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 pe-10 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                      className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]px-4 py-2.5 pe-10 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                     />
                     <button
                       type="button"
@@ -315,7 +317,7 @@ export default function ForgotPasswordPage() {
                       onChange={(e) => setConfirm(e.target.value)}
                       placeholder="••••••••"
                       required
-                      className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 pe-10 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                      className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]px-4 py-2.5 pe-10 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                     />
                     <button
                       type="button"

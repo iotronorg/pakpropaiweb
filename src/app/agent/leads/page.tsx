@@ -135,7 +135,7 @@ export default function AgentLeadsPage() {
                       </td>
                       <td className="px-6 py-3 text-[var(--text-muted)] text-xs">
                         <p>{l.location_interest || "—"}</p>
-                        <p className="text-[var(--text-muted)]">{l.budget_max ? formatCurrency(l.budget_max, l.budget_currency ?? "PKR") : "Budget unknown"}</p>
+                        <p className="text-[var(--text-muted)]">{l.budget_max && l.budget_currency ? formatCurrency(l.budget_max, l.budget_currency) : "—"}</p>
                       </td>
                       <td className="px-6 py-3">
                         {l.intent_score !== null ? (

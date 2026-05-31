@@ -105,6 +105,7 @@ export default function FeaturesSection() {
           {categories.map((c) => (
             <button
               key={c.id}
+              type="button"
               onClick={() => setActive(c.id)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-150 border ${
                 active === c.id

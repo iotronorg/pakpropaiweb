@@ -586,7 +586,7 @@ export default function AgentsPage() {
             This will unlink their leads and assigned properties. This cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
-            <button onClick={() => setDeleteId(null)} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
+            <button type="button" onClick={() => setDeleteId(null)} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
               Cancel
             </button>
             <button
@@ -649,11 +649,11 @@ function AgentFormBody({
         <div className="grid grid-cols-2 gap-3">
           <Field label="Phone" required>
             <input type="tel" value={form.phone} onChange={set("phone")}
-              placeholder="+923001234567" className={`${inputCls} font-mono`} />
+              placeholder="+12025551234" className={`${inputCls} font-mono`} />
           </Field>
           <Field label="WhatsApp Number">
             <input type="tel" value={form.whatsapp_number} onChange={set("whatsapp_number")}
-              placeholder="+923001234567 (if different)" className={`${inputCls} font-mono`} />
+              placeholder="+12025551234 (if different)" className={`${inputCls} font-mono`} />
           </Field>
         </div>
         <Field label="Email">
@@ -750,7 +750,7 @@ function AgentFormBody({
       )}
 
       <div className="flex justify-end gap-3 pt-2 border-t border-[var(--border)]">
-        <button onClick={onCancel} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
+        <button type="button" onClick={onCancel} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
           Cancel
         </button>
         <button

@@ -129,7 +129,7 @@ export default function OrgDealsPage() {
                   </tr>
                 ) : (
                   deals.map((deal) => (
-                    <tr key={deal.id} className="hover:bg-gray-50/50 transition-colors">
+                    <tr key={deal.id} className="hover:bg-[var(--bg-muted)] transition-colors">
                       <td className="px-5 py-3">
                         <p className="font-medium text-[var(--text-primary)]">{deal.property_title}</p>
                         {deal.property_city && (
@@ -264,7 +264,7 @@ export default function OrgDealsPage() {
                 <p role="alert" className="mb-3 text-xs text-red-600">Failed to dispute deal. Please try again.</p>
               )}
               <div className="flex justify-end gap-2">
-                <button onClick={() => setDisputeDeal(null)}
+                <button type="button" onClick={() => setDisputeDeal(null)}
                   className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)]">
                   Cancel
                 </button>

@@ -204,7 +204,7 @@ export default function HeroSection() {
           className="flex flex-col sm:flex-row gap-4 mt-2"
         >
           <Link
-            href="/register"
+            href="/register/organization"
             className="group inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 shadow-md shadow-blue-200 hover:shadow-blue-300 hover:scale-[1.02] text-base"
           >
             Start Free Trial

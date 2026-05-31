@@ -306,7 +306,7 @@ function CommissionLedgerTab() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end items-center gap-3">
-        <button type="button" onClick={handleVerify} className="bg-gray-800 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">
+        <button type="button" onClick={handleVerify} className="bg-[var(--bg-subtle)] text-[var(--text-primary)] text-sm px-4 py-2 rounded hover:bg-[var(--bg-muted)]">
           Verify Chain Integrity
         </button>
         {verifyResult && (
@@ -369,7 +369,7 @@ export default function MarketplacePage() {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab
                 ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-[var(--text-muted)] hover:text-gray-700'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]'
             }`}
           >
             {tab}

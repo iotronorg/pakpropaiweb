@@ -43,6 +43,7 @@ function LoginForm() {
 
   const [error,   setError]   = useState("");
   const [loading, setLoading] = useState(false);
+  const [resending, setResending] = useState(false);
 
   const registered = searchParams.get("registered") === "true";
 
@@ -79,6 +80,18 @@ function LoginForm() {
       setError("Could not send OTP. Check the phone number.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function onResendOtp() {
+    setResending(true);
+    setError("");
+    try {
+      await sendOtp(otpPhone);
+    } catch {
+      setError("Failed to resend OTP. Please try again.");
+    } finally {
+      setResending(false);
     }
   }
 
@@ -216,7 +229,7 @@ function LoginForm() {
                     onChange={(e) => setIdentifier(e.target.value)}
                     placeholder="you@example.com or +1 555 123 4567"
                     required
-                    className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                    className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                   />
                 </div>
 
@@ -241,7 +254,7 @@ function LoginForm() {
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="••••••••"
                       required
-                      className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 pe-10 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                      className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]px-4 py-2.5 pe-10 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                     />
                     <button
                       type="button"
@@ -282,7 +295,7 @@ function LoginForm() {
 
                 <div className="flex items-center justify-between text-xs">
                   <Link
-                    href="/register"
+                    href="/register/organization"
                     className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
                   >
                     No account? Register →
@@ -322,7 +335,7 @@ function LoginForm() {
                     onChange={(e) => setOtpPhone(e.target.value)}
                     placeholder="+1 555 123 4567"
                     required
-                    className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
+                    className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                   />
                 </div>
 
@@ -396,7 +409,7 @@ function LoginForm() {
                     onChange={(e) => setOtpCode(e.target.value)}
                     placeholder="• • • • • •"
                     required
-                    className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-center text-lg font-bold tracking-[0.35em] text-[var(--text-primary)] placeholder:text-slate-300 placeholder:tracking-normal outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition-all"
+                    className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)]px-4 py-2.5 text-center text-lg font-bold tracking-[0.35em] text-[var(--text-primary)] placeholder:text-slate-300 placeholder:tracking-normal outline-none focus:border-teal-400 focus:ring-2 focus:ring-teal-100 transition-all"
                   />
                 </div>
 
@@ -426,13 +439,23 @@ function LoginForm() {
                     : "Verify & Sign in"}
                 </motion.button>
 
-                <button
-                  type="button"
-                  onClick={() => { switchMode("otp-phone"); setOtpCode(""); }}
-                  className="w-full text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
-                >
-                  Use a different number
-                </button>
+                <div className="flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    onClick={onResendOtp}
+                    disabled={resending}
+                    className="text-teal-600 hover:text-teal-700 font-medium disabled:opacity-50 transition-colors cursor-pointer"
+                  >
+                    {resending ? "Sending…" : "Resend OTP"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => { switchMode("otp-phone"); setOtpCode(""); }}
+                    className="text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors cursor-pointer"
+                  >
+                    Use a different number
+                  </button>
+                </div>
               </motion.form>
             )}
 

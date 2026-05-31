@@ -58,7 +58,7 @@ export default function WhoIsItFor() {
   const prefersReduced = useReducedMotion();
 
   return (
-    <section ref={ref} className="bg-[#0D1117] py-24 px-6">
+    <section ref={ref} className="bg-white py-24 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div
@@ -67,12 +67,12 @@ export default function WhoIsItFor() {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="text-center mb-16"
         >
-          <span className="text-xs font-semibold uppercase tracking-widest text-[#14B8A6]">
+          <span className="text-xs font-semibold uppercase tracking-widest text-teal-600">
             Who It&apos;s For
           </span>
           <h2
-            className="mt-3 text-4xl sm:text-5xl font-bold text-white leading-tight"
-            style={{ fontFamily: "'Cinzel', 'Georgia', serif" }}
+            className="mt-3 text-4xl sm:text-5xl font-bold text-slate-900 leading-tight"
+            style={{ fontFamily: "var(--font-cinzel, 'Georgia', serif)" }}
           >
             Built for Every Player
             <br />
@@ -89,7 +89,7 @@ export default function WhoIsItFor() {
               initial={prefersReduced ? false : { opacity: 0, y: 32 }}
               animate={inView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.55, delay: prefersReduced ? 0 : i * 0.15, ease: "easeOut" }}
-              className="relative rounded-2xl p-6 border border-white/8 bg-white/4 flex flex-col gap-5 overflow-hidden group hover:border-white/15 transition-colors duration-200"
+              className="relative rounded-2xl p-6 border border-slate-200 bg-slate-50 flex flex-col gap-5 overflow-hidden group hover:border-slate-300 hover:shadow-sm transition-all duration-200"
             >
               {/* Subtle top glow on hover */}
               <div
@@ -100,21 +100,21 @@ export default function WhoIsItFor() {
               <div className="flex items-start gap-4">
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                  style={{ backgroundColor: bgColor + "20", border: `1px solid ${color}40` }}
+                  style={{ backgroundColor: bgColor + "15", border: `1px solid ${color}30` }}
                 >
                   <Icon size={22} style={{ color }} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white">{title}</h3>
-                  <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
+                  <h3 className="text-lg font-bold text-slate-900">{title}</h3>
+                  <p className="text-xs text-slate-500 mt-0.5">{subtitle}</p>
                 </div>
               </div>
 
-              <p className="text-sm text-gray-400 leading-relaxed">{description}</p>
+              <p className="text-sm text-slate-600 leading-relaxed">{description}</p>
 
-              <ul className="flex flex-col gap-2 mt-auto pt-4 border-t border-white/8">
+              <ul className="flex flex-col gap-2 mt-auto pt-4 border-t border-slate-200">
                 {capabilities.map((cap) => (
-                  <li key={cap} className="flex items-center gap-2 text-sm text-gray-300">
+                  <li key={cap} className="flex items-center gap-2 text-sm text-slate-700">
                     <svg
                       className="w-4 h-4 shrink-0"
                       style={{ color }}

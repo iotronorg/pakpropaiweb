@@ -253,7 +253,7 @@ export default function UsersPage() {
                   type="tel"
                   value={createForm.phone}
                   onChange={(e) => setCreateForm((f) => ({ ...f, phone: e.target.value }))}
-                  placeholder="+923001234567"
+                  placeholder="+12025551234"
                   className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -290,7 +290,7 @@ export default function UsersPage() {
                 <p className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">{createError}</p>
               )}
               <div className="flex justify-end gap-3 pt-2 border-t border-[var(--border)]">
-                <button onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
+                <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
                   Cancel
                 </button>
                 <button

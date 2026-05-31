@@ -121,6 +121,8 @@ export default function OrgRegisterPage() {
       if (data?.otp_required) {
         setOtpPhone(form.phone.trim());
         setOtpStep(true);
+      } else {
+        router.push("/organization/onboarding");
       }
     } catch (err: unknown) {
       const data = (err as { response?: { data?: Record<string, unknown> } })?.response?.data;

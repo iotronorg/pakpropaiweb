@@ -256,7 +256,7 @@ export default function OrgSettingsPage() {
   const currentLocale = useLocale();
   const [dashLocale, setDashLocale] = useState<Locale>(currentLocale as Locale);
 
-  const [measurementSystem, setMeasurementSystem] = useState<string>("pk_traditional");
+  const [measurementSystem, setMeasurementSystem] = useState<string>("metric");
   const [msSaved, setMsSaved] = useState(false);
   useEffect(() => { if (orgProfile?.measurement_system) setMeasurementSystem(orgProfile.measurement_system); }, [orgProfile]);
 
@@ -395,7 +395,7 @@ export default function OrgSettingsPage() {
                     onClick={() => toggle(key, isEnabled)}
                     disabled={updateMutation.isPending}
                     className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus:outline-none disabled:opacity-50 ${
-                      isEnabled ? "bg-blue-600" : "bg-gray-200"
+                      isEnabled ? "bg-blue-600" : "bg-[var(--bg-subtle)]"
                     }`}
                   >
                     <span
@@ -505,7 +505,7 @@ export default function OrgSettingsPage() {
         <div className="px-6 py-5">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
-              { value: "pk_traditional", label: "Marla / Kanal",  desc: "Pakistani traditional units" },
+              { value: "pk_traditional", label: "Marla / Kanal",  desc: "Traditional (South Asian)" },
               { value: "imperial",       label: "Square Feet",    desc: "Imperial (sqft)" },
               { value: "metric",         label: "Square Metres",  desc: "Metric (m²)" },
             ].map(({ value, label, desc }) => (
@@ -530,7 +530,7 @@ export default function OrgSettingsPage() {
             {msSaved && <span className="text-sm text-green-600 font-medium flex items-center gap-1"><CheckCircle2 size={13} aria-hidden="true" />Saved</span>}
             <button
               onClick={() => msMutation.mutate(measurementSystem)}
-              disabled={msMutation.isPending || measurementSystem === (orgProfile?.measurement_system ?? "pk_traditional")}
+              disabled={msMutation.isPending || measurementSystem === (orgProfile?.measurement_system ?? "metric")}
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               {msMutation.isPending ? "Saving…" : "Save"}
@@ -631,7 +631,7 @@ export default function OrgSettingsPage() {
               {[
                 { key: "jazzcash_number",    label: "JazzCash Number",    placeholder: "03xx-xxxxxxx" },
                 { key: "easypaisa_number",   label: "Easypaisa Number",   placeholder: "03xx-xxxxxxx" },
-                { key: "bank_account_number", label: "Bank Account No.",  placeholder: "PK00XXXX0000000000000000" },
+                { key: "bank_account_number", label: "Bank Account No.",  placeholder: "e.g. GB29NWBK60161331926819" },
                 { key: "bank_account_name",   label: "Account Name",      placeholder: "Company Ltd." },
               ].map(({ key, label, placeholder }) => (
                 <div key={key}>
@@ -670,7 +670,7 @@ export default function OrgSettingsPage() {
       <div className="bg-[var(--bg-surface)] rounded-xl shadow-sm border border-[var(--border)] p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-[var(--text-primary)]">Team Members</h2>
-          <button onClick={() => setShowInvite(true)}
+          <button type="button" onClick={() => setShowInvite(true)}
             className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
             + Invite Member
           </button>
@@ -683,7 +683,7 @@ export default function OrgSettingsPage() {
                 <p className="text-sm text-[var(--text-muted)]">{m.user_phone} · {m.role.replace(/_/g, ' ')}</p>
               </div>
               {m.role !== 'owner' && (
-                <button onClick={() => removeOrgMember(m.id).then(() => qc.invalidateQueries({ queryKey: ['org-members'] }))}
+                <button type="button" onClick={() => removeOrgMember(m.id).then(() => qc.invalidateQueries({ queryKey: ['org-members'] }))}
                   className="text-sm text-red-600 hover:text-red-800">Remove</button>
               )}
             </div>
@@ -707,12 +707,12 @@ export default function OrgSettingsPage() {
                 <option value="viewer">Viewer</option>
               </select>
               <div className="flex gap-2">
-                <button onClick={() => inviteMutation.mutate({ phone: invitePhone, role: inviteRole, employment_type: 'internal' })}
+                <button type="button" onClick={() => inviteMutation.mutate({ phone: invitePhone, role: inviteRole, employment_type: 'internal' })}
                   disabled={!invitePhone || inviteMutation.isPending}
                   className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg disabled:opacity-50">
                   {inviteMutation.isPending ? 'Inviting…' : 'Send Invite'}
                 </button>
-                <button onClick={() => setShowInvite(false)} className="px-4 py-2 text-sm text-[var(--text-muted)]">Cancel</button>
+                <button type="button" onClick={() => setShowInvite(false)} className="px-4 py-2 text-sm text-[var(--text-muted)]">Cancel</button>
               </div>
             </div>
           </div>

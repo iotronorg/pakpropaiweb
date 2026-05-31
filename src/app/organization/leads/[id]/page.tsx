@@ -33,10 +33,10 @@ function fmtDate(d: string | null) {
 }
 
 function fmtBudget(min: number | null, max: number | null, currency: string | null) {
-  const cur = currency ?? "PKR";
-  if (min && max) return `${formatCurrency(min, cur)} – ${formatCurrency(max, cur)}`;
-  if (max) return `up to ${formatCurrency(max, cur)}`;
-  if (min) return `from ${formatCurrency(min, cur)}`;
+  if (!currency) return "—";
+  if (min && max) return `${formatCurrency(min, currency)} – ${formatCurrency(max, currency)}`;
+  if (max) return `up to ${formatCurrency(max, currency)}`;
+  if (min) return `from ${formatCurrency(min, currency)}`;
   return "—";
 }
 
@@ -234,9 +234,9 @@ export default function LeadDetailPage() {
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-[var(--text-muted)]">Notes</h2>
               {notesEdit === null
-                ? <button onClick={() => setNotesEdit(lead.notes ?? "")} className="text-xs text-blue-600 hover:underline">Edit</button>
+                ? <button type="button" onClick={() => setNotesEdit(lead.notes ?? "")} className="text-xs text-blue-600 hover:underline">Edit</button>
                 : <div className="flex gap-2">
-                    <button onClick={() => setNotesEdit(null)} className="text-xs text-[var(--text-muted)] hover:underline">Cancel</button>
+                    <button type="button" onClick={() => setNotesEdit(null)} className="text-xs text-[var(--text-muted)] hover:underline">Cancel</button>
                     <button
                       onClick={() => saveMutation.mutate({ notes: notesEdit })}
                       disabled={saveMutation.isPending}
@@ -451,14 +451,9 @@ export default function LeadDetailPage() {
                   <p className="text-xs text-[var(--text-muted)]">
                     {p.city}{p.location ? ` · ${p.location}` : ""} · {p.property_type}
                   </p>
-                  {p.price != null && (
+                  {p.price != null && (p as Property & { currency?: string }).currency && (
                     <p className="text-xs font-semibold text-[var(--text-muted)]">
-                      {(p as Property & { currency?: string }).currency ?? "PKR"}{" "}
-                      {p.price >= 10_000_000
-                        ? `${(p.price / 10_000_000).toFixed(1)} Cr`
-                        : p.price >= 100_000
-                        ? `${(p.price / 100_000).toFixed(0)} L`
-                        : p.price.toLocaleString()}
+                      {formatCurrency(p.price, (p as Property & { currency?: string }).currency!)}
                     </p>
                   )}
                   <a

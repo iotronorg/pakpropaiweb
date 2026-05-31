@@ -267,7 +267,7 @@ export default function LeadDetailPage() {
       <div className="py-20 text-center text-[var(--text-muted)]">
         <p className="text-4xl mb-3">📋</p>
         <p className="font-medium">Lead not found</p>
-        <button onClick={() => router.back()} className="mt-4 text-sm text-blue-600 hover:underline">
+        <button type="button" onClick={() => router.back()} className="mt-4 text-sm text-blue-600 hover:underline">
           ← Back to leads
         </button>
       </div>
@@ -281,7 +281,7 @@ export default function LeadDetailPage() {
 
       {/* Back + header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-[var(--text-muted)] hover:text-[var(--text-muted)] text-sm">
+        <button type="button" onClick={() => router.back()} className="text-[var(--text-muted)] hover:text-[var(--text-muted)] text-sm">
           ← Back
         </button>
       </div>
@@ -317,7 +317,7 @@ export default function LeadDetailPage() {
               className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition-colors ${
                 lead.status === s
                   ? "bg-blue-600 text-white"
-                  : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-gray-200"
+                  : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
               }`}
             >
               {s}
@@ -355,13 +355,13 @@ export default function LeadDetailPage() {
               <div className="flex justify-between">
                 <span className="text-xs text-[var(--text-muted)]">Budget Min</span>
                 <span className="text-xs font-medium text-[var(--text-muted)]">
-                  {lead.budget_min ? formatCurrency(lead.budget_min, lead.budget_currency ?? "PKR") : "—"}
+                  {lead.budget_min && lead.budget_currency ? formatCurrency(lead.budget_min, lead.budget_currency) : "—"}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-xs text-[var(--text-muted)]">Budget Max</span>
                 <span className="text-xs font-medium text-[var(--text-muted)]">
-                  {lead.budget_max ? formatCurrency(lead.budget_max, lead.budget_currency ?? "PKR") : "—"}
+                  {lead.budget_max && lead.budget_currency ? formatCurrency(lead.budget_max, lead.budget_currency) : "—"}
                 </span>
               </div>
               <div className="flex justify-between">
@@ -611,7 +611,7 @@ export default function LeadDetailPage() {
           <div className="bg-[var(--bg-surface)] rounded-2xl w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="font-semibold text-[var(--text-primary)]">Book Appointment</h2>
-              <button onClick={() => setShowBookModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-muted)] text-xl">×</button>
+              <button type="button" onClick={() => setShowBookModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-muted)] text-xl">×</button>
             </div>
             <div>
               <label className="text-xs font-medium text-[var(--text-muted)] mb-1 block">Date & Time</label>
