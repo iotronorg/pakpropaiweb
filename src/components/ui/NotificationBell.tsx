@@ -57,55 +57,62 @@ export function NotificationBell() {
     <div ref={ref} className="relative">
       <button
         onClick={handleOpen}
-        className="relative flex items-center justify-center w-9 h-9 rounded-lg text-gray-500 hover:bg-gray-100 hover:text-gray-700 transition-colors"
-        aria-label="Notifications"
+        className="relative flex items-center justify-center w-9 h-9 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]"
+        aria-label={`Notifications${unreadCount > 0 ? `, ${unreadCount} unread` : ""}`}
+        aria-expanded={open}
+        aria-haspopup="dialog"
       >
-        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+        <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8} aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round"
             d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
         </svg>
         {unreadCount > 0 && (
-          <span className="absolute top-1 end-1 flex items-center justify-center w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold leading-none">
+          <span className="absolute top-1 end-1 flex items-center justify-center w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-bold leading-none" aria-hidden="true">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute end-0 top-11 z-50 w-80 rounded-xl border border-gray-200 bg-white shadow-lg overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-            <h3 className="text-sm font-semibold text-gray-800">Notifications</h3>
+        <div
+          role="dialog"
+          aria-label="Notifications panel"
+          className="absolute end-0 top-11 z-50 w-80 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-lg overflow-hidden"
+        >
+          <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--border)]">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Notifications</h3>
             {notifications.some((n) => !n.is_read) && (
               <button
                 onClick={() => markReadMutation.mutate(undefined)}
-                className="text-xs text-blue-600 hover:underline"
+                className="text-xs text-[var(--primary)] hover:underline focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[var(--border-focus)] rounded"
               >
                 Mark all read
               </button>
             )}
           </div>
 
-          <div className="max-h-96 overflow-y-auto divide-y divide-gray-50">
+          <div className="max-h-96 overflow-y-auto divide-y divide-[var(--border)]" role="list">
             {notifications.length === 0 ? (
-              <p className="px-4 py-8 text-center text-sm text-gray-400">No notifications</p>
+              <p className="px-4 py-8 text-center text-sm text-[var(--text-muted)]">No notifications</p>
             ) : (
               notifications.map((n) => (
                 <div
                   key={n.id}
-                  className={`px-4 py-3 ${!n.is_read ? "bg-blue-50" : ""}`}
+                  role="listitem"
+                  className={`px-4 py-3 transition-colors ${!n.is_read ? "bg-sky-50/60" : "hover:bg-[var(--bg-hover)]"}`}
                 >
                   <div className="flex items-start gap-2">
                     <div className="flex-1 min-w-0">
                       {n.title && (
-                        <p className="text-xs font-semibold text-gray-800 truncate">{n.title}</p>
+                        <p className="text-xs font-semibold text-[var(--text-primary)] truncate">{n.title}</p>
                       )}
-                      <p className="text-xs text-gray-600 mt-0.5 line-clamp-2">
+                      <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-2">
                         {n.message.replace(/\*/g, '')}
                       </p>
-                      <p className="text-[10px] text-gray-400 mt-1">{timeAgo(n.created_at)}</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-1">{timeAgo(n.created_at)}</p>
                     </div>
                     {!n.is_read && (
-                      <div className="mt-1.5 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+                      <div className="mt-1.5 w-2 h-2 rounded-full bg-[var(--primary)] flex-shrink-0" aria-hidden="true" />
                     )}
                   </div>
                 </div>

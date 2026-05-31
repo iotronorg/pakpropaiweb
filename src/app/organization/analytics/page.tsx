@@ -13,6 +13,10 @@ import {
   StatCard, ChartCard, BarChart, BreakdownBar,
   SectionHeader, type Period, type TrendPoint,
 } from "@/components/ui/Charts";
+import {
+  ClipboardList, TrendingUp, Lock, Flame, BarChart2, CheckCircle2,
+  MessageSquare, Calendar, Home, Bot, AlertTriangle, Clock,
+} from "lucide-react";
 import type {
   AgentPerformanceRow, LeadReportData, PropertyReportData, DealReportData,
   FunnelData, WaTokenData, SpeedLeaderboardEntry,
@@ -48,10 +52,10 @@ function SalesFunnel({ data }: { data: FunnelData }) {
         const width = max > 0 ? Math.max((s.count / max) * 100, 4) : 4;
         return (
           <div key={s.stage} className="flex items-center gap-3">
-            <span className="w-20 text-right text-xs font-medium text-gray-500 shrink-0">
+            <span className="w-20 text-right text-xs font-medium text-[var(--text-muted)] shrink-0">
               {s.stage}
             </span>
-            <div className="flex-1 h-8 rounded-full bg-gray-100 overflow-hidden relative">
+            <div className="flex-1 h-8 rounded-full bg-[var(--bg-subtle)] overflow-hidden relative">
               <motion.div
                 className={`h-full rounded-full bg-gradient-to-r ${colors[i]}`}
                 initial={{ width: 0 }}
@@ -60,17 +64,17 @@ function SalesFunnel({ data }: { data: FunnelData }) {
               />
             </div>
             <div className="flex items-center gap-2 w-28 shrink-0">
-              <span className="text-sm font-bold text-gray-800 tabular-nums">
+              <span className="text-sm font-bold text-[var(--text-primary)] tabular-nums">
                 {s.count.toLocaleString()}
               </span>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-[var(--text-muted)]">
                 {s.conversion.toFixed(1)}%
               </span>
             </div>
           </div>
         );
       })}
-      <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between text-xs text-gray-500">
+      <div className="mt-3 pt-3 border-t border-[var(--border)] flex justify-between text-xs text-[var(--text-muted)]">
         <span>Overall conversion</span>
         <span className="font-semibold text-emerald-600">
           {data.overall_conversion.toFixed(1)}%
@@ -90,10 +94,10 @@ function WaTokenChart({ data }: { data: WaTokenData }) {
         const pct = Math.max((m.tokens / max) * 100, m.tokens > 0 ? 2 : 0);
         return (
           <div key={m.period} className="flex items-center gap-3">
-            <span className="w-16 text-right text-xs text-gray-400 shrink-0">
+            <span className="w-16 text-right text-xs text-[var(--text-muted)] shrink-0">
               {m.period.slice(5)}
             </span>
-            <div className="flex-1 h-6 rounded bg-gray-100 overflow-hidden">
+            <div className="flex-1 h-6 rounded bg-[var(--bg-subtle)] overflow-hidden">
               <motion.div
                 className="h-full rounded bg-gradient-to-r from-indigo-500 to-violet-400"
                 initial={{ width: 0 }}
@@ -101,7 +105,7 @@ function WaTokenChart({ data }: { data: WaTokenData }) {
                 transition={{ duration: 0.6, delay: i * 0.08, ease: "easeOut" }}
               />
             </div>
-            <span className="w-14 text-right text-xs font-medium text-gray-700 tabular-nums shrink-0">
+            <span className="w-14 text-right text-xs font-medium text-[var(--text-primary)] tabular-nums shrink-0">
               {m.tokens.toLocaleString()}
             </span>
           </div>
@@ -117,7 +121,7 @@ function SectionSkeleton({ rows = 4 }: { rows?: number }) {
   return (
     <div className="space-y-3 animate-pulse">
       {Array.from({ length: rows }).map((_, i) => (
-        <div key={i} className="h-10 rounded-lg bg-gray-100" />
+        <div key={i} className="h-10 rounded-lg bg-[var(--bg-subtle)]" />
       ))}
     </div>
   );
@@ -175,8 +179,8 @@ export default function OrgAnalyticsPage() {
 
       {/* Page header */}
       <motion.div variants={fadeUp} initial="hidden" animate="visible">
-        <h1 className="text-2xl font-bold text-gray-900">Analytics</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Analytics</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Real-time multi-tenant BI — lead funnel, agent performance, WhatsApp AI usage
         </p>
       </motion.div>
@@ -188,20 +192,20 @@ export default function OrgAnalyticsPage() {
           <motion.div variants={stagger} initial="hidden" animate="visible"
             className="grid grid-cols-3 gap-3">
             {[
-              { label: "Total Leads",       value: funnelData?.total_leads ?? 0,       accent: "blue"    as const, icon: "📋" },
-              { label: "Overall Conv.",     value: `${funnelData?.overall_conversion ?? 0}%`, accent: "emerald" as const, icon: "📈" },
-              { label: "Deals Transacted",  value: funnelData?.stages[5]?.count ?? 0,  accent: "violet"  as const, icon: "🔒" },
+              { label: "Total Leads",       value: funnelData?.total_leads ?? 0,       accent: "blue"    as const, icon: ClipboardList },
+              { label: "Overall Conv.",     value: `${funnelData?.overall_conversion ?? 0}%`, accent: "emerald" as const, icon: TrendingUp },
+              { label: "Deals Transacted",  value: funnelData?.stages[5]?.count ?? 0,  accent: "violet"  as const, icon: Lock },
             ].map((s) => (
               <motion.div key={s.label} variants={fadeUp}>
                 <StatCard {...s} />
               </motion.div>
             ))}
           </motion.div>
-          <div className="lg:col-span-2 rounded-xl border border-gray-200 bg-white p-5">
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">Funnel Breakdown</h3>
+          <div className="lg:col-span-2 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">Funnel Breakdown</h3>
             {l5 ? <SectionSkeleton rows={6} /> : funnelData
               ? <SalesFunnel data={funnelData} />
-              : <p className="text-xs text-gray-400 text-center py-6">No data</p>}
+              : <p className="text-xs text-[var(--text-muted)] text-center py-6">No data</p>}
           </div>
         </div>
       </section>
@@ -213,10 +217,10 @@ export default function OrgAnalyticsPage() {
           <motion.div variants={stagger} initial="hidden" animate="visible"
             className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: "Total Leads", value: leads.total,     accent: "blue"    as const, icon: "📋" },
-              { label: "Hot Leads",   value: leads.hot_leads, accent: "amber"   as const, icon: "🔥", sub: "Score ≥ 70" },
-              { label: "Avg Score",   value: leads.avg_score, accent: "violet"  as const, icon: "📊" },
-              { label: "Conversion",  value: `${convRate}%`,  accent: "emerald" as const, icon: "✅", sub: "→ Qualified" },
+              { label: "Total Leads", value: leads.total,     accent: "blue"    as const, icon: ClipboardList },
+              { label: "Hot Leads",   value: leads.hot_leads, accent: "amber"   as const, icon: Flame, sub: "Score ≥ 70" },
+              { label: "Avg Score",   value: leads.avg_score, accent: "violet"  as const, icon: BarChart2 },
+              { label: "Conversion",  value: `${convRate}%`,  accent: "emerald" as const, icon: CheckCircle2, sub: "→ Qualified" },
             ].map((s) => (
               <motion.div key={s.label} variants={fadeUp}><StatCard {...s} /></motion.div>
             ))}
@@ -230,17 +234,17 @@ export default function OrgAnalyticsPage() {
               </ChartCard>
             )}
             <div className="grid grid-cols-1 gap-5">
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">By Intent</h3>
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">By Intent</h3>
                 {Object.keys(leads.by_intent).length > 0
                   ? <BreakdownBar data={leads.by_intent} />
-                  : <p className="text-xs text-gray-400 text-center py-3">No data</p>}
+                  : <p className="text-xs text-[var(--text-muted)] text-center py-3">No data</p>}
               </div>
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
-                <h3 className="text-sm font-semibold text-gray-700 mb-3">By Source</h3>
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-3">By Source</h3>
                 {Object.keys(leads.by_source).length > 0
                   ? <BreakdownBar data={leads.by_source} />
-                  : <p className="text-xs text-gray-400 text-center py-3">No data</p>}
+                  : <p className="text-xs text-[var(--text-muted)] text-center py-3">No data</p>}
               </div>
             </div>
           </div>
@@ -254,18 +258,18 @@ export default function OrgAnalyticsPage() {
           <motion.div variants={stagger} initial="hidden" animate="visible"
             className="grid grid-cols-3 gap-3">
             {[
-              { label: "This Month", value: waTokenData?.current_month ?? 0,  accent: "violet" as const, icon: "💬" },
-              { label: "6-Month Total", value: waTokenData?.total_6m ?? 0,    accent: "blue"   as const, icon: "📊" },
-              { label: "Period", value: waTokenData?.current_period ?? "—",   accent: "amber"  as const, icon: "📅" },
+              { label: "This Month", value: waTokenData?.current_month ?? 0,  accent: "violet" as const, icon: MessageSquare },
+              { label: "6-Month Total", value: waTokenData?.total_6m ?? 0,    accent: "blue"   as const, icon: BarChart2 },
+              { label: "Period", value: waTokenData?.current_period ?? "—",   accent: "amber"  as const, icon: Calendar },
             ].map((s) => (
               <motion.div key={s.label} variants={fadeUp}><StatCard {...s} /></motion.div>
             ))}
           </motion.div>
-          <div className="lg:col-span-2 rounded-xl border border-gray-200 bg-white p-5">
-            <h3 className="text-sm font-semibold text-gray-700 mb-4">Monthly Token Consumption</h3>
+          <div className="lg:col-span-2 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">Monthly Token Consumption</h3>
             {l6 ? <SectionSkeleton rows={6} /> : waTokenData
               ? <WaTokenChart data={waTokenData} />
-              : <p className="text-xs text-gray-400 text-center py-6">No data</p>}
+              : <p className="text-xs text-[var(--text-muted)] text-center py-6">No data</p>}
           </div>
         </div>
       </section>
@@ -274,27 +278,27 @@ export default function OrgAnalyticsPage() {
       <section>
         <SectionHeader title="Agent Speed Leaderboard" sub="Ranked by fastest lead response time (Redis sorted set, 24 h window)" />
         {l7 ? <SectionSkeleton rows={5} /> : leaderboardData && leaderboardData.length > 0 ? (
-          <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
+                <tr className="border-b border-[var(--border)]">
                   {["#", "Agent", "Avg Response", "Closed Deals", "Rating"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <motion.tbody className="divide-y divide-gray-50"
+              <motion.tbody className="divide-y divide-[var(--border)]"
                 variants={stagger} initial="hidden" animate="visible">
                 {(leaderboardData as SpeedLeaderboardEntry[]).map((e) => (
                   <motion.tr key={e.agent_id} variants={fadeUp}
-                    className="hover:bg-gray-50/60 transition-colors">
+                    className="hover:bg-[var(--bg-muted)]/60 transition-colors">
                     <td className="px-5 py-3 w-12">
                       <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold
                         ${e.rank === 1 ? "bg-amber-100 text-amber-600" :
                           e.rank === 2 ? "bg-slate-100 text-slate-500" :
-                          e.rank === 3 ? "bg-orange-100 text-orange-500" : "text-gray-400"}`}>
+                          e.rank === 3 ? "bg-orange-100 text-orange-500" : "text-[var(--text-muted)]"}`}>
                         {e.rank}
                       </span>
                     </td>
@@ -305,26 +309,26 @@ export default function OrgAnalyticsPage() {
                             {e.name.slice(0, 2).toUpperCase()}
                           </span>
                         </div>
-                        <span className="font-medium text-gray-900">{e.name}</span>
+                        <span className="font-medium text-[var(--text-primary)]">{e.name}</span>
                       </div>
                     </td>
                     <td className="px-5 py-3 tabular-nums">
                       {e.avg_response_time_hours !== null
                         ? <span className="font-medium text-teal-600">{e.avg_response_time_hours.toFixed(1)}h</span>
-                        : <span className="text-gray-400">—</span>}
+                        : <span className="text-[var(--text-muted)]">—</span>}
                     </td>
-                    <td className="px-5 py-3 tabular-nums text-gray-700">{e.closed_deals}</td>
+                    <td className="px-5 py-3 tabular-nums text-[var(--text-primary)]">{e.closed_deals}</td>
                     <td className="px-5 py-3">
                       {e.rating > 0
                         ? <span className="font-medium">⭐ {e.rating.toFixed(1)}</span>
-                        : <span className="text-gray-400">—</span>}
+                        : <span className="text-[var(--text-muted)]">—</span>}
                     </td>
                   </motion.tr>
                 ))}
               </motion.tbody>
             </table>
           </div>
-        ) : <p className="text-xs text-gray-400 text-center py-6">No agents yet</p>}
+        ) : <p className="text-xs text-[var(--text-muted)] text-center py-6">No agents yet</p>}
       </section>
 
       {/* ── Inventory Analytics ──────────────────────────────────────────── */}
@@ -335,10 +339,10 @@ export default function OrgAnalyticsPage() {
             <motion.div variants={stagger} initial="hidden" animate="visible"
               className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
               {[
-                { label: "Total Listings",    value: props.total,                             accent: "blue"    as const, icon: "🏠" },
-                { label: "Verified",          value: props.by_legal_status?.verified ?? 0,    accent: "emerald" as const, icon: "✅" },
-                { label: "Installment Plans", value: props.installment_available,             accent: "violet"  as const, icon: "📅" },
-                { label: "Avg AI Score",      value: `${props.avg_ai_score}/100`,             accent: "amber"   as const, icon: "🤖" },
+                { label: "Total Listings",    value: props.total,                             accent: "blue"    as const, icon: Home },
+                { label: "Verified",          value: props.by_legal_status?.verified ?? 0,    accent: "emerald" as const, icon: CheckCircle2 },
+                { label: "Installment Plans", value: props.installment_available,             accent: "violet"  as const, icon: Calendar },
+                { label: "Avg AI Score",      value: `${props.avg_ai_score}/100`,             accent: "amber"   as const, icon: Bot },
               ].map((s) => (
                 <motion.div key={s.label} variants={fadeUp}><StatCard {...s} /></motion.div>
               ))}
@@ -351,11 +355,11 @@ export default function OrgAnalyticsPage() {
                   </ChartCard>
                 </div>
               )}
-              <div className="rounded-xl border border-gray-200 bg-white p-5">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4">By Type</h3>
+              <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+                <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">By Type</h3>
                 {Object.keys(props.by_type).length > 0
                   ? <BreakdownBar data={props.by_type} />
-                  : <p className="text-xs text-gray-400 text-center py-4">No data</p>}
+                  : <p className="text-xs text-[var(--text-muted)] text-center py-4">No data</p>}
               </div>
             </div>
           </>
@@ -369,11 +373,11 @@ export default function OrgAnalyticsPage() {
           <motion.div variants={stagger} initial="hidden" animate="visible"
             className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              { label: "Total Locks",      value: deals.total_locks,    accent: "blue"    as const, icon: "🔒" },
-              { label: "Completed",        value: deals.completed,      accent: "emerald" as const, icon: "✅", sub: "Released" },
-              { label: "Disputed",         value: deals.disputed,       accent: "rose"    as const, icon: "⚠️" },
+              { label: "Total Locks",      value: deals.total_locks,    accent: "blue"    as const, icon: Lock },
+              { label: "Completed",        value: deals.completed,      accent: "emerald" as const, icon: CheckCircle2, sub: "Released" },
+              { label: "Disputed",         value: deals.disputed,       accent: "rose"    as const, icon: AlertTriangle },
               { label: "Avg Confirm Time", value: deals.avg_confirm_hours !== null ? `${deals.avg_confirm_hours}h` : "—",
-                accent: "violet" as const, icon: "⏱", sub: "Initiation → payment" },
+                accent: "violet" as const, icon: Clock, sub: "Initiation → payment" },
             ].map((s) => (
               <motion.div key={s.label} variants={fadeUp}><StatCard {...s} /></motion.div>
             ))}
@@ -385,23 +389,23 @@ export default function OrgAnalyticsPage() {
       {!l2 && agents.length > 0 && (
         <section>
           <SectionHeader title="Agent Performance" sub="All active agents in your organization" />
-          <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
+                <tr className="border-b border-[var(--border)]">
                   {["Rank", "Agent", "City", "Leads", "Qualified", "Closed Deals", "Rating", "Verified"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <motion.tbody className="divide-y divide-gray-50"
+              <motion.tbody className="divide-y divide-[var(--border)]"
                 variants={stagger} initial="hidden" animate="visible">
                 {agents.map((a, i) => (
                   <motion.tr key={a.id} variants={fadeUp}
-                    className="hover:bg-gray-50/50 transition-colors">
-                    <td className="px-5 py-3 text-xs font-bold text-gray-400 tabular-nums">#{i + 1}</td>
+                    className="hover:bg-[var(--bg-muted)]/50 transition-colors">
+                    <td className="px-5 py-3 text-xs font-bold text-[var(--text-muted)] tabular-nums">#{i + 1}</td>
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2.5">
                         <div className="h-7 w-7 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
@@ -410,19 +414,19 @@ export default function OrgAnalyticsPage() {
                           </span>
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">{a.name}</p>
-                          <p className="text-xs text-gray-400">{a.phone}</p>
+                          <p className="font-medium text-[var(--text-primary)]">{a.name}</p>
+                          <p className="text-xs text-[var(--text-muted)]">{a.phone}</p>
                         </div>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-gray-600">{a.primary_city || "—"}</td>
-                    <td className="px-5 py-3 font-bold text-gray-900 tabular-nums">{a.total_leads}</td>
-                    <td className="px-5 py-3 text-gray-600 tabular-nums">{a.closed_leads}</td>
-                    <td className="px-5 py-3 text-gray-600 tabular-nums">{a.closed_deals}</td>
+                    <td className="px-5 py-3 text-[var(--text-muted)]">{a.primary_city || "—"}</td>
+                    <td className="px-5 py-3 font-bold text-[var(--text-primary)] tabular-nums">{a.total_leads}</td>
+                    <td className="px-5 py-3 text-[var(--text-muted)] tabular-nums">{a.closed_leads}</td>
+                    <td className="px-5 py-3 text-[var(--text-muted)] tabular-nums">{a.closed_deals}</td>
                     <td className="px-5 py-3">
                       {a.rating > 0
                         ? <span className="font-medium">⭐ {a.rating.toFixed(1)}</span>
-                        : <span className="text-gray-400">—</span>}
+                        : <span className="text-[var(--text-muted)]">—</span>}
                     </td>
                     <td className="px-5 py-3">
                       <Badge label={a.is_verified ? "Yes" : "No"} variant={a.is_verified ? "green" : "gray"} />

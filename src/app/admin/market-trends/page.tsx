@@ -4,15 +4,14 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getMarketTrends } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { formatCurrency } from "@/lib/utils";
 import { MarketTrend } from "@/types";
 
 const CITIES = ["Lahore", "Karachi", "Islamabad", "Rawalpindi", "Faisalabad", "Peshawar", "Quetta", "Multan"];
 
-function formatPkr(value: number | null) {
+function formatPrice(value: number | null) {
   if (value == null) return "—";
-  if (value >= 10_000_000) return `₨ ${(value / 10_000_000).toFixed(1)} Cr`;
-  if (value >= 100_000) return `₨ ${(value / 100_000).toFixed(1)} L`;
-  return `₨ ${value.toLocaleString()}`;
+  return formatCurrency(value, "PKR");
 }
 
 function TrendBar({ value, max, label }: { value: number; max: number; label: string }) {
@@ -98,7 +97,7 @@ export default function MarketTrendsPage() {
                       style={{ width: `${maxPrice > 0 ? Math.round(((t.avg_price ?? 0) / maxPrice) * 100) : 0}%` }}
                     />
                   </div>
-                  <span className="text-xs text-gray-700 w-24 text-right">{formatPkr(t.avg_price)}</span>
+                  <span className="text-xs text-gray-700 w-24 text-right">{formatPrice(t.avg_price)}</span>
                 </div>
               ))}
             </div>
@@ -128,7 +127,7 @@ export default function MarketTrendsPage() {
                 {trends.map((t) => (
                   <tr key={t.period} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="px-4 py-2.5 text-gray-800">{t.period}</td>
-                    <td className="px-4 py-2.5 text-right text-gray-800">{formatPkr(t.avg_price)}</td>
+                    <td className="px-4 py-2.5 text-right text-gray-800">{formatPrice(t.avg_price)}</td>
                     <td className="px-4 py-2.5 text-right text-gray-800">{t.listing_count}</td>
                   </tr>
                 ))}

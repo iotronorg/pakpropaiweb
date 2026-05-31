@@ -1,5 +1,7 @@
 "use client";
 
+import type { LucideIcon } from "lucide-react";
+
 export type TrendPoint = { period: string; count: number };
 export type Period = "weekly" | "monthly";
 
@@ -12,13 +14,6 @@ export function formatPeriodLabel(p: string, period: Period): string {
       .toLocaleDateString("en-US", { month: "short", year: "2-digit" });
   }
   return new Date(p).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-export function formatPkr(n: number): string {
-  if (n >= 10_000_000) return `PKR ${(n / 10_000_000).toFixed(1)}Cr`;
-  if (n >= 100_000)    return `PKR ${(n / 100_000).toFixed(1)}L`;
-  if (n >= 1_000)      return `PKR ${(n / 1_000).toFixed(0)}K`;
-  return `PKR ${n}`;
 }
 
 // ── BarChart ──────────────────────────────────────────────────────────────────
@@ -44,7 +39,7 @@ export function BarChart({
   height?: number;
 }) {
   if (!data.length)
-    return <p className="text-xs text-gray-400 py-6 text-center">No data yet</p>;
+    return <p className="text-xs text-[var(--text-muted)] py-6 text-center">No data yet</p>;
 
   const max = Math.max(...data.map((d) => d.count), 1);
   const bar = BAR_COLORS[color];
@@ -55,14 +50,14 @@ export function BarChart({
       {data.map((d) => (
         <div key={d.period} className="flex flex-col items-center flex-1 min-w-0 h-full justify-end">
           {d.count > 0 && (
-            <span className="text-[10px] text-gray-500 font-medium mb-0.5">{d.count}</span>
+            <span className="text-[10px] text-[var(--text-muted)] font-medium mb-0.5">{d.count}</span>
           )}
           <div
             className={`w-full rounded-t ${bar} transition-all`}
             style={{ height: `${Math.max((d.count / max) * 80, d.count > 0 ? 3 : 0)}%` }}
             title={`${formatPeriodLabel(d.period, period)}: ${d.count}`}
           />
-          <span className="text-[9px] text-gray-400 mt-1 truncate w-full text-center leading-tight">
+          <span className="text-[9px] text-[var(--text-muted)] mt-1 truncate w-full text-center leading-tight">
             {formatPeriodLabel(d.period, period)}
           </span>
         </div>
@@ -99,36 +94,50 @@ export function MiniBarChart({
 
 // ── StatCard ──────────────────────────────────────────────────────────────────
 
+const ACCENT_ICON_COLORS: Record<string, string> = {
+  blue:    "text-blue-600 bg-blue-50",
+  emerald: "text-emerald-600 bg-emerald-50",
+  violet:  "text-violet-600 bg-violet-50",
+  amber:   "text-amber-600 bg-amber-50",
+  rose:    "text-rose-600 bg-rose-50",
+};
+
+const ACCENT_BORDER: Record<string, string> = {
+  blue:    "border-l-blue-500",
+  emerald: "border-l-emerald-500",
+  violet:  "border-l-violet-500",
+  amber:   "border-l-amber-500",
+  rose:    "border-l-rose-500",
+};
+
 export function StatCard({
   label,
   value,
   sub,
   accent,
-  icon,
+  icon: Icon,
 }: {
   label: string;
   value: string | number;
   sub?: string;
   accent?: "blue" | "emerald" | "violet" | "amber" | "rose";
-  icon?: string;
+  icon?: LucideIcon;
 }) {
-  const accentMap: Record<string, string> = {
-    blue:    "border-l-blue-500",
-    emerald: "border-l-emerald-500",
-    violet:  "border-l-violet-500",
-    amber:   "border-l-amber-500",
-    rose:    "border-l-rose-500",
-  };
-  const border = accent ? `border-l-4 ${accentMap[accent]}` : "";
+  const border = accent ? `border-l-4 ${ACCENT_BORDER[accent]}` : "";
+  const iconCls = accent ? ACCENT_ICON_COLORS[accent] : "text-slate-500 bg-slate-50";
 
   return (
-    <div className={`rounded-xl border border-gray-200 bg-white p-5 ${border}`}>
+    <div className={`rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 ${border}`}>
       <div className="flex items-start justify-between">
-        <p className="text-sm text-gray-500">{label}</p>
-        {icon && <span className="text-xl">{icon}</span>}
+        <p className="text-sm text-[var(--text-muted)]">{label}</p>
+        {Icon && (
+          <div className={`rounded-lg p-1.5 ${iconCls}`}>
+            <Icon size={14} />
+          </div>
+        )}
       </div>
-      <p className="mt-1 text-2xl font-bold text-gray-900 tabular-nums">{value}</p>
-      {sub && <p className="mt-0.5 text-xs text-gray-400">{sub}</p>}
+      <p className="mt-1 text-2xl font-bold text-[var(--text-primary)] tabular-nums">{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-[var(--text-muted)]">{sub}</p>}
     </div>
   );
 }
@@ -143,13 +152,16 @@ export function PeriodToggle({
   onChange: (p: Period) => void;
 }) {
   return (
-    <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
+    <div className="flex rounded-lg border border-[var(--border)] overflow-hidden text-xs font-medium" role="group" aria-label="Period selector">
       {(["weekly", "monthly"] as Period[]).map((p) => (
         <button
           key={p}
           onClick={() => onChange(p)}
-          className={`px-3 py-1.5 transition-colors ${
-            value === p ? "bg-blue-600 text-white" : "bg-white text-gray-500 hover:bg-gray-50"
+          aria-pressed={value === p}
+          className={`px-3 py-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[var(--border-focus)] ${
+            value === p
+              ? "bg-[var(--primary)] text-white"
+              : "bg-[var(--bg-surface)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
           }`}
         >
           {p === "weekly" ? "Weekly" : "Monthly"}
@@ -173,9 +185,9 @@ export function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-sm font-semibold text-gray-700">{title}</h3>
+        <h3 className="text-sm font-semibold text-[var(--text-primary)]">{title}</h3>
         {period && onPeriodChange && (
           <PeriodToggle value={period} onChange={onPeriodChange} />
         )}
@@ -202,17 +214,17 @@ export function LeadPipelineFunnel({ data }: { data: FunnelStep[] }) {
         return (
           <div key={step.label}>
             <div className="flex items-center justify-between mb-1">
-              <span className="text-xs font-medium text-gray-600">{step.label}</span>
+              <span className="text-xs font-medium text-[var(--text-muted)]">{step.label}</span>
               <div className="flex items-center gap-2">
                 {convRate !== null && (
-                  <span className="text-[10px] text-gray-400">{convRate}% from prev</span>
+                  <span className="text-[10px] text-[var(--text-muted)]">{convRate}% from prev</span>
                 )}
-                <span className="text-xs font-bold text-gray-800 tabular-nums w-10 text-right">
+                <span className="text-xs font-bold text-[var(--text-primary)] tabular-nums w-10 text-right">
                   {step.value}
                 </span>
               </div>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-5">
+            <div className="w-full bg-[var(--bg-subtle)] rounded-full h-5">
               <div
                 className={`h-5 rounded-full ${step.color} transition-all flex items-center justify-end pe-2`}
                 style={{ width: `${pct}%` }}
@@ -240,11 +252,11 @@ export function BreakdownBar({
   ];
   const entries = Object.entries(data).filter(([, v]) => v > 0);
   const total   = entries.reduce((s, [, v]) => s + v, 0);
-  if (!total) return <p className="text-xs text-gray-400">No data</p>;
+  if (!total) return <p className="text-xs text-[var(--text-muted)]">No data</p>;
 
   return (
     <div>
-      <div className="flex h-3 rounded-full overflow-hidden gap-0.5 mb-3">
+      <div className="flex h-3 rounded-full overflow-hidden gap-0.5 mb-3" role="img" aria-label="Distribution chart">
         {entries.map(([k, v], i) => (
           <div
             key={k}
@@ -258,10 +270,11 @@ export function BreakdownBar({
         {entries.map(([k, v], i) => (
           <div key={k} className="flex items-center gap-1.5">
             <div
+              aria-hidden="true"
               className={`w-2.5 h-2.5 rounded-sm flex-shrink-0 ${colors?.[k] ?? defaultColors[i % defaultColors.length]}`}
             />
-            <span className="text-xs text-gray-600 capitalize">{k.replace(/_/g, " ")}</span>
-            <span className="text-xs font-semibold text-gray-800">{v}</span>
+            <span className="text-xs text-[var(--text-muted)] capitalize">{k.replace(/_/g, " ")}</span>
+            <span className="text-xs font-semibold text-[var(--text-primary)]">{v}</span>
           </div>
         ))}
       </div>
@@ -274,8 +287,8 @@ export function BreakdownBar({
 export function SectionHeader({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-4">
-      <h2 className="text-base font-semibold text-gray-800">{title}</h2>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+      <h2 className="text-base font-semibold text-[var(--text-primary)]">{title}</h2>
+      {sub && <p className="text-xs text-[var(--text-muted)] mt-0.5">{sub}</p>}
     </div>
   );
 }

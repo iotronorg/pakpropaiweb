@@ -39,6 +39,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <style dangerouslySetInnerHTML={{ __html: `:root{${css}}` }} />
       </head>
       <body className="min-h-full bg-[var(--bg-base)] text-[var(--text-primary)]">
+        {/* Skip-to-content for keyboard/screen-reader users */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:start-2 focus:z-[9999] focus:rounded-lg focus:bg-[var(--primary)] focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-white focus:shadow-md"
+        >
+          Skip to main content
+        </a>
         <Providers locale={locale} messages={messages}>
           {children}
           <CookieConsentBanner />

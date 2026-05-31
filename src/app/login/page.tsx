@@ -305,7 +305,7 @@ function LoginForm() {
                     type="tel"
                     value={otpPhone}
                     onChange={(e) => setOtpPhone(e.target.value)}
-                    placeholder="+92 300 1234567"
+                    placeholder="+1 555 123 4567"
                     required
                     className="w-full rounded-lg border border-[var(--border-strong)] bg-white px-4 py-2.5 text-sm text-[var(--text-primary)] placeholder:text-[var(--text-muted)] outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-100 transition-all"
                   />

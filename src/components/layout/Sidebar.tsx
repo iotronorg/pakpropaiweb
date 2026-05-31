@@ -28,31 +28,64 @@ interface NavItemDef {
   badge?: boolean;
 }
 
-const NAV_DEFS: Record<string, NavItemDef[]> = {
+interface NavGroupDef {
+  group?: string;
+  items: NavItemDef[];
+}
+
+const NAV_GROUPED: Record<string, NavGroupDef[]> = {
   admin: [
-    { key: "overview",      href: "/admin",                    icon: LayoutDashboard, exact: true },
-    { key: "analytics",     href: "/admin/analytics",          icon: TrendingUp },
-    { key: "marketTrends",  href: "/admin/market-trends",      icon: BarChart3 },
-    { key: "systemSetup",   href: "/admin/setup",              icon: Settings },
-    { key: "clients",       href: "/admin/clients",            icon: MessageSquare },
-    { key: "leads",         href: "/admin/leads",              icon: ClipboardList, exact: true },
-    { key: "duplicates",    href: "/admin/leads/duplicates",   icon: AlertTriangle },
-    { key: "appointments",  href: "/admin/appointments",       icon: Calendar },
-    { key: "agents",        href: "/admin/agents",             icon: Building2 },
-    { key: "organizations", href: "/admin/organizations",      icon: Building },
-    { key: "admins",        href: "/admin/admins",             icon: ShieldCheck },
-    { key: "properties",    href: "/admin/properties",         icon: Home, exact: true },
-    { key: "compare",       href: "/admin/properties/compare", icon: GitCompare },
-    { key: "verification",  href: "/admin/verification",       icon: BadgeCheck },
-    { key: "dealLocks",     href: "/admin/deals",              icon: Lock },
-    { key: "fraudMonitor",  href: "/admin/fraud",              icon: AlertOctagon },
-    { key: "reports",       href: "/admin/reports",            icon: FileBarChart },
-    { key: "auditLog",      href: "/admin/audit",              icon: FileText, exact: true },
-    { key: "benchmarks",    href: "/admin/audit/benchmarks",   icon: SlidersHorizontal },
-    { key: "systemLog",     href: "/admin/audit-log",          icon: FolderOpen },
-    { key: "notifications", href: "/admin/notifications",      icon: Bell, badge: true },
-    { key: "settings",      href: "/admin/settings",           icon: Settings2 },
+    {
+      items: [
+        { key: "overview",      href: "/admin",               icon: LayoutDashboard, exact: true },
+        { key: "analytics",     href: "/admin/analytics",     icon: TrendingUp },
+        { key: "marketTrends",  href: "/admin/market-trends", icon: BarChart3 },
+      ],
+    },
+    {
+      group: "Operations",
+      items: [
+        { key: "clients",       href: "/admin/clients",            icon: MessageSquare },
+        { key: "leads",         href: "/admin/leads",              icon: ClipboardList, exact: true },
+        { key: "duplicates",    href: "/admin/leads/duplicates",   icon: AlertTriangle },
+        { key: "appointments",  href: "/admin/appointments",       icon: Calendar },
+        { key: "dealLocks",     href: "/admin/deals",              icon: Lock },
+        { key: "fraudMonitor",  href: "/admin/fraud",              icon: AlertOctagon },
+      ],
+    },
+    {
+      group: "Inventory",
+      items: [
+        { key: "properties",    href: "/admin/properties",         icon: Home, exact: true },
+        { key: "compare",       href: "/admin/properties/compare", icon: GitCompare },
+        { key: "verification",  href: "/admin/verification",       icon: BadgeCheck },
+      ],
+    },
+    {
+      group: "People",
+      items: [
+        { key: "agents",        href: "/admin/agents",        icon: Building2 },
+        { key: "organizations", href: "/admin/organizations", icon: Building },
+        { key: "admins",        href: "/admin/admins",        icon: ShieldCheck },
+      ],
+    },
+    {
+      group: "Platform",
+      items: [
+        { key: "reports",       href: "/admin/reports",            icon: FileBarChart },
+        { key: "auditLog",      href: "/admin/audit",              icon: FileText, exact: true },
+        { key: "benchmarks",    href: "/admin/audit/benchmarks",   icon: SlidersHorizontal },
+        { key: "systemLog",     href: "/admin/audit-log",          icon: FolderOpen },
+        { key: "notifications", href: "/admin/notifications",      icon: Bell, badge: true },
+        { key: "systemSetup",   href: "/admin/setup",              icon: Settings },
+        { key: "settings",      href: "/admin/settings",           icon: Settings2 },
+      ],
+    },
   ],
+};
+
+const NAV_DEFS: Record<string, NavItemDef[]> = {
+  admin: NAV_GROUPED.admin.flatMap((g) => g.items),
   agent: [
     { key: "overview",      href: "/agent",               icon: LayoutDashboard, exact: true },
     { key: "analytics",     href: "/agent/analytics",     icon: TrendingUp },
@@ -99,8 +132,10 @@ function NavLink({ item, label, active, unreadCount = 0 }: { item: NavItemDef; l
   return (
     <Link
       href={item.href}
+      aria-current={active ? "page" : undefined}
       className={cn(
         "group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-150 cursor-pointer",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)]",
         active
           ? "bg-[var(--primary-dim)] text-[var(--primary)]"
           : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)]"
@@ -203,18 +238,46 @@ export function Sidebar() {
 
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto px-3 pb-4">
-        <ul className="space-y-0.5">
-          {defs.map((item) => (
-            <li key={item.href}>
-              <NavLink
-                item={item}
-                label={tNav(item.key)}
-                active={isActive(item)}
-                unreadCount={unreadCount}
-              />
-            </li>
-          ))}
-        </ul>
+        {role === "admin" && NAV_GROUPED.admin ? (
+          <div className="space-y-1">
+            {NAV_GROUPED.admin.map((group, gi) => (
+              <div key={gi}>
+                {group.group && (
+                  <div className="px-3 pt-4 pb-1">
+                    <span className="text-[9px] font-semibold uppercase tracking-widest text-[var(--text-faint)]">
+                      {group.group}
+                    </span>
+                  </div>
+                )}
+                <ul className="space-y-0.5">
+                  {group.items.map((item) => (
+                    <li key={item.href}>
+                      <NavLink
+                        item={item}
+                        label={tNav(item.key)}
+                        active={isActive(item)}
+                        unreadCount={unreadCount}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <ul className="space-y-0.5">
+            {defs.map((item) => (
+              <li key={item.href}>
+                <NavLink
+                  item={item}
+                  label={tNav(item.key)}
+                  active={isActive(item)}
+                  unreadCount={unreadCount}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </nav>
 
       {/* User footer */}
@@ -236,9 +299,10 @@ export function Sidebar() {
           whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
           onClick={handleLogout}
-          className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border)] py-1.5 text-xs font-medium text-[var(--text-muted)] hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 cursor-pointer"
+          aria-label="Sign out"
+          className="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-[var(--border)] py-1.5 text-xs font-medium text-[var(--text-muted)] hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-colors duration-150 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-300"
         >
-          <LogOut size={12} />
+          <LogOut size={12} aria-hidden="true" />
           {tNav("signOut")}
         </motion.button>
       </div>

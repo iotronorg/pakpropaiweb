@@ -1,14 +1,22 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { getOrgDashboard, getOrgAIStats, getMyOrganization } from "@/lib/api";
+import { getOrgDashboard, getOrgAIStats, getMyOrganization, getBillingUsage } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { StatCard, BreakdownBar, SectionHeader } from "@/components/ui/Charts";
-import type { OrgDashboardStats, OrgAIStats } from "@/types";
+import type { OrgDashboardStats, OrgAIStats, BillingUsage } from "@/types";
 import Link from "next/link";
+import { ClipboardList, Flame, Clock, Users, Home } from "lucide-react";
 
-function TrialBanner() {
+function TrialBanner({ usage }: { usage: BillingUsage | undefined }) {
+  const agentLimit     = usage?.usage?.agents?.limit;
+  const inventoryLimit = usage?.usage?.inventory?.limit;
+
+  const limitText = (agentLimit != null && inventoryLimit != null)
+    ? `limited to ${inventoryLimit} properties and ${agentLimit} agents`
+    : "limited features";
+
   return (
     <div className="flex items-center justify-between gap-4 rounded-xl border border-amber-300 bg-amber-50 px-5 py-3.5">
       <div className="flex items-center gap-3">
@@ -16,7 +24,7 @@ function TrialBanner() {
           Trial
         </span>
         <p className="text-sm text-amber-800">
-          You are on the <strong>Trial plan</strong> — limited to 10 properties and 2 agents.
+          You are on the <strong>Trial plan</strong> — {limitText}.
           Upgrade to unlock unlimited listings, team members, and advanced features.
         </p>
       </div>
@@ -41,6 +49,12 @@ export default function OrgOverviewPage() {
     queryFn: () => getMyOrganization().then((r) => r.data),
   });
   const isTrialPlan = (orgData as { plan?: string } | undefined)?.plan === "trial";
+
+  const { data: billingUsage } = useQuery({
+    queryKey: ["billing-usage"],
+    queryFn: () => getBillingUsage().then((r) => r.data as BillingUsage),
+    enabled: isTrialPlan,
+  });
 
   const { data: ai, isLoading: l2 } = useQuery({
     queryKey: ["org-ai-stats"],
@@ -72,13 +86,13 @@ export default function OrgOverviewPage() {
     <div className="space-y-7 pb-10">
 
       {/* Trial plan banner */}
-      {isTrialPlan && <TrialBanner />}
+      {isTrialPlan && <TrialBanner usage={billingUsage} />}
 
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Organization Dashboard</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Organization Dashboard</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             Real-time overview of your AI sales infrastructure
           </p>
         </div>
@@ -93,11 +107,11 @@ export default function OrgOverviewPage() {
 
       {/* Top KPI strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-5 gap-4">
-        <StatCard label="Total Leads"    value={leads.total}            accent="blue"    icon="📋" />
-        <StatCard label="Hot Leads"      value={leads.hot}              accent="amber"   icon="🔥" sub="Score ≥ 70" />
-        <StatCard label="Routing Queue"  value={leads.routing_queue}    accent="violet"  icon="⏳" sub="Unassigned" />
-        <StatCard label="Active Agents"  value={agents.active}          accent="emerald" icon="👥" sub={agents.pending ? `${agents.pending} pending` : undefined} />
-        <StatCard label="Inventory"      value={inventory.total}        accent="rose"    icon="🏠" sub={`${inventory.verified} verified`} />
+        <StatCard label="Total Leads"    value={leads.total}            accent="blue"    icon={ClipboardList} />
+        <StatCard label="Hot Leads"      value={leads.hot}              accent="amber"   icon={Flame} sub="Score ≥ 70" />
+        <StatCard label="Routing Queue"  value={leads.routing_queue}    accent="violet"  icon={Clock} sub="Unassigned" />
+        <StatCard label="Active Agents"  value={agents.active}          accent="emerald" icon={Users} sub={agents.pending ? `${agents.pending} pending` : undefined} />
+        <StatCard label="Inventory"      value={inventory.total}        accent="rose"    icon={Home} sub={`${inventory.verified} verified`} />
       </div>
 
       {/* AI + Leads row */}
@@ -132,10 +146,10 @@ export default function OrgOverviewPage() {
         </div>
 
         {/* Lead pipeline */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-700">Lead Pipeline</h3>
-            <span className="text-xs text-gray-400">{conversionRate}% conversion</span>
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Lead Pipeline</h3>
+            <span className="text-xs text-[var(--text-muted)]">{conversionRate}% conversion</span>
           </div>
           <div className="space-y-2.5">
             {[
@@ -162,10 +176,10 @@ export default function OrgOverviewPage() {
         </div>
 
         {/* Inventory distribution */}
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-semibold text-gray-700">Inventory Distribution</h3>
-            <Link href="/organization/inventory" className="text-xs text-gray-400 hover:text-gray-600">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)]">Inventory Distribution</h3>
+            <Link href="/organization/inventory" className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]">
               View all →
             </Link>
           </div>
@@ -193,14 +207,14 @@ export default function OrgOverviewPage() {
 
       {/* Recent AI conversations */}
       {recentConvos.length > 0 && (
-        <div className="rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+          <div className="border-b border-[var(--border)] px-6 py-4 flex items-center justify-between">
             <SectionHeader title="Recent AI Conversations" sub="Latest inbound messages across your leads" />
-            <Link href="/organization/ai-monitor" className="text-xs text-blue-600 hover:underline shrink-0">
+            <Link href="/organization/ai-monitor" className="text-xs text-[var(--primary)] hover:underline shrink-0">
               See all →
             </Link>
           </div>
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-[var(--border)]">
             {recentConvos.map((c) => (
               <div key={c.lead_id + c.created_at} className="flex items-start gap-4 px-6 py-3.5">
                 <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0 mt-0.5">
@@ -240,8 +254,8 @@ export default function OrgOverviewPage() {
 
       {/* Intent breakdown */}
       {Object.keys(leads.by_intent).length > 0 && (
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
-          <h3 className="text-sm font-semibold text-gray-700 mb-4">Lead Intent Breakdown</h3>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+          <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-4">Lead Intent Breakdown</h3>
           <BreakdownBar data={leads.by_intent} />
         </div>
       )}

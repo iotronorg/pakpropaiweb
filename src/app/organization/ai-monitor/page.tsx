@@ -5,6 +5,7 @@ import { getOrgAIStats, getAgentReport, getLeadReport } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { StatCard, ChartCard, BarChart, BreakdownBar, SectionHeader, type Period, type TrendPoint } from "@/components/ui/Charts";
+import { Bot, Flame, Clock, User, MessageSquare } from "lucide-react";
 import type { OrgAIStats, AgentPerformanceRow } from "@/types";
 import { useState } from "react";
 
@@ -100,11 +101,11 @@ export default function AIMonitorPage() {
 
       {/* AI KPI row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 xl:grid-cols-5 gap-4">
-        <StatCard label="Chat Success Rate" value={`${s.chat_success_rate}%`} accent="amber"   icon="🤖" sub="Convos → qualified" />
-        <StatCard label="Hot Leads"          value={s.hot_leads}              accent="amber"   icon="🔥" sub="Score ≥ 70" />
-        <StatCard label="Routing Queue"      value={s.routing_queue}          accent="violet"  icon="⏳" sub="Awaiting agent" />
-        <StatCard label="Agent Assigned"     value={s.agent_assigned}         accent="blue"    icon="👤" sub="Active assignments" />
-        <StatCard label="With Conversations" value={s.leads_with_convos}      accent="emerald" icon="💬" sub="AI-engaged leads" />
+        <StatCard label="Chat Success Rate" value={`${s.chat_success_rate}%`} accent="amber"   icon={Bot} sub="Convos → qualified" />
+        <StatCard label="Hot Leads"          value={s.hot_leads}              accent="amber"   icon={Flame} sub="Score ≥ 70" />
+        <StatCard label="Routing Queue"      value={s.routing_queue}          accent="violet"  icon={Clock} sub="Awaiting agent" />
+        <StatCard label="Agent Assigned"     value={s.agent_assigned}         accent="blue"    icon={User} sub="Active assignments" />
+        <StatCard label="With Conversations" value={s.leads_with_convos}      accent="emerald" icon={MessageSquare} sub="AI-engaged leads" />
       </div>
 
       {/* Success ring + routing breakdown */}

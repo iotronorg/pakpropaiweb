@@ -9,6 +9,7 @@ import {
   StatCard, ChartCard, BarChart, BreakdownBar, SectionHeader,
   type Period, type TrendPoint,
 } from "@/components/ui/Charts";
+import { Home, Bot, CheckCircle2, Calendar } from "lucide-react";
 import type { PropertyReportData } from "@/types";
 
 interface MarketTrendRow {
@@ -92,10 +93,10 @@ export default function PropertyAnalyticsPage() {
 
       {/* KPI strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatCard label="Total Active"       value={r.total}                      accent="blue"    icon="🏠" />
-        <StatCard label="Avg AI Score"       value={`${r.avg_ai_score}/100`}      accent="amber"   icon="🤖" />
-        <StatCard label="Verified"           value={r.by_legal_status?.verified ?? 0} accent="emerald" icon="✅" />
-        <StatCard label="Installment Plans"  value={r.installment_available}      accent="violet"  icon="📅" />
+        <StatCard label="Total Active"       value={r.total}                      accent="blue"    icon={Home} />
+        <StatCard label="Avg AI Score"       value={`${r.avg_ai_score}/100`}      accent="amber"   icon={Bot} />
+        <StatCard label="Verified"           value={r.by_legal_status?.verified ?? 0} accent="emerald" icon={CheckCircle2} />
+        <StatCard label="Installment Plans"  value={r.installment_available}      accent="violet"  icon={Calendar} />
       </div>
 
       {/* Inventory growth trend */}

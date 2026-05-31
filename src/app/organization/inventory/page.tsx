@@ -7,6 +7,7 @@ import { formatArea } from "@/lib/utils";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { StatCard, BreakdownBar, ChartCard, BarChart, type Period, type TrendPoint } from "@/components/ui/Charts";
+import { Home, CheckCircle2, Calendar, Bot } from "lucide-react";
 import type { Property, PropertyImage, PropertyReportData } from "@/types";
 
 // ── Trust Certificate Cell ────────────────────────────────────────────────────
@@ -250,10 +251,10 @@ export default function OrgInventoryPage() {
 
       {/* KPI strip */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <StatCard label="Total Listings"       value={report.total}                accent="blue"    icon="🏠" />
-        <StatCard label="Verified"             value={report.by_legal_status?.verified ?? 0} accent="emerald" icon="✅" sub="Legally confirmed" />
-        <StatCard label="Installment Plans"    value={report.installment_available} accent="violet"  icon="📅" />
-        <StatCard label="Avg AI Score"         value={`${report.avg_ai_score}/100`} accent="amber"   icon="🤖" />
+        <StatCard label="Total Listings"       value={report.total}                accent="blue"    icon={Home} />
+        <StatCard label="Verified"             value={report.by_legal_status?.verified ?? 0} accent="emerald" icon={CheckCircle2} sub="Legally confirmed" />
+        <StatCard label="Installment Plans"    value={report.installment_available} accent="violet"  icon={Calendar} />
+        <StatCard label="Avg AI Score"         value={`${report.avg_ai_score}/100`} accent="amber"   icon={Bot} />
       </div>
 
       {/* Distribution row */}
