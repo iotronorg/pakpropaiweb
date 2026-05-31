@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView, useReducedMotion } from "framer-motion";
-import { ArrowRight, Building, GitFork, LayoutDashboard, LineChart, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, Building, GitFork, LayoutDashboard, LineChart, ShieldCheck, Users, Phone } from "lucide-react";
 import Link from "next/link";
 
 const benefits = [
@@ -43,7 +43,7 @@ const benefits = [
       "Strict org-level isolation. Your inventory, leads, and analytics are invisible to other organisations on the platform. Complete data privacy.",
   },
   {
-    icon: LineChart,
+    icon: Phone,
     title: "AI Voice Channel — Phone Calls, Automated",
     description:
       "AI handles inbound and outbound property calls. Agents can barge in for live deals in under 100ms. Calls transcribed and synced to CRM automatically.",
@@ -177,10 +177,10 @@ export default function DeveloperBenefits() {
           className="mt-12 text-center"
         >
           <Link
-            href="/register"
+            href="/register/organization"
             className="group inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-8 py-4 rounded-xl transition-colors duration-150 shadow-sm text-base"
           >
-            Book a Demo
+            Start Free Trial
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-150" />
           </Link>
         </motion.div>

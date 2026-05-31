@@ -88,7 +88,7 @@ export default function AiCapabilitiesSection() {
           transition={{ duration: 0.5, delay: 0.5 }}
           className="text-center text-xs text-slate-400 mt-10"
         >
-          Powered by Gemini 2.5 Flash · GPT-4 Turbo · Custom fine-tuned models for real estate
+          Powered by leading AI models · custom fine-tuned on real estate data · updated continuously
         </motion.p>
       </div>
     </section>

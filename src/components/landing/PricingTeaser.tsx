@@ -70,7 +70,7 @@ export default function PricingTeaser() {
   const prefersReduced = useReducedMotion();
 
   return (
-    <section ref={ref} className="bg-white py-24 px-6">
+    <section id="pricing" ref={ref} className="bg-white py-24 px-6">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={prefersReduced ? false : { opacity: 0, y: 24 }}
@@ -171,9 +171,9 @@ export default function PricingTeaser() {
           className="text-center text-sm text-slate-400 mt-8"
         >
           All plans include full AI capabilities. No per-seat fees for WhatsApp conversations.{" "}
-          <Link href="/register/organization" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
-            See full pricing →
-          </Link>
+          <a href="#pricing" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">
+            Compare all features →
+          </a>
         </motion.p>
       </div>
     </section>

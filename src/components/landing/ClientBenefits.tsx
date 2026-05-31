@@ -77,7 +77,7 @@ export default function ClientBenefits() {
             </p>
             <div className="mt-6 flex items-center gap-3">
               <a
-                href="https://wa.me/15550000000"
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_DEMO_NUMBER ?? ""}`}
                 className="inline-flex items-center gap-2 bg-[#25D366] hover:bg-[#1ea85a] text-white font-semibold px-6 py-3 rounded-lg transition-colors duration-150 text-sm"
               >
                 <svg viewBox="0 0 24 24" fill="white" className="w-4 h-4">

@@ -7,10 +7,8 @@ import HowItWorks from "@/components/landing/HowItWorks";
 import WhatsAppSection from "@/components/landing/WhatsAppSection";
 import FeaturesSection from "@/components/landing/FeaturesSection";
 import AiCapabilitiesSection from "@/components/landing/AiCapabilitiesSection";
-import WorkflowVisualization from "@/components/landing/WorkflowVisualization";
 import DeveloperBenefits from "@/components/landing/DeveloperBenefits";
-import AgentBenefits from "@/components/landing/AgentBenefits";
-import ClientBenefits from "@/components/landing/ClientBenefits";
+import WhoIsItFor from "@/components/landing/WhoIsItFor";
 import GlobalSection from "@/components/landing/GlobalSection";
 import SocialProofSection from "@/components/landing/SocialProofSection";
 import PricingTeaser from "@/components/landing/PricingTeaser";
@@ -96,10 +94,8 @@ export default function LandingPage() {
         <WhatsAppSection />
         <FeaturesSection />
         <AiCapabilitiesSection />
-        <WorkflowVisualization />
         <DeveloperBenefits />
-        <AgentBenefits />
-        <ClientBenefits />
+        <WhoIsItFor />
         <GlobalSection />
         <SocialProofSection />
         <PricingTeaser />

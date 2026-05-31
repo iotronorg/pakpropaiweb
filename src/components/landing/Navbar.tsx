@@ -7,10 +7,10 @@ import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { label: "How It Works", href: "#how-it-works" },
-  { label: "Features", href: "#features" },
-  { label: "For Organizations", href: "#developers" },
-  { label: "For Agents", href: "#agents" },
-  { label: "For Clients", href: "#clients" },
+  { label: "Features",     href: "#features" },
+  { label: "AI",           href: "#ai" },
+  { label: "For Orgs",     href: "#developers" },
+  { label: "Pricing",      href: "#pricing" },
 ];
 
 export default function Navbar() {
@@ -77,9 +77,11 @@ export default function Navbar() {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-slate-600 hover:text-slate-900 transition-colors cursor-pointer p-1"
+          className="md:hidden text-slate-600 hover:text-slate-900 transition-colors cursor-pointer p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 rounded"
           onClick={() => setMenuOpen((v) => !v)}
-          aria-label="Toggle menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
+          aria-controls="mobile-menu"
         >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -88,6 +90,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <motion.div
+          id="mobile-menu"
           initial={prefersReduced ? false : { opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2 }}

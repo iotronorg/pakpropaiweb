@@ -71,11 +71,19 @@ export default function SocialProofSection() {
           initial={prefersReduced ? false : { opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="flex items-center justify-center gap-3 mb-16"
+          className="flex flex-wrap items-center justify-center gap-2 mb-16"
         >
-          <span className="text-slate-300 text-sm">🇵🇰</span>
-          <span className="text-slate-400 text-sm font-medium">Trusted by organizations across Pakistan, UAE, United Kingdom, and the United States</span>
-          <span className="text-slate-300 text-sm">🇦🇪 🇬🇧 🇺🇸</span>
+          {[
+            { code: "PK", label: "Pakistan",       flag: "🇵🇰" },
+            { code: "AE", label: "UAE",            flag: "🇦🇪" },
+            { code: "GB", label: "United Kingdom", flag: "🇬🇧" },
+            { code: "US", label: "United States",  flag: "🇺🇸" },
+          ].map(({ code, label, flag }) => (
+            <span key={code} className="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1 text-xs font-medium text-slate-600">
+              <span aria-hidden="true">{flag}</span>
+              {label}
+            </span>
+          ))}
         </motion.div>
 
         {/* Testimonial cards */}
@@ -100,13 +108,16 @@ export default function SocialProofSection() {
               <p className="text-slate-600 text-sm leading-relaxed flex-1">{quote}</p>
 
               <div className="flex items-center gap-3 pt-2 border-t border-slate-100">
-                <div className="w-9 h-9 rounded-full bg-slate-100 flex items-center justify-center text-base shrink-0">
-                  {flag}
+                <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0" aria-hidden="true">
+                  <span className="text-xs font-bold text-blue-600">{market.slice(0, 2).toUpperCase()}</span>
                 </div>
                 <div>
                   <div className="text-sm font-bold text-slate-900">{name}</div>
                   <div className="text-xs text-slate-400">{title}, {company}</div>
-                  <div className="text-xs text-slate-400 mt-0.5">{market}</div>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <span aria-hidden="true" className="text-xs">{flag}</span>
+                    <span className="text-xs text-slate-400">{market}</span>
+                  </div>
                 </div>
               </div>
             </motion.div>
