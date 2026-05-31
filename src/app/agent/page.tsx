@@ -112,7 +112,11 @@ export default function AgentOverview() {
                     <p className="text-sm font-medium text-[var(--text-primary)]">{l.name || l.phone}</p>
                     <p className="text-xs text-[var(--text-muted)]">
                       {l.location_interest ?? "No location"} ·{" "}
-                      {l.budget_max ? formatCurrency(l.budget_max, l.budget_currency ?? "PKR") : "Budget unknown"} ·{" "}
+                      {l.budget_max
+                        ? l.budget_currency
+                          ? formatCurrency(l.budget_max, l.budget_currency)
+                          : l.budget_max.toLocaleString()
+                        : "Budget unknown"} ·{" "}
                       {formatDate(l.created_at)}
                     </p>
                   </div>

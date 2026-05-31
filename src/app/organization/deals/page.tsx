@@ -7,7 +7,7 @@ import { getDealLocks, confirmDealLock, cancelDealLock, releaseDealLock, dispute
 import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import type { DealLock, DealLockStatus } from "@/types";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_TABS = ["all", "initiated", "locked", "released", "cancelled", "disputed", "expired"] as const;
 
@@ -74,22 +74,24 @@ export default function OrgDealsPage() {
   return (
     <div className="space-y-6 pb-10">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Deal Locks</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Deal Locks</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Deal lock requests on your organization&apos;s properties
         </p>
       </div>
 
       {/* Status tabs */}
-      <div className="flex flex-wrap gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1 w-fit">
+      <div className="flex flex-wrap gap-1 rounded-xl border border-[var(--border)] bg-[var(--bg-muted)] p-1 w-fit">
         {STATUS_TABS.map((t) => (
           <button
             key={t}
+            type="button"
+            aria-pressed={tab === t}
             onClick={() => setTab(t)}
             className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-colors capitalize ${
               tab === t
-                ? "bg-white text-blue-600 shadow-sm border border-gray-200"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-[var(--bg-surface)] text-blue-600 shadow-sm border border-[var(--border)]"
+                : "text-[var(--text-muted)] hover:text-[var(--text-muted)]"
             }`}
           >
             {t}
@@ -98,7 +100,7 @@ export default function OrgDealsPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-gray-200 bg-white">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <LoadingSpinner />
@@ -107,21 +109,21 @@ export default function OrgDealsPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
+                <tr className="border-b border-[var(--border)]">
                   {["Property", "Buyer", "Amount", "Gateway", "Status", "Created", "Actions"].map((h) => (
                     <th
                       key={h}
-                      className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap"
+                      className="px-5 py-3 text-start text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide whitespace-nowrap"
                     >
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-[var(--border)]">
                 {deals.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-sm text-gray-400">
+                    <td colSpan={7} className="py-12 text-center text-sm text-[var(--text-muted)]">
                       No deal locks found
                     </td>
                   </tr>
@@ -129,18 +131,18 @@ export default function OrgDealsPage() {
                   deals.map((deal) => (
                     <tr key={deal.id} className="hover:bg-gray-50/50 transition-colors">
                       <td className="px-5 py-3">
-                        <p className="font-medium text-gray-900">{deal.property_title}</p>
+                        <p className="font-medium text-[var(--text-primary)]">{deal.property_title}</p>
                         {deal.property_city && (
-                          <p className="text-xs text-gray-400">{deal.property_city}</p>
+                          <p className="text-xs text-[var(--text-muted)]">{deal.property_city}</p>
                         )}
                       </td>
-                      <td className="px-5 py-3 font-mono text-sm text-gray-600">
+                      <td className="px-5 py-3 font-mono text-sm text-[var(--text-muted)]">
                         {deal.buyer_phone}
                       </td>
-                      <td className="px-5 py-3 font-semibold tabular-nums text-gray-800">
+                      <td className="px-5 py-3 font-semibold tabular-nums text-[var(--text-primary)]">
                         {formatCurrency(deal.token_amount, deal.currency)}
                       </td>
-                      <td className="px-5 py-3 text-xs capitalize text-gray-500">
+                      <td className="px-5 py-3 text-xs capitalize text-[var(--text-muted)]">
                         {deal.payment_gateway.replace(/_/g, " ")}
                       </td>
                       <td className="px-5 py-3">
@@ -149,12 +151,8 @@ export default function OrgDealsPage() {
                           variant={STATUS_VARIANT[deal.status] ?? "gray"}
                         />
                       </td>
-                      <td className="px-5 py-3 whitespace-nowrap text-xs text-gray-400">
-                        {new Date(deal.created_at).toLocaleDateString("en-GB", {
-                          day: "2-digit",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                      <td className="px-5 py-3 whitespace-nowrap text-xs text-[var(--text-muted)]">
+                        {formatDate(deal.created_at)}
                       </td>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-2">
@@ -171,7 +169,12 @@ export default function OrgDealsPage() {
                           )}
                           {deal.status === "locked" && (
                             <button
-                              onClick={() => releaseMutation.mutate(deal.id)}
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Release escrow for "${deal.property_title}"? This transfers the deal to released state.`)) {
+                                  releaseMutation.mutate(deal.id);
+                                }
+                              }}
                               disabled={releaseMutation.isPending}
                               className="whitespace-nowrap rounded-md bg-green-50 px-2.5 py-1 text-xs font-medium text-green-600 transition-colors hover:bg-green-100 disabled:opacity-50"
                             >
@@ -180,6 +183,7 @@ export default function OrgDealsPage() {
                           )}
                           {deal.status === "locked" && (
                             <button
+                              type="button"
                               onClick={() => sellerConfirmMutation.mutate(deal.id)}
                               disabled={sellerConfirmMutation.isPending}
                               className="whitespace-nowrap rounded-md bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-700 transition-colors hover:bg-emerald-100 disabled:opacity-50"
@@ -189,6 +193,7 @@ export default function OrgDealsPage() {
                           )}
                           {deal.status === "locked" && (
                             <button
+                              type="button"
                               onClick={() => { setDisputeDeal(deal); setDisputeNotes(""); }}
                               className="whitespace-nowrap rounded-md bg-orange-50 px-2.5 py-1 text-xs font-medium text-orange-600 transition-colors hover:bg-orange-100"
                             >
@@ -197,7 +202,12 @@ export default function OrgDealsPage() {
                           )}
                           {(deal.status === "initiated" || deal.status === "locked") && (
                             <button
-                              onClick={() => cancelMutation.mutate(deal.id)}
+                              type="button"
+                              onClick={() => {
+                                if (window.confirm(`Cancel this deal lock on "${deal.property_title}"? This cannot be undone.`)) {
+                                  cancelMutation.mutate(deal.id);
+                                }
+                              }}
                               disabled={cancelMutation.isPending}
                               className="whitespace-nowrap rounded-md bg-red-50 px-2.5 py-1 text-xs font-medium text-red-500 transition-colors hover:bg-red-100 disabled:opacity-50"
                             >
@@ -205,7 +215,7 @@ export default function OrgDealsPage() {
                             </button>
                           )}
                           {deal.status !== "initiated" && deal.status !== "locked" && (
-                            <span className="text-xs text-gray-300">—</span>
+                            <span className="text-xs text-[var(--text-faint)]">—</span>
                           )}
                         </div>
                       </td>
@@ -231,27 +241,31 @@ export default function OrgDealsPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="dispute-modal-title"
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+              className="w-full max-w-md rounded-2xl bg-[var(--bg-surface)] p-6 shadow-2xl"
             >
-              <h2 className="mb-1 text-lg font-semibold text-gray-900">Dispute Deal</h2>
-              <p className="mb-4 text-sm text-gray-500">
-                Property: <span className="font-medium text-gray-700">{disputeDeal.property_title}</span>
+              <h2 id="dispute-modal-title" className="mb-1 text-lg font-semibold text-[var(--text-primary)]">Dispute Deal</h2>
+              <p className="mb-4 text-sm text-[var(--text-muted)]">
+                Property: <span className="font-medium text-[var(--text-muted)]">{disputeDeal.property_title}</span>
               </p>
-              <label className="mb-1 block text-xs font-medium text-gray-600">Notes (optional)</label>
+              <label htmlFor="dispute-notes" className="mb-1 block text-xs font-medium text-[var(--text-muted)]">Notes (optional)</label>
               <textarea
+                id="dispute-notes"
                 rows={3}
                 placeholder="Describe the reason for this dispute…"
                 value={disputeNotes}
                 onChange={(e) => setDisputeNotes(e.target.value)}
-                className="mb-4 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200"
+                className="mb-4 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200"
               />
               {disputeMutation.isError && (
-                <p className="mb-3 text-xs text-red-500">Failed to dispute deal. Please try again.</p>
+                <p role="alert" className="mb-3 text-xs text-red-600">Failed to dispute deal. Please try again.</p>
               )}
               <div className="flex justify-end gap-2">
                 <button onClick={() => setDisputeDeal(null)}
-                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50">
+                  className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)]">
                   Cancel
                 </button>
                 <button
@@ -281,37 +295,41 @@ export default function OrgDealsPage() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
               transition={{ type: "spring", stiffness: 380, damping: 30 }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="confirm-modal-title"
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl"
+              className="w-full max-w-md rounded-2xl bg-[var(--bg-surface)] p-6 shadow-2xl"
             >
-              <h2 className="mb-1 text-lg font-semibold text-gray-900">Confirm Payment</h2>
-              <p className="mb-4 text-sm text-gray-500">
+              <h2 id="confirm-modal-title" className="mb-1 text-lg font-semibold text-[var(--text-primary)]">Confirm Payment</h2>
+              <p className="mb-4 text-sm text-[var(--text-muted)]">
                 Property:{" "}
-                <span className="font-medium text-gray-700">{confirmDeal.property_title}</span>
+                <span className="font-medium text-[var(--text-muted)]">{confirmDeal.property_title}</span>
                 <br />
                 Amount:{" "}
-                <span className="font-medium text-gray-700">
+                <span className="font-medium text-[var(--text-muted)]">
                   {formatCurrency(confirmDeal.token_amount, confirmDeal.currency)}
                 </span>
               </p>
-              <label className="mb-1 block text-xs font-medium text-gray-600">
+              <label htmlFor="payment-ref" className="mb-1 block text-xs font-medium text-[var(--text-muted)]">
                 Payment Reference
               </label>
               <input
+                id="payment-ref"
                 type="text"
                 placeholder="e.g. TXN123456 or bank reference"
                 value={paymentRef}
                 onChange={(e) => setPaymentRef(e.target.value)}
-                className="mb-4 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="mb-4 w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
                 autoFocus
               />
               {confirmMutation.isError && (
-                <p className="mb-3 text-xs text-red-500">Failed to confirm payment. Please try again.</p>
+                <p role="alert" className="mb-3 text-xs text-red-600">Failed to confirm payment. Please try again.</p>
               )}
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setConfirmDeal(null)}
-                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50"
+                  className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] transition-colors hover:bg-[var(--bg-muted)]"
                 >
                   Cancel
                 </button>

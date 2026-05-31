@@ -11,9 +11,9 @@ const STATUS_COLORS: Record<DealLockStatus, string> = {
   initiated: "bg-yellow-100 text-yellow-800",
   locked:    "bg-green-100 text-green-800",
   released:  "bg-indigo-100 text-indigo-800",
-  cancelled: "bg-gray-100 text-gray-600",
+  cancelled: "bg-[var(--bg-subtle)] text-[var(--text-muted)]",
   disputed:  "bg-red-100 text-red-800",
-  expired:   "bg-gray-100 text-gray-500",
+  expired:   "bg-[var(--bg-subtle)] text-[var(--text-muted)]",
 };
 
 const GATEWAYS: Record<string, string> = {
@@ -39,40 +39,52 @@ function ConfirmModal({ deal, onClose, onConfirm, loading }: ConfirmModalProps) 
   const [notes, setNotes] = useState("");
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl">
-        <h3 className="text-lg font-semibold mb-1">Confirm Payment</h3>
-        <p className="text-sm text-gray-500 mb-4">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="admin-confirm-modal-title"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6 w-full max-w-md shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 id="admin-confirm-modal-title" className="text-lg font-semibold text-[var(--text-primary)] mb-1">Confirm Payment</h3>
+        <p className="text-sm text-[var(--text-muted)] mb-4">
           {deal.property_title} — {formatCurrency(deal.token_amount, deal.currency)}
         </p>
 
-        <label className="block text-sm font-medium mb-1">Payment Reference *</label>
+        <label htmlFor="admin-payment-ref" className="block text-sm font-medium text-[var(--text-muted)] mb-1">
+          Payment Reference <span aria-hidden="true">*</span><span className="sr-only">(required)</span>
+        </label>
         <input
-          className="w-full border rounded-lg px-3 py-2 text-sm mb-3"
+          id="admin-payment-ref"
+          className="w-full border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-sm mb-3 outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           placeholder="JazzCash TID / Bank Ref / Receipt No."
           value={ref}
           onChange={e => setRef(e.target.value)}
+          autoFocus
         />
 
-        <label className="block text-sm font-medium mb-1">Admin Notes (optional)</label>
+        <label htmlFor="admin-deal-notes" className="block text-sm font-medium text-[var(--text-muted)] mb-1">Admin Notes (optional)</label>
         <textarea
-          className="w-full border rounded-lg px-3 py-2 text-sm mb-4 resize-none"
+          id="admin-deal-notes"
+          className="w-full border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-sm mb-4 resize-none outline-none focus:ring-2 focus:ring-blue-500 transition-all"
           rows={2}
-          placeholder="Any notes for internal record..."
+          placeholder="Any notes for internal record…"
           value={notes}
           onChange={e => setNotes(e.target.value)}
         />
 
         <div className="flex gap-3 justify-end">
-          <button onClick={onClose} className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900">
+          <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
             Cancel
           </button>
           <button
+            type="button"
             onClick={() => onConfirm(ref, notes)}
             disabled={!ref.trim() || loading}
-            className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
+            className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-colors"
           >
-            {loading ? "Confirming..." : "Confirm & Activate Lock"}
+            {loading ? "Confirming…" : "Confirm & Activate Lock"}
           </button>
         </div>
       </div>
@@ -162,7 +174,7 @@ export default function AdminDealsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Deals & Payments</h1>
-          <p className="text-sm text-gray-500 mt-1">Manage deal locks and payment records</p>
+          <p className="text-sm text-[var(--text-muted)] mt-1">Manage deal locks and payment records</p>
         </div>
       </div>
 
@@ -175,7 +187,7 @@ export default function AdminDealsPage() {
             className={`px-4 py-2 text-sm font-semibold border-b-2 transition-colors capitalize ${
               activeTab === t
                 ? "border-indigo-600 text-indigo-700"
-                : "border-transparent text-gray-400 hover:text-gray-700"
+                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-muted)]"
             }`}
           >
             {t === "locks" ? "🔒 Deal Locks" : "💳 Payments"}
@@ -186,11 +198,11 @@ export default function AdminDealsPage() {
       {activeTab === "payments" && (
         <div>
           {payments.length === 0 ? (
-            <div className="text-center py-16 text-gray-400">No payment records yet.</div>
+            <div className="text-center py-16 text-[var(--text-muted)]">No payment records yet.</div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border bg-white">
+            <div className="overflow-x-auto rounded-xl border bg-[var(--bg-surface)]">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+                <thead className="bg-[var(--bg-muted)] text-xs uppercase text-[var(--text-muted)]">
                   <tr>
                     {["Buyer", "Amount", "Gateway", "Status", "Reference", "Deal", "Date"].map(h => (
                       <th key={h} className="px-4 py-3 text-start font-medium">{h}</th>
@@ -199,7 +211,7 @@ export default function AdminDealsPage() {
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {payments.map(p => (
-                    <tr key={p.id} className="hover:bg-gray-50">
+                    <tr key={p.id} className="hover:bg-[var(--bg-muted)]">
                       <td className="px-4 py-3 font-mono text-xs">{p.user}</td>
                       <td className="px-4 py-3 font-semibold">{formatCurrency(p.amount, p.currency)}</td>
                       <td className="px-4 py-3 capitalize">{p.gateway}</td>
@@ -211,9 +223,9 @@ export default function AdminDealsPage() {
                           : "bg-yellow-100 text-yellow-700"
                         }`}>{p.status}</span>
                       </td>
-                      <td className="px-4 py-3 font-mono text-xs text-gray-400">{p.reference || "—"}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-[var(--text-muted)]">{p.reference || "—"}</td>
                       <td className="px-4 py-3 font-mono text-xs">{p.deal_id ? p.deal_id.slice(0, 8).toUpperCase() : "—"}</td>
-                      <td className="px-4 py-3 text-gray-400">{formatDate(p.created_at)}</td>
+                      <td className="px-4 py-3 text-[var(--text-muted)]">{formatDate(p.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -234,7 +246,7 @@ export default function AdminDealsPage() {
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               statusFilter === t.value
                 ? "border-indigo-600 text-indigo-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-muted)]"
             }`}
           >
             {t.label}
@@ -245,25 +257,25 @@ export default function AdminDealsPage() {
       {isLoading ? (
         <div className="flex justify-center py-12"><LoadingSpinner /></div>
       ) : deals.length === 0 ? (
-        <div className="text-center py-16 text-gray-400">
+        <div className="text-center py-16 text-[var(--text-muted)]">
           <p className="text-4xl mb-3">🔒</p>
           <p className="font-medium">No deal locks found</p>
         </div>
       ) : (
         <div className="space-y-3">
           {deals.map(deal => (
-            <div key={deal.id} className="bg-white rounded-xl border p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+            <div key={deal.id} className="bg-[var(--bg-surface)] rounded-xl border p-5 flex flex-col sm:flex-row sm:items-center gap-4">
               {/* Property info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${STATUS_COLORS[deal.status]}`}>
                     {deal.status.toUpperCase()}
                   </span>
-                  <span className="text-xs text-gray-400">{deal.initiated_via}</span>
+                  <span className="text-xs text-[var(--text-muted)]">{deal.initiated_via}</span>
                 </div>
-                <p className="font-semibold text-gray-900 truncate">{deal.property_title}</p>
-                <p className="text-sm text-gray-500">{deal.property_city}</p>
-                <p className="text-xs text-gray-400 mt-1">
+                <p className="font-semibold text-[var(--text-primary)] truncate">{deal.property_title}</p>
+                <p className="text-sm text-[var(--text-muted)]">{deal.property_city}</p>
+                <p className="text-xs text-[var(--text-muted)] mt-1">
                   Buyer: <span className="font-mono">{deal.buyer_phone}</span>
                   {deal.agent_name && <> · Agent: {deal.agent_name}</>}
                 </p>
@@ -271,10 +283,10 @@ export default function AdminDealsPage() {
 
               {/* Amount + gateway */}
               <div className="text-right sm:text-start sm:min-w-[140px]">
-                <p className="text-lg font-bold text-gray-900">{formatCurrency(deal.token_amount, deal.currency)}</p>
-                <p className="text-xs text-gray-500">{GATEWAYS[deal.payment_gateway] ?? deal.payment_gateway}</p>
+                <p className="text-lg font-bold text-[var(--text-primary)]">{formatCurrency(deal.token_amount, deal.currency)}</p>
+                <p className="text-xs text-[var(--text-muted)]">{GATEWAYS[deal.payment_gateway] ?? deal.payment_gateway}</p>
                 {deal.payment_ref && (
-                  <p className="text-xs text-gray-400 font-mono mt-0.5">Ref: {deal.payment_ref}</p>
+                  <p className="text-xs text-[var(--text-muted)] font-mono mt-0.5">Ref: {deal.payment_ref}</p>
                 )}
               </div>
 
@@ -285,12 +297,12 @@ export default function AdminDealsPage() {
                     <p className={`text-sm font-bold ${deal.hours_remaining < 6 ? "text-red-600" : "text-green-600"}`}>
                       {deal.hours_remaining.toFixed(1)}h left
                     </p>
-                    <p className="text-xs text-gray-400">Expires {formatDate(deal.lock_expires_at!)}</p>
+                    <p className="text-xs text-[var(--text-muted)]">Expires {formatDate(deal.lock_expires_at!)}</p>
                   </div>
                 ) : deal.status === "initiated" ? (
                   <p className="text-xs text-yellow-600 font-medium">Awaiting payment</p>
                 ) : (
-                  <p className="text-xs text-gray-400">{formatDate(deal.created_at)}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{formatDate(deal.created_at)}</p>
                 )}
               </div>
 
@@ -346,7 +358,7 @@ export default function AdminDealsPage() {
                   <button
                     onClick={() => setCancelId(deal.id)}
                     disabled={cancelMutation.isPending && cancelId === deal.id}
-                    className="px-3 py-1.5 text-xs border border-gray-300 text-gray-600 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    className="px-3 py-1.5 text-xs border border-[var(--border-strong)] text-[var(--text-muted)] rounded-lg hover:bg-[var(--bg-muted)] disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -372,11 +384,11 @@ export default function AdminDealsPage() {
       {/* Cancel confirmation */}
       {cancelId && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-sm shadow-xl">
+          <div className="bg-[var(--bg-surface)] rounded-xl p-6 w-full max-w-sm shadow-xl">
             <h3 className="font-semibold mb-2">Cancel Deal Lock?</h3>
-            <p className="text-sm text-gray-500 mb-4">This cannot be undone.</p>
+            <p className="text-sm text-[var(--text-muted)] mb-4">This cannot be undone.</p>
             <div className="flex gap-3 justify-end">
-              <button onClick={() => setCancelId(null)} className="px-4 py-2 text-sm text-gray-600">Keep</button>
+              <button onClick={() => setCancelId(null)} className="px-4 py-2 text-sm text-[var(--text-muted)]">Keep</button>
               <button
                 onClick={() => cancelMutation.mutate(cancelId)}
                 disabled={cancelMutation.isPending}

@@ -49,9 +49,9 @@ export default function LiveChatPage() {
 
   if (!lead) {
     return (
-      <div className="py-20 text-center text-gray-400">
+      <div className="py-20 text-center text-[var(--text-muted)]">
         <p className="font-medium">Lead not found</p>
-        <button onClick={() => router.back()} className="mt-4 text-sm text-blue-600 hover:underline">
+        <button type="button" onClick={() => router.back()} className="mt-4 text-sm text-blue-600 hover:underline">
           Back
         </button>
       </div>
@@ -60,9 +60,9 @@ export default function LiveChatPage() {
 
   if (!lead.wa_session_id) {
     return (
-      <div className="py-20 text-center text-gray-400">
+      <div className="py-20 text-center text-[var(--text-muted)]">
         <p className="font-medium">No active WhatsApp session for this lead</p>
-        <button onClick={() => router.back()} className="mt-4 text-sm text-blue-600 hover:underline">
+        <button type="button" onClick={() => router.back()} className="mt-4 text-sm text-blue-600 hover:underline">
           Back
         </button>
       </div>
@@ -72,14 +72,15 @@ export default function LiveChatPage() {
   return (
     <div className="flex flex-col h-[calc(100vh-4rem)] max-w-3xl mx-auto">
       {/* Back header */}
-      <div className="flex items-center gap-3 px-4 py-3 border-b bg-white shrink-0">
+      <div className="flex items-center gap-3 px-4 py-3 border-b bg-[var(--bg-surface)] shrink-0">
         <button
+          type="button"
           onClick={() => router.back()}
-          className="text-gray-400 hover:text-gray-600 text-sm"
+          className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-sm"
         >
           ← Back
         </button>
-        <h1 className="text-sm font-semibold text-gray-800 truncate">
+        <h1 className="text-sm font-semibold text-[var(--text-primary)] truncate">
           {lead.name || lead.phone}
         </h1>
       </div>

@@ -14,7 +14,7 @@ import { useRTBFStatus } from "@/hooks/useRTBFStatus";
 import type { PIIDetectionSummary, PrivacyAuditLogEntry, SanctionScreeningResult } from "@/types";
 
 function SectionHeader({ title }: { title: string }) {
-  return <h2 className="text-base font-semibold text-gray-800">{title}</h2>;
+  return <h2 className="text-base font-semibold text-[var(--text-primary)]">{title}</h2>;
 }
 
 export default function OrgCompliancePage() {
@@ -71,16 +71,17 @@ export default function OrgCompliancePage() {
 
   return (
     <div className="space-y-4 p-6">
-      <h1 className="text-2xl font-bold text-gray-900">Compliance</h1>
+      <h1 className="text-2xl font-bold text-[var(--text-primary)]">Compliance</h1>
 
       {/* PII Detections accordion */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-sm">
         <button
+          type="button"
           onClick={() => toggle("pii")}
           className="flex w-full items-center justify-between px-5 py-4 text-start"
         >
           <SectionHeader title="PII Detection Feed (last 24h)" />
-          <span className="text-gray-400">{openSection === "pii" ? "▲" : "▼"}</span>
+          <span className="text-[var(--text-muted)]">{openSection === "pii" ? "▲" : "▼"}</span>
         </button>
         <AnimatePresence>
           {openSection === "pii" && (
@@ -92,15 +93,15 @@ export default function OrgCompliancePage() {
             >
               <div className="border-t px-5 py-4">
                 {Object.keys(piiSummary).length === 0 ? (
-                  <p className="text-sm text-gray-500">No PII detected in the last 24 hours.</p>
+                  <p className="text-sm text-[var(--text-muted)]">No PII detected in the last 24 hours.</p>
                 ) : (
                   <ul className="space-y-2">
                     {Object.entries(piiSummary).map(([pattern, count]) => (
                       <li
                         key={pattern}
-                        className="flex justify-between rounded-lg bg-gray-50 px-3 py-2 text-sm"
+                        className="flex justify-between rounded-lg bg-[var(--bg-muted)] px-3 py-2 text-sm"
                       >
-                        <span className="capitalize text-gray-700">{pattern}</span>
+                        <span className="capitalize text-[var(--text-muted)]">{pattern}</span>
                         <span className="font-semibold text-red-600">{count} detected</span>
                       </li>
                     ))}
@@ -113,13 +114,14 @@ export default function OrgCompliancePage() {
       </div>
 
       {/* RTBF accordion */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-sm">
         <button
+          type="button"
           onClick={() => toggle("rtbf")}
           className="flex w-full items-center justify-between px-5 py-4 text-start"
         >
           <SectionHeader title="Right-to-Be-Forgotten Request" />
-          <span className="text-gray-400">{openSection === "rtbf" ? "▲" : "▼"}</span>
+          <span className="text-[var(--text-muted)]">{openSection === "rtbf" ? "▲" : "▼"}</span>
         </button>
         <AnimatePresence>
           {openSection === "rtbf" && (
@@ -131,19 +133,20 @@ export default function OrgCompliancePage() {
             >
               <div className="space-y-3 border-t px-5 py-4">
                 <input
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Lead phone (E.164)"
                   value={rtbfPhone}
                   onChange={(e) => setRtbfPhone(e.target.value)}
                 />
                 <textarea
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   placeholder="Reason"
                   rows={2}
                   value={rtbfReason}
                   onChange={(e) => setRtbfReason(e.target.value)}
                 />
                 <button
+                  type="button"
                   onClick={() => rtbfMutation.mutate()}
                   disabled={!rtbfPhone || !rtbfReason || rtbfMutation.isPending}
                   className="rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-40"
@@ -151,7 +154,7 @@ export default function OrgCompliancePage() {
                   {rtbfMutation.isPending ? "Submitting…" : "Submit Erasure Request"}
                 </button>
                 {requestId && (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-[var(--text-muted)]">
                     Status:{" "}
                     <span className="font-medium">
                       {rtbf.status ?? "pending"}
@@ -166,13 +169,14 @@ export default function OrgCompliancePage() {
       </div>
 
       {/* Audit log accordion */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-sm">
         <button
+          type="button"
           onClick={() => toggle("audit")}
           className="flex w-full items-center justify-between px-5 py-4 text-start"
         >
           <SectionHeader title="Privacy Audit Log" />
-          <span className="text-gray-400">{openSection === "audit" ? "▲" : "▼"}</span>
+          <span className="text-[var(--text-muted)]">{openSection === "audit" ? "▲" : "▼"}</span>
         </button>
         <AnimatePresence>
           {openSection === "audit" && (
@@ -184,21 +188,21 @@ export default function OrgCompliancePage() {
             >
               <div className="border-t px-5 py-4">
                 {auditLog.length === 0 ? (
-                  <p className="text-sm text-gray-500">No audit entries.</p>
+                  <p className="text-sm text-[var(--text-muted)]">No audit entries.</p>
                 ) : (
                   <ul className="space-y-2 text-sm">
                     {auditLog.slice(0, 20).map((entry) => (
                       <li
                         key={entry.id}
-                        className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2"
+                        className="flex items-center justify-between rounded-lg bg-[var(--bg-muted)] px-3 py-2"
                       >
                         <div>
-                          <span className="font-medium capitalize text-gray-700">
+                          <span className="font-medium capitalize text-[var(--text-muted)]">
                             {entry.action.replace(/_/g, " ")}
                           </span>
-                          <span className="ms-2 text-xs text-gray-400">{entry.jurisdiction}</span>
+                          <span className="ms-2 text-xs text-[var(--text-muted)]">{entry.jurisdiction}</span>
                         </div>
-                        <span className="text-xs text-gray-400">
+                        <span className="text-xs text-[var(--text-muted)]">
                           {new Date(entry.created_at).toLocaleDateString()}
                         </span>
                       </li>
@@ -211,13 +215,14 @@ export default function OrgCompliancePage() {
         </AnimatePresence>
       </div>
       {/* AML Screening section */}
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] shadow-sm">
         <button
+          type="button"
           onClick={() => toggle("aml")}
           className="flex w-full items-center justify-between px-5 py-4 text-start"
         >
           <SectionHeader title="AML Screening" />
-          <span className="text-gray-400">{openSection === "aml" ? "▲" : "▼"}</span>
+          <span className="text-[var(--text-muted)]">{openSection === "aml" ? "▲" : "▼"}</span>
         </button>
         <AnimatePresence>
           {openSection === "aml" && (
@@ -236,21 +241,21 @@ export default function OrgCompliancePage() {
                     { label: "Blocked", value: blockedCount, color: "text-red-600" },
                     { label: "Clear Rate", value: `${clearRate}%`, color: "text-green-600" },
                   ].map(({ label, value, color }) => (
-                    <div key={label} className="rounded-lg bg-gray-50 p-3 text-center">
-                      <div className={`text-2xl font-bold ${color || "text-gray-900"}`}>{value}</div>
-                      <div className="text-xs text-gray-500 mt-1">{label}</div>
+                    <div key={label} className="rounded-lg bg-[var(--bg-muted)] p-3 text-center">
+                      <div className={`text-2xl font-bold ${color || "text-[var(--text-primary)]"}`}>{value}</div>
+                      <div className="text-xs text-[var(--text-muted)] mt-1">{label}</div>
                     </div>
                   ))}
                 </div>
 
                 {/* Screenings table */}
                 {screenings.length === 0 ? (
-                  <p className="text-sm text-gray-500">No screening records.</p>
+                  <p className="text-sm text-[var(--text-muted)]">No screening records.</p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="border-b text-start text-xs text-gray-500">
+                        <tr className="border-b text-start text-xs text-[var(--text-muted)]">
                           <th className="pb-2 pe-4">Name</th>
                           <th className="pb-2 pe-4">List</th>
                           <th className="pb-2 pe-4">Match</th>
@@ -259,19 +264,19 @@ export default function OrgCompliancePage() {
                           <th className="pb-2">Date</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-gray-100">
+                      <tbody className="divide-y divide-[var(--border)]">
                         {screenings.slice(0, 20).map((sr) => (
                           <tr key={sr.screening_id}>
-                            <td className="py-2 pe-4 font-medium text-gray-800">{sr.screened_name}</td>
-                            <td className="py-2 pe-4 text-gray-600">{sr.list_source || "—"}</td>
-                            <td className="py-2 pe-4 text-gray-600 capitalize">{sr.match_type || "—"}</td>
-                            <td className="py-2 pe-4 text-gray-600">{sr.risk_score}</td>
+                            <td className="py-2 pe-4 font-medium text-[var(--text-primary)]">{sr.screened_name}</td>
+                            <td className="py-2 pe-4 text-[var(--text-muted)]">{sr.list_source || "—"}</td>
+                            <td className="py-2 pe-4 text-[var(--text-muted)] capitalize">{sr.match_type || "—"}</td>
+                            <td className="py-2 pe-4 text-[var(--text-muted)]">{sr.risk_score}</td>
                             <td className="py-2 pe-4">
                               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor(sr.status)}`}>
                                 {sr.status}
                               </span>
                             </td>
-                            <td className="py-2 text-xs text-gray-400">
+                            <td className="py-2 text-xs text-[var(--text-muted)]">
                               {new Date(sr.screened_at).toLocaleDateString()}
                             </td>
                           </tr>
@@ -282,8 +287,9 @@ export default function OrgCompliancePage() {
                 )}
 
                 <button
+                  type="button"
                   onClick={handleExport}
-                  className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200 transition"
+                  className="rounded-lg bg-[var(--bg-subtle)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] transition"
                 >
                   Export CSV
                 </button>

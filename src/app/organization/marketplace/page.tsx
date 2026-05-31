@@ -20,7 +20,7 @@ const TABS = ['Syndicate Inventory', 'Partner Network', 'Inbound Submissions', '
 type Tab = typeof TABS[number]
 
 const statusColor: Record<string, string> = {
-  draft: 'bg-gray-100 text-gray-600',
+  draft: 'bg-[var(--bg-subtle)] text-[var(--text-muted)]',
   syndicated: 'bg-green-100 text-green-700',
   withdrawn: 'bg-amber-100 text-amber-700',
   invited: 'bg-blue-100 text-blue-700',
@@ -38,7 +38,7 @@ const statusColor: Record<string, string> = {
 
 function Badge({ label }: { label: string }) {
   return (
-    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[label] ?? 'bg-gray-100 text-gray-600'}`}>
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${statusColor[label] ?? 'bg-[var(--bg-subtle)] text-[var(--text-muted)]'}`}>
       {label}
     </span>
   )
@@ -65,7 +65,7 @@ function SyndicateInventoryTab() {
   return (
     <div className="space-y-4">
       <table className="w-full text-sm border rounded-lg overflow-hidden">
-        <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+        <thead className="bg-[var(--bg-muted)] text-[var(--text-muted)] uppercase text-xs">
           <tr>
             <th className="px-4 py-3 text-start">Property</th>
             <th className="px-4 py-3 text-start">Status</th>
@@ -85,12 +85,12 @@ function SyndicateInventoryTab() {
               <td className="px-4 py-3 capitalize">{l.syndication_scope.replace('_', ' ')}</td>
               <td className="px-4 py-3 text-right space-x-2">
                 {l.status === 'draft' && (
-                  <button onClick={() => setPublishId(l.id)} className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+                  <button type="button" onClick={() => setPublishId(l.id)} className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
                     Publish to Network
                   </button>
                 )}
                 {l.status === 'syndicated' && (
-                  <button onClick={() => withdraw.mutate(l.id)} className="text-xs bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600">
+                  <button type="button" onClick={() => withdraw.mutate(l.id)} className="text-xs bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600">
                     Withdraw
                   </button>
                 )}
@@ -98,7 +98,7 @@ function SyndicateInventoryTab() {
             </motion.tr>
           ))}
           {listings.length === 0 && (
-            <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No listings yet.</td></tr>
+            <tr><td colSpan={5} className="px-4 py-8 text-center text-[var(--text-muted)]">No listings yet.</td></tr>
           )}
         </tbody>
       </table>
@@ -107,7 +107,7 @@ function SyndicateInventoryTab() {
         {publishId && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md space-y-4">
+            <div className="bg-[var(--bg-surface)] rounded-xl shadow-xl p-6 w-full max-w-md space-y-4">
               <h3 className="text-lg font-semibold">Publish to Broker Network</h3>
               <div className="space-y-3">
                 <div className="flex gap-3">
@@ -130,8 +130,8 @@ function SyndicateInventoryTab() {
                   className="border rounded px-3 py-2 text-sm w-full h-20 resize-none" />
               </div>
               <div className="flex justify-end gap-3">
-                <button onClick={() => setPublishId(null)} className="text-sm text-gray-500 hover:underline">Cancel</button>
-                <button onClick={() => syndicate.mutate(publishId!)}
+                <button type="button" onClick={() => setPublishId(null)} className="text-sm text-[var(--text-muted)] hover:underline">Cancel</button>
+                <button type="button" onClick={() => syndicate.mutate(publishId!)}
                   className="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700">
                   Syndicate
                 </button>
@@ -165,12 +165,12 @@ function PartnerNetworkTab() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end">
-        <button onClick={() => setShowInvite(true)} className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">
+        <button type="button" onClick={() => setShowInvite(true)} className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">
           + Invite Partner
         </button>
       </div>
       <table className="w-full text-sm border rounded-lg overflow-hidden">
-        <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+        <thead className="bg-[var(--bg-muted)] text-[var(--text-muted)] uppercase text-xs">
           <tr>
             <th className="px-4 py-3 text-start">Partner</th>
             <th className="px-4 py-3 text-start">Status</th>
@@ -184,19 +184,19 @@ function PartnerNetworkTab() {
             <tr key={p.id}>
               <td className="px-4 py-3 font-medium">{p.broker_org_name ?? p.broker_agent_name ?? '—'}</td>
               <td className="px-4 py-3"><Badge label={p.status} /></td>
-              <td className="px-4 py-3 text-gray-600">
+              <td className="px-4 py-3 text-[var(--text-muted)]">
                 {p.commission_override_value ? `${p.commission_override_value}${p.commission_override_type === 'percentage' ? '%' : ''}` : '—'}
               </td>
-              <td className="px-4 py-3 text-gray-500">{p.activated_at ? new Date(p.activated_at).toLocaleDateString() : '—'}</td>
+              <td className="px-4 py-3 text-[var(--text-muted)]">{p.activated_at ? new Date(p.activated_at).toLocaleDateString() : '—'}</td>
               <td className="px-4 py-3 text-right">
                 {p.status === 'active' && (
-                  <button onClick={() => revoke.mutate(p.id)} className="text-xs text-red-600 hover:underline">Revoke</button>
+                  <button type="button" onClick={() => revoke.mutate(p.id)} className="text-xs text-red-600 hover:underline">Revoke</button>
                 )}
               </td>
             </tr>
           ))}
           {partners.length === 0 && (
-            <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No partners yet.</td></tr>
+            <tr><td colSpan={5} className="px-4 py-8 text-center text-[var(--text-muted)]">No partners yet.</td></tr>
           )}
         </tbody>
       </table>
@@ -205,7 +205,7 @@ function PartnerNetworkTab() {
         {showInvite && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md space-y-4">
+            <div className="bg-[var(--bg-surface)] rounded-xl shadow-xl p-6 w-full max-w-md space-y-4">
               <h3 className="text-lg font-semibold">Invite Partner</h3>
               <input placeholder="Partner Org ID (UUID)" value={form.broker_org}
                 onChange={e => setForm(f => ({ ...f, broker_org: e.target.value }))}
@@ -225,8 +225,8 @@ function PartnerNetworkTab() {
                 onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
                 className="border rounded px-3 py-2 text-sm w-full h-20 resize-none" />
               <div className="flex justify-end gap-3">
-                <button onClick={() => setShowInvite(false)} className="text-sm text-gray-500 hover:underline">Cancel</button>
-                <button onClick={() => invite.mutate()} className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">Send Invitation</button>
+                <button type="button" onClick={() => setShowInvite(false)} className="text-sm text-[var(--text-muted)] hover:underline">Cancel</button>
+                <button type="button" onClick={() => invite.mutate()} className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700">Send Invitation</button>
               </div>
             </div>
           </motion.div>
@@ -247,7 +247,7 @@ function InboundSubmissionsTab() {
 
   return (
     <table className="w-full text-sm border rounded-lg overflow-hidden">
-      <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+      <thead className="bg-[var(--bg-muted)] text-[var(--text-muted)] uppercase text-xs">
         <tr>
           <th className="px-4 py-3 text-start">Lead</th>
           <th className="px-4 py-3 text-start">Listing</th>
@@ -261,8 +261,8 @@ function InboundSubmissionsTab() {
         {submissions.map((s) => (
           <tr key={s.id}>
             <td className="px-4 py-3 font-medium">{s.lead_name}</td>
-            <td className="px-4 py-3 text-gray-600">{s.listing_title}</td>
-            <td className="px-4 py-3 text-gray-500">{s.submitted_by_org_name ?? '—'}</td>
+            <td className="px-4 py-3 text-[var(--text-muted)]">{s.listing_title}</td>
+            <td className="px-4 py-3 text-[var(--text-muted)]">{s.submitted_by_org_name ?? '—'}</td>
             <td className="px-4 py-3">
               {s.commission_calculated ? `${s.commission_currency} ${Number(s.commission_calculated).toLocaleString()}` : '—'}
             </td>
@@ -274,15 +274,15 @@ function InboundSubmissionsTab() {
             <td className="px-4 py-3 text-right space-x-2">
               {s.status === 'pending' && (
                 <>
-                  <button onClick={() => accept.mutate(s.id)} className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Accept</button>
-                  <button onClick={() => reject.mutate(s.id)} className="text-xs bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Reject</button>
+                  <button type="button" onClick={() => accept.mutate(s.id)} className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Accept</button>
+                  <button type="button" onClick={() => reject.mutate(s.id)} className="text-xs bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600">Reject</button>
                 </>
               )}
             </td>
           </tr>
         ))}
         {submissions.length === 0 && (
-          <tr><td colSpan={6} className="px-4 py-8 text-center text-gray-400">No submissions yet.</td></tr>
+          <tr><td colSpan={6} className="px-4 py-8 text-center text-[var(--text-muted)]">No submissions yet.</td></tr>
         )}
       </tbody>
     </table>
@@ -306,7 +306,7 @@ function CommissionLedgerTab() {
   return (
     <div className="space-y-4">
       <div className="flex justify-end items-center gap-3">
-        <button onClick={handleVerify} className="bg-gray-800 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">
+        <button type="button" onClick={handleVerify} className="bg-gray-800 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">
           Verify Chain Integrity
         </button>
         {verifyResult && (
@@ -316,7 +316,7 @@ function CommissionLedgerTab() {
         )}
       </div>
       <table className="w-full text-sm border rounded-lg overflow-hidden">
-        <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+        <thead className="bg-[var(--bg-muted)] text-[var(--text-muted)] uppercase text-xs">
           <tr>
             <th className="px-4 py-3 text-start">Entry ID</th>
             <th className="px-4 py-3 text-start">Broker</th>
@@ -328,15 +328,15 @@ function CommissionLedgerTab() {
         <tbody className="divide-y">
           {entries.map((e) => (
             <tr key={e.entry_id}>
-              <td className="px-4 py-3 font-mono text-xs text-gray-500">{e.entry_id.slice(0, 8)}…</td>
+              <td className="px-4 py-3 font-mono text-xs text-[var(--text-muted)]">{e.entry_id.slice(0, 8)}…</td>
               <td className="px-4 py-3">{e.broker_org_name ?? '—'}</td>
               <td className="px-4 py-3 font-medium">{e.commission_currency} {Number(e.commission_amount).toLocaleString()}</td>
               <td className="px-4 py-3"><Badge label={e.status} /></td>
-              <td className="px-4 py-3 text-gray-500">{new Date(e.created_at).toLocaleDateString()}</td>
+              <td className="px-4 py-3 text-[var(--text-muted)]">{new Date(e.created_at).toLocaleDateString()}</td>
             </tr>
           ))}
           {entries.length === 0 && (
-            <tr><td colSpan={5} className="px-4 py-8 text-center text-gray-400">No ledger entries yet.</td></tr>
+            <tr><td colSpan={5} className="px-4 py-8 text-center text-[var(--text-muted)]">No ledger entries yet.</td></tr>
           )}
         </tbody>
       </table>
@@ -352,23 +352,24 @@ export default function MarketplacePage() {
   const [activeTab, setActiveTab] = useState<Tab>('Syndicate Inventory')
 
   if (role && role !== 'developer' && role !== 'admin') {
-    return <div className="p-8 text-gray-500">Access restricted to developer organizations.</div>
+    return <div className="p-8 text-[var(--text-muted)]">Access restricted to developer organizations.</div>
   }
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Broker Marketplace</h1>
+      <h1 className="text-2xl font-bold text-[var(--text-primary)]">Broker Marketplace</h1>
 
       {/* Tabs */}
       <div className="flex border-b space-x-1">
         {TABS.map((tab) => (
           <button
             key={tab}
+            type="button"
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab
                 ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                : 'border-transparent text-[var(--text-muted)] hover:text-gray-700'
             }`}
           >
             {tab}

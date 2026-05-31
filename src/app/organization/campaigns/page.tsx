@@ -14,7 +14,7 @@ import TemplatePreviewPanel from "@/components/campaigns/TemplatePreviewPanel";
 // ── helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_COLORS: Record<string, string> = {
-  draft:     "bg-gray-100 text-gray-600",
+  draft:     "bg-[var(--bg-subtle)] text-[var(--text-muted)]",
   scheduled: "bg-blue-100 text-blue-700",
   sending:   "bg-amber-100 text-amber-700",
   sent:      "bg-emerald-100 text-emerald-700",
@@ -35,7 +35,7 @@ const AUDIENCE_LABELS: Record<CampaignAudienceFilter, string> = {
 };
 
 function fmtDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-PK", {
+  return new Date(iso).toLocaleDateString("en-US", {
     day: "numeric", month: "short", year: "numeric",
     hour: "2-digit", minute: "2-digit",
   });
@@ -91,7 +91,7 @@ function buildPayload(form: FormState) {
 
 // ── CampaignFormBody ─────────────────────────────────────────────────────────
 
-const INPUT = "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
+const INPUT = "w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400";
 
 function CampaignFormBody({ form, setForm }: { form: FormState; setForm: (f: FormState) => void }) {
   const { data: templates = [], isLoading: tplLoading } = useQuery({
@@ -107,13 +107,13 @@ function CampaignFormBody({ form, setForm }: { form: FormState; setForm: (f: For
   return (
     <div className="space-y-4">
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Campaign name</label>
+        <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">Campaign name</label>
         <input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })}
-          placeholder="e.g. DHA Lahore — May Promotion" className={INPUT} />
+          placeholder="e.g. May Residential Campaign" className={INPUT} />
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Audience</label>
+        <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">Audience</label>
         <select value={form.audience}
           onChange={e => setForm({ ...form, audience: e.target.value as CampaignAudienceFilter })}
           className={INPUT}>
@@ -121,11 +121,11 @@ function CampaignFormBody({ form, setForm }: { form: FormState; setForm: (f: For
         </select>
       </div>
 
-      <div className="flex rounded-lg border border-gray-200 bg-gray-50 p-1 w-fit gap-1">
+      <div className="flex rounded-lg border border-[var(--border)] bg-[var(--bg-muted)] p-1 w-fit gap-1">
         {(["text", "template"] as const).map(m => (
           <button key={m} type="button" onClick={() => setForm({ ...form, mode: m })}
             className={`rounded-md px-3 py-1 text-xs font-semibold cursor-pointer transition-colors ${
-              form.mode === m ? "bg-white text-amber-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+              form.mode === m ? "bg-[var(--bg-surface)] text-amber-600 shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-muted)]"}`}>
             {m === "text" ? "Custom Text" : "Meta Template"}
           </button>
         ))}
@@ -133,8 +133,8 @@ function CampaignFormBody({ form, setForm }: { form: FormState; setForm: (f: For
 
       {form.mode === "text" ? (
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Message <span className="text-gray-400 font-normal">({form.message.length}/4096)</span>
+          <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">
+            Message <span className="text-[var(--text-muted)] font-normal">({form.message.length}/4096)</span>
           </label>
           <textarea value={form.message} onChange={e => setForm({ ...form, message: e.target.value })}
             rows={5} maxLength={4096} placeholder="Write your WhatsApp message here…"
@@ -142,7 +142,7 @@ function CampaignFormBody({ form, setForm }: { form: FormState; setForm: (f: For
         </div>
       ) : (
         <div className="space-y-2">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Template</label>
+          <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">Template</label>
           <select value={form.templateKey}
             onChange={e => setForm({ ...form, templateKey: e.target.value, components: [] })}
             className={INPUT} disabled={tplLoading}>
@@ -161,7 +161,7 @@ function CampaignFormBody({ form, setForm }: { form: FormState; setForm: (f: For
       )}
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Messaging Tier</label>
+        <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">Messaging Tier</label>
         <select value={form.tier}
           onChange={e => setForm({ ...form, tier: Number(e.target.value) as 1 | 2 | 3 })}
           className={INPUT}>
@@ -173,13 +173,13 @@ function CampaignFormBody({ form, setForm }: { form: FormState; setForm: (f: For
 
       <div className="flex gap-3">
         <div className="flex-1">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Budget min</label>
+          <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">Budget min</label>
           <input type="number" min={0} value={form.budgetMin}
             onChange={e => setForm({ ...form, budgetMin: e.target.value })}
             placeholder="0" className={INPUT} />
         </div>
         <div className="flex-1">
-          <label className="mb-1 block text-sm font-medium text-gray-700">Budget max</label>
+          <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">Budget max</label>
           <input type="number" value={form.budgetMax}
             onChange={e => setForm({ ...form, budgetMax: e.target.value })}
             placeholder="Any" className={INPUT} />
@@ -187,10 +187,10 @@ function CampaignFormBody({ form, setForm }: { form: FormState; setForm: (f: For
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Area interest filter</label>
+        <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">Area interest filter</label>
         <input value={form.areaInterest}
           onChange={e => setForm({ ...form, areaInterest: e.target.value })}
-          placeholder="e.g. DHA, Gulberg (optional)" className={INPUT} />
+          placeholder="e.g. downtown, marina (optional)" className={INPUT} />
       </div>
     </div>
   );
@@ -216,16 +216,16 @@ function CreateModal({ onClose }: { onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-        <h2 className="mb-5 text-lg font-semibold text-gray-900">New Campaign</h2>
+        className="w-full max-w-lg rounded-2xl bg-[var(--bg-surface)] p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+        <h2 className="mb-5 text-lg font-semibold text-[var(--text-primary)]">New Campaign</h2>
         <CampaignFormBody form={form} setForm={setForm} />
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
         <div className="mt-6 flex justify-end gap-3">
-          <button onClick={onClose}
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
+          <button type="button" onClick={onClose}
+            className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] cursor-pointer">
             Cancel
           </button>
-          <button onClick={() => create.mutate()} disabled={!isValid || create.isPending}
+          <button type="button" onClick={() => create.mutate()} disabled={!isValid || create.isPending}
             className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50 cursor-pointer">
             {create.isPending ? "Creating…" : "Create Campaign"}
           </button>
@@ -255,16 +255,16 @@ function EditModal({ campaign, onClose }: { campaign: Campaign; onClose: () => v
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl max-h-[90vh] overflow-y-auto">
-        <h2 className="mb-5 text-lg font-semibold text-gray-900">Edit Campaign</h2>
+        className="w-full max-w-lg rounded-2xl bg-[var(--bg-surface)] p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+        <h2 className="mb-5 text-lg font-semibold text-[var(--text-primary)]">Edit Campaign</h2>
         <CampaignFormBody form={form} setForm={setForm} />
         {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
         <div className="mt-6 flex justify-end gap-3">
-          <button onClick={onClose}
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
+          <button type="button" onClick={onClose}
+            className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] cursor-pointer">
             Cancel
           </button>
-          <button onClick={() => edit.mutate()} disabled={!isValid || edit.isPending}
+          <button type="button" onClick={() => edit.mutate()} disabled={!isValid || edit.isPending}
             className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50 cursor-pointer">
             {edit.isPending ? "Saving…" : "Save Changes"}
           </button>
@@ -293,19 +293,19 @@ function ScheduleModal({ campaign, onClose }: { campaign: Campaign; onClose: () 
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
       <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-        <h2 className="mb-2 text-lg font-semibold text-gray-900">Schedule Campaign</h2>
-        <p className="mb-4 text-sm text-gray-500">{campaign.name}</p>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Send at</label>
+        className="w-full max-w-md rounded-2xl bg-[var(--bg-surface)] p-6 shadow-xl">
+        <h2 className="mb-2 text-lg font-semibold text-[var(--text-primary)]">Schedule Campaign</h2>
+        <p className="mb-4 text-sm text-[var(--text-muted)]">{campaign.name}</p>
+        <label className="mb-1 block text-sm font-medium text-[var(--text-muted)]">Send at</label>
         <input type="datetime-local" value={scheduledAt} onChange={e => setScheduledAt(e.target.value)}
-          className="mb-4 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
+          className="mb-4 w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400" />
         {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
         <div className="flex justify-end gap-3">
-          <button onClick={onClose}
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
+          <button type="button" onClick={onClose}
+            className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] cursor-pointer">
             Cancel
           </button>
-          <button onClick={() => schedule.mutate()} disabled={!scheduledAt || schedule.isPending}
+          <button type="button" onClick={() => schedule.mutate()} disabled={!scheduledAt || schedule.isPending}
             className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 cursor-pointer">
             {schedule.isPending ? "Scheduling…" : "Schedule"}
           </button>
@@ -327,14 +327,14 @@ function CampaignProgressBar({ campaignId }: { campaignId: string }) {
   const pct = Math.min(100, data.pct_complete);
   return (
     <div className="mt-3">
-      <div className="mb-1 flex justify-between text-[11px] text-gray-500">
+      <div className="mb-1 flex justify-between text-[11px] text-[var(--text-muted)]">
         <span>{data.sent.toLocaleString()} sent</span>
         <span>
           {data.pending.toLocaleString()} pending
           {data.failed > 0 && ` · ${data.failed.toLocaleString()} failed`}
         </span>
       </div>
-      <div className="h-1.5 rounded-full bg-gray-100">
+      <div className="h-1.5 rounded-full bg-[var(--bg-subtle)]">
         <div className="h-1.5 rounded-full bg-amber-400 transition-all duration-300" style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -366,16 +366,16 @@ function CampaignCard({ campaign, onEdit, onSchedule }: {
 
   return (
     <motion.div layout initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 shadow-sm">
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-semibold text-gray-900 truncate">{campaign.name}</h3>
+            <h3 className="font-semibold text-[var(--text-primary)] truncate">{campaign.name}</h3>
             <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${STATUS_COLORS[campaign.status]}`}>
               {campaign.status.toUpperCase()}
             </span>
           </div>
-          <p className="mt-0.5 text-xs text-gray-500">
+          <p className="mt-0.5 text-xs text-[var(--text-muted)]">
             {AUDIENCE_LABELS[campaign.audience_filter]} · Created {fmtDate(campaign.created_at)}
             {campaign.created_by_name && ` · by ${campaign.created_by_name}`}
           </p>
@@ -393,24 +393,24 @@ function CampaignCard({ campaign, onEdit, onSchedule }: {
         {(campaign.status === "sent" || campaign.status === "sending") && (
           <div className="flex gap-3 shrink-0 text-center">
             <div>
-              <p className="text-lg font-bold text-gray-900">{campaign.recipient_count.toLocaleString()}</p>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Targeted</p>
+              <p className="text-lg font-bold text-[var(--text-primary)]">{campaign.recipient_count.toLocaleString()}</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide">Targeted</p>
             </div>
             <div>
               <p className="text-lg font-bold text-emerald-600">{campaign.sent_count.toLocaleString()}</p>
-              <p className="text-[10px] text-gray-400 uppercase tracking-wide">Sent</p>
+              <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide">Sent</p>
             </div>
             {campaign.failed_count > 0 && (
               <div>
                 <p className="text-lg font-bold text-red-500">{campaign.failed_count.toLocaleString()}</p>
-                <p className="text-[10px] text-gray-400 uppercase tracking-wide">Failed</p>
+                <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide">Failed</p>
               </div>
             )}
           </div>
         )}
       </div>
 
-      <p className="mt-3 rounded-lg bg-gray-50 px-3 py-2 text-xs text-gray-600 line-clamp-2 whitespace-pre-wrap">
+      <p className="mt-3 rounded-lg bg-[var(--bg-muted)] px-3 py-2 text-xs text-[var(--text-muted)] line-clamp-2 whitespace-pre-wrap">
         {msgPreview}
       </p>
 
@@ -418,31 +418,31 @@ function CampaignCard({ campaign, onEdit, onSchedule }: {
 
       <div className="mt-4 flex gap-2 flex-wrap">
         {canSend && (
-          <button onClick={() => sendMut.mutate()} disabled={sendMut.isPending}
+          <button type="button" onClick={() => sendMut.mutate()} disabled={sendMut.isPending}
             className="rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-white hover:bg-amber-600 disabled:opacity-50 cursor-pointer">
             {sendMut.isPending ? "Sending…" : "Send Now"}
           </button>
         )}
         {canSchedule && (
-          <button onClick={() => onSchedule(campaign)}
+          <button type="button" onClick={() => onSchedule(campaign)}
             className="rounded-lg border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-600 hover:bg-blue-50 cursor-pointer">
             Schedule
           </button>
         )}
         {canEdit && (
-          <button onClick={() => onEdit(campaign)}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 cursor-pointer">
+          <button type="button" onClick={() => onEdit(campaign)}
+            className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] cursor-pointer">
             Edit
           </button>
         )}
         {canCancel && (
-          <button onClick={() => cancelMut.mutate()} disabled={cancelMut.isPending}
-            className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 cursor-pointer">
+          <button type="button" onClick={() => cancelMut.mutate()} disabled={cancelMut.isPending}
+            className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] disabled:opacity-50 cursor-pointer">
             Cancel
           </button>
         )}
         {canDelete && (
-          <button onClick={() => { if (confirm("Delete this campaign?")) deleteMut.mutate(); }}
+          <button type="button" onClick={() => { if (confirm("Delete this campaign?")) deleteMut.mutate(); }}
             disabled={deleteMut.isPending}
             className="rounded-lg border border-red-200 px-3 py-1.5 text-xs font-medium text-red-500 hover:bg-red-50 disabled:opacity-50 cursor-pointer ms-auto">
             Delete
@@ -482,21 +482,21 @@ export default function CampaignsPage() {
       <div className="space-y-6 pb-10">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Campaigns</h1>
-            <p className="mt-1 text-sm text-gray-500">Send bulk WhatsApp messages to filtered lead segments</p>
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Campaigns</h1>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">Send bulk WhatsApp messages to filtered lead segments</p>
           </div>
-          <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          <motion.button type="button" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
             onClick={() => setShowCreate(true)}
             className="rounded-xl bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 shadow-sm cursor-pointer">
             + New Campaign
           </motion.button>
         </div>
 
-        <div className="flex gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1 w-fit">
+        <div className="flex gap-1 rounded-xl border border-[var(--border)] bg-[var(--bg-muted)] p-1 w-fit">
           {STATUS_TABS.map(t => (
-            <button key={t} onClick={() => setTab(t)}
+            <button type="button" key={t} onClick={() => setTab(t)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold capitalize transition-colors cursor-pointer ${
-                tab === t ? "bg-white text-amber-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}>
+                tab === t ? "bg-[var(--bg-surface)] text-amber-600 shadow-sm" : "text-[var(--text-muted)] hover:text-[var(--text-muted)]"}`}>
               {t}
             </button>
           ))}
@@ -507,19 +507,19 @@ export default function CampaignsPage() {
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
           </div>
         ) : campaigns.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 py-20 text-center">
+          <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[var(--border)] py-20 text-center">
             <div className="mb-3 rounded-full bg-amber-50 p-4">
               <svg className="h-8 w-8 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                   d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
               </svg>
             </div>
-            <p className="text-sm font-medium text-gray-600">No campaigns yet</p>
-            <p className="mt-1 text-xs text-gray-400">Create your first campaign to send bulk messages</p>
+            <p className="text-sm font-medium text-[var(--text-muted)]">No campaigns yet</p>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">Create your first campaign to send bulk messages</p>
           </div>
         ) : (
           <div className="space-y-4">
-            <p className="text-xs text-gray-400">{total} campaign{total !== 1 ? "s" : ""}</p>
+            <p className="text-xs text-[var(--text-muted)]">{total} campaign{total !== 1 ? "s" : ""}</p>
             {campaigns.map(c => (
               <CampaignCard key={c.id} campaign={c} onEdit={setEditCampaign} onSchedule={setSchedCampaign} />
             ))}

@@ -12,7 +12,6 @@ import {
   StatCard, ChartCard, BarChart, BreakdownBar, LeadPipelineFunnel,
   SectionHeader, type Period, type TrendPoint,
 } from "@/components/ui/Charts";
-import { formatCurrency } from "@/lib/utils";
 import { ClipboardList, Flame, User, Home, Lock, MessageSquare } from "lucide-react";
 
 export default function AdminAnalyticsPage() {
@@ -86,7 +85,7 @@ export default function AdminAnalyticsPage() {
         <StatCard label="Hot Leads"        value={leads.hot_leads ?? 0}         accent="amber"   icon={Flame} sub={`Avg score ${leads.avg_score ?? 0}`} />
         <StatCard label="Active Agents"    value={agentData?.count ?? 0}        accent="violet"  icon={User} />
         <StatCard label="Properties"       value={props.total ?? 0}             accent="emerald" icon={Home} sub={`Avg score ${props.avg_ai_score ?? 0}`} />
-        <StatCard label="Token Locked"     value={formatCurrency(rev.deals?.total_token_pkr ?? 0, "PKR")} accent="rose" icon={Lock} />
+        <StatCard label="Deals (Locked)"  value={rev.deals?.locked ?? 0}   accent="rose"    icon={Lock} />
         <StatCard label="Bot Messages"     value={bot.total_messages ?? 0}      accent="blue"    icon={MessageSquare} sub={`${bot.active_users_7d ?? 0} active this week`} />
       </div>
 
@@ -96,7 +95,7 @@ export default function AdminAnalyticsPage() {
         <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
           <SectionHeader title="Lead Pipeline" sub="Conversion funnel across all stages" />
           <LeadPipelineFunnel data={funnelSteps} />
-          <div className="mt-4 pt-4 border-t border-gray-50 grid grid-cols-3 gap-3 text-center">
+          <div className="mt-4 pt-4 border-t border-[var(--border-subtle)] grid grid-cols-3 gap-3 text-center">
             {Object.entries(leads.by_intent ?? {}).map(([k, v]) => (
               <div key={k}>
                 <p className="text-lg font-bold text-[var(--text-primary)] tabular-nums">{v as number}</p>
@@ -162,14 +161,14 @@ export default function AdminAnalyticsPage() {
               </div>
             ))}
           </div>
-          <div className="mt-3 pt-3 border-t border-gray-50">
+          <div className="mt-3 pt-3 border-t border-[var(--border-subtle)]">
             <div className="flex justify-between text-xs text-[var(--text-muted)]">
-              <span>Total Token Locked</span>
-              <span className="font-semibold text-[var(--text-primary)]">{formatCurrency(rev.deals?.total_token_pkr ?? 0, "PKR")}</span>
+              <span>Total Deals Locked</span>
+              <span className="font-semibold text-[var(--text-primary)]">{rev.deals?.locked ?? 0}</span>
             </div>
             <div className="flex justify-between text-xs text-[var(--text-muted)] mt-1">
-              <span>Avg Token Amount</span>
-              <span className="font-semibold text-[var(--text-primary)]">{formatCurrency(rev.deals?.avg_token_pkr ?? 0, "PKR")}</span>
+              <span>Released</span>
+              <span className="font-semibold text-[var(--text-primary)]">{rev.deals?.released ?? 0}</span>
             </div>
             {Object.keys(rev.deals?.by_gateway ?? {}).length > 0 && (
               <div className="mt-2">
@@ -195,7 +194,7 @@ export default function AdminAnalyticsPage() {
               <p className="text-xs text-[var(--text-muted)]">Sessions</p>
             </div>
           </div>
-          <div className="mt-3 pt-3 border-t border-gray-50">
+          <div className="mt-3 pt-3 border-t border-[var(--border-subtle)]">
             <div className="flex justify-between text-xs text-[var(--text-muted)]">
               <span>Active users (7 days)</span>
               <span className="font-semibold text-[var(--text-primary)]">{bot.active_users_7d ?? 0}</span>

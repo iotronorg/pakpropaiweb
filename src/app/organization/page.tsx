@@ -126,21 +126,21 @@ export default function OrgOverviewPage() {
             </Link>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg bg-white border border-amber-100 p-3 text-center">
-              <p className="text-2xl font-bold text-gray-900 tabular-nums">{aiSummary.chat_success_rate}%</p>
-              <p className="text-xs text-gray-400 mt-0.5">Chat Success</p>
+            <div className="rounded-lg bg-[var(--bg-surface)] border border-amber-100 p-3 text-center">
+              <p className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">{aiSummary.chat_success_rate}%</p>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">Chat Success</p>
             </div>
-            <div className="rounded-lg bg-white border border-amber-100 p-3 text-center">
-              <p className="text-2xl font-bold text-gray-900 tabular-nums">{aiSummary.hot_leads}</p>
-              <p className="text-xs text-gray-400 mt-0.5">Hot Leads</p>
+            <div className="rounded-lg bg-[var(--bg-surface)] border border-amber-100 p-3 text-center">
+              <p className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">{aiSummary.hot_leads}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">Hot Leads</p>
             </div>
-            <div className="rounded-lg bg-white border border-amber-100 p-3 text-center">
-              <p className="text-2xl font-bold text-gray-900 tabular-nums">{aiSummary.routing_queue}</p>
-              <p className="text-xs text-gray-400 mt-0.5">In Queue</p>
+            <div className="rounded-lg bg-[var(--bg-surface)] border border-amber-100 p-3 text-center">
+              <p className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">{aiSummary.routing_queue}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">In Queue</p>
             </div>
-            <div className="rounded-lg bg-white border border-amber-100 p-3 text-center">
-              <p className="text-2xl font-bold text-gray-900 tabular-nums">{aiSummary.leads_with_convos}</p>
-              <p className="text-xs text-gray-400 mt-0.5">With Convos</p>
+            <div className="rounded-lg bg-[var(--bg-surface)] border border-amber-100 p-3 text-center">
+              <p className="text-2xl font-bold text-[var(--text-primary)] tabular-nums">{aiSummary.leads_with_convos}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">With Convos</p>
             </div>
           </div>
         </div>
@@ -163,10 +163,10 @@ export default function OrgOverviewPage() {
               return (
                 <div key={key}>
                   <div className="flex justify-between mb-1">
-                    <span className="text-xs font-medium text-gray-600">{label}</span>
-                    <span className="text-xs font-bold text-gray-800 tabular-nums">{val}</span>
+                    <span className="text-xs font-medium text-[var(--text-muted)]">{label}</span>
+                    <span className="text-xs font-bold text-[var(--text-primary)] tabular-nums">{val}</span>
                   </div>
-                  <div className="h-2 w-full bg-gray-100 rounded-full">
+                  <div className="h-2 w-full bg-[var(--bg-subtle)] rounded-full">
                     <div className={`h-2 rounded-full ${color} transition-all`} style={{ width: `${pct}%` }} />
                   </div>
                 </div>
@@ -186,20 +186,20 @@ export default function OrgOverviewPage() {
           {Object.keys(inventory.by_type).length > 0 ? (
             <BreakdownBar data={inventory.by_type} />
           ) : (
-            <p className="text-xs text-gray-400 text-center py-4">No inventory yet</p>
+            <p className="text-xs text-[var(--text-muted)] text-center py-4">No inventory yet</p>
           )}
-          <div className="mt-4 flex items-center justify-between pt-3 border-t border-gray-100">
+          <div className="mt-4 flex items-center justify-between pt-3 border-t border-[var(--border)]">
             <div className="text-center">
-              <p className="text-lg font-bold text-gray-900 tabular-nums">{inventory.verified}</p>
-              <p className="text-xs text-gray-400">Verified</p>
+              <p className="text-lg font-bold text-[var(--text-primary)] tabular-nums">{inventory.verified}</p>
+              <p className="text-xs text-[var(--text-muted)]">Verified</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-gray-900 tabular-nums">{inventory.avg_ai_score}</p>
-              <p className="text-xs text-gray-400">Avg AI Score</p>
+              <p className="text-lg font-bold text-[var(--text-primary)] tabular-nums">{inventory.avg_ai_score}</p>
+              <p className="text-xs text-[var(--text-muted)]">Avg AI Score</p>
             </div>
             <div className="text-center">
-              <p className="text-lg font-bold text-gray-900 tabular-nums">{inventory.total - inventory.verified}</p>
-              <p className="text-xs text-gray-400">Unverified</p>
+              <p className="text-lg font-bold text-[var(--text-primary)] tabular-nums">{inventory.total - inventory.verified}</p>
+              <p className="text-xs text-[var(--text-muted)]">Unverified</p>
             </div>
           </div>
         </div>
@@ -224,20 +224,20 @@ export default function OrgOverviewPage() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between mb-0.5">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-[var(--text-primary)] truncate">
                       {c.lead_name ?? c.lead_phone}
                     </p>
-                    <span className="text-xs text-gray-400 shrink-0 ms-3">
+                    <span className="text-xs text-[var(--text-muted)] shrink-0 ms-3">
                       {new Date(c.created_at).toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 truncate">{c.message_preview}</p>
+                  <p className="text-xs text-[var(--text-muted)] truncate">{c.message_preview}</p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   <span className={`text-xs font-bold tabular-nums px-1.5 py-0.5 rounded ${
                     c.lead_score >= 70 ? "bg-amber-100 text-amber-700"
                     : c.lead_score >= 40 ? "bg-blue-100 text-blue-700"
-                    : "bg-gray-100 text-gray-500"
+                    : "bg-[var(--bg-subtle)] text-[var(--text-muted)]"
                   }`}>
                     {c.lead_score}
                   </span>

@@ -52,9 +52,9 @@ export default function CopilotWorkspacePage() {
 
   if (!lead?.wa_session_id) {
     return (
-      <div className="flex h-screen flex-col items-center justify-center gap-3 text-sm text-gray-400">
+      <div className="flex h-screen flex-col items-center justify-center gap-3 text-sm text-[var(--text-muted)]">
         <p>No active WhatsApp session for this lead.</p>
-        <button onClick={() => router.back()} className="text-blue-600 hover:underline">← Back</button>
+        <button type="button" onClick={() => router.back()} className="text-blue-600 hover:underline">← Back</button>
       </div>
     )
   }
@@ -66,7 +66,7 @@ export default function CopilotWorkspacePage() {
       className="flex h-screen overflow-hidden"
     >
       {/* Left pane — Agent Chat */}
-      <div className="flex flex-1 flex-col min-w-0 border-r border-gray-200">
+      <div className="flex flex-1 flex-col min-w-0 border-r border-[var(--border)]">
         <TakeControlBar
           conversationMode={conversationMode}
           lockHolder={lockHolder}
@@ -89,9 +89,9 @@ export default function CopilotWorkspacePage() {
       </div>
 
       {/* Right pane — Co-Pilot suggestions */}
-      <div data-testid="copilot-panel" className="w-[380px] shrink-0 flex flex-col bg-white">
-        <div className="flex items-center gap-2 border-b border-gray-100 px-4 py-3">
-          <span className="text-sm font-semibold text-gray-900">Co-Pilot</span>
+      <div data-testid="copilot-panel" className="w-[380px] shrink-0 flex flex-col bg-[var(--bg-surface)]">
+        <div className="flex items-center gap-2 border-b border-[var(--border)] px-4 py-3">
+          <span className="text-sm font-semibold text-[var(--text-primary)]">Co-Pilot</span>
           <span className={`h-2 w-2 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-gray-300'}`} />
         </div>
         <div className="flex-1 overflow-y-auto">

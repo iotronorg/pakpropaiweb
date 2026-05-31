@@ -7,6 +7,8 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate } from "@/lib/utils";
 import { AgentProfile } from "@/types";
+import { User } from "lucide-react";
+import { PasswordChangeCard } from "@/components/settings/PasswordChangeCard";
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 
 const SPECIALIZATION_OPTIONS = [
@@ -62,19 +64,19 @@ function formToPayload(f: ProfileForm): Record<string, unknown> {
   };
 }
 
-const inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+const inputCls = "w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-0.5">{label}</p>
-      <p className="text-sm text-gray-900">{value || <span className="text-gray-300">—</span>}</p>
+      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] mb-0.5">{label}</p>
+      <p className="text-sm text-[var(--text-primary)]">{value || <span className="text-[var(--text-faint)]">—</span>}</p>
     </div>
   );
 }
 
 function TagList({ items }: { items: string[] }) {
-  if (!items.length) return <span className="text-gray-300 text-sm">—</span>;
+  if (!items.length) return <span className="text-[var(--text-faint)] text-sm">—</span>;
   return (
     <div className="flex flex-wrap gap-1.5">
       {items.map((t, i) => (
@@ -130,8 +132,8 @@ export default function AgentProfilePage() {
 
   if (isLoading) return <div className="flex justify-center py-20"><LoadingSpinner /></div>;
   if (error || !data) return (
-    <div className="p-6 text-center text-gray-400">
-      <p className="text-4xl mb-3">👤</p>
+    <div className="p-6 text-center text-[var(--text-muted)]">
+      <User size={36} className="mx-auto mb-3 text-[var(--text-muted)]" aria-hidden="true" />
       <p className="font-medium">Could not load profile</p>
       <p className="text-xs mt-1">Make sure this account is linked to an agent profile</p>
     </div>
@@ -145,7 +147,7 @@ export default function AgentProfilePage() {
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold">{p.name}</h1>
-          <p className="text-sm text-gray-500 mt-0.5">
+          <p className="text-sm text-[var(--text-muted)] mt-0.5">
             {p.designation || p.agent_type} {p.company_name ? `· ${p.company_name}` : ""}
           </p>
           <div className="flex items-center gap-2 mt-2">
@@ -155,17 +157,19 @@ export default function AgentProfilePage() {
           </div>
           {/* Availability toggle */}
           <div className="flex items-center gap-2 mt-3">
-            <span className="text-xs text-gray-500 font-medium">Availability:</span>
+            <span className="text-xs text-[var(--text-muted)] font-medium">Availability:</span>
             {(["available", "busy", "offline"] as const).map((s) => {
               const active = (p.availability_status ?? "available") === s;
               const colors: Record<string, string> = {
-                available: active ? "bg-emerald-600 text-white" : "bg-gray-100 text-gray-500 hover:bg-gray-200",
-                busy:      active ? "bg-amber-500 text-white"   : "bg-gray-100 text-gray-500 hover:bg-gray-200",
-                offline:   active ? "bg-gray-600 text-white"    : "bg-gray-100 text-gray-500 hover:bg-gray-200",
+                available: active ? "bg-emerald-600 text-white" : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-gray-200",
+                busy:      active ? "bg-amber-500 text-white"   : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-gray-200",
+                offline:   active ? "bg-gray-600 text-white"    : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-gray-200",
               };
               return (
                 <button
                   key={s}
+                  type="button"
+                  aria-pressed={active}
                   disabled={availabilityMutation.isPending}
                   onClick={() => availabilityMutation.mutate(s)}
                   className={`px-3 py-1 rounded-full text-xs font-medium transition-colors capitalize ${colors[s]}`}
@@ -194,50 +198,50 @@ export default function AgentProfilePage() {
           { label: "Closed Deals",  value: p.closed_deals },
           { label: "Rating",        value: p.rating !== null ? `${p.rating}/5` : "—" },
         ].map((s) => (
-          <div key={s.label} className="bg-white rounded-xl border p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">{s.label}</p>
-            <p className="text-2xl font-bold text-gray-900">{s.value}</p>
+          <div key={s.label} className="bg-[var(--bg-surface)] rounded-xl border p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] mb-1">{s.label}</p>
+            <p className="text-2xl font-bold text-[var(--text-primary)]">{s.value}</p>
           </div>
         ))}
       </div>
 
       {/* Edit form */}
       {editing ? (
-        <div className="bg-white rounded-xl border p-6 space-y-5">
-          <h2 className="font-semibold text-gray-800">Edit Profile</h2>
+        <div className="bg-[var(--bg-surface)] rounded-xl border p-6 space-y-5">
+          <h2 className="font-semibold text-[var(--text-primary)]">Edit Profile</h2>
 
           {/* Basic info */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Basic Info</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Basic Info</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Full Name</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Full Name</label>
                 <input className={inputCls} value={form.name}
                   onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Email</label>
                 <input type="email" className={inputCls} value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Company Name</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Company Name</label>
                 <input className={inputCls} value={form.company_name}
                   onChange={(e) => setForm((f) => ({ ...f, company_name: e.target.value }))} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Designation</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Designation</label>
                 <input className={inputCls} value={form.designation}
                   onChange={(e) => setForm((f) => ({ ...f, designation: e.target.value }))} />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Years of Experience</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Years of Experience</label>
                 <input type="number" min="0" className={inputCls} value={form.years_experience}
                   onChange={(e) => setForm((f) => ({ ...f, years_experience: e.target.value }))} />
               </div>
             </div>
             <div className="mt-4">
-              <label className="block text-xs font-medium text-gray-600 mb-1">Bio</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Bio</label>
               <textarea rows={3} className={`${inputCls} resize-none`} value={form.bio}
                 onChange={(e) => setForm((f) => ({ ...f, bio: e.target.value }))} />
             </div>
@@ -245,38 +249,38 @@ export default function AgentProfilePage() {
 
           {/* Coverage */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Geographic Coverage</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Geographic Coverage</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Primary City</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Primary City</label>
                 <input className={inputCls} value={form.primary_city}
                   onChange={(e) => setForm((f) => ({ ...f, primary_city: e.target.value }))}
-                  placeholder="e.g. Lahore" />
+                  placeholder="e.g. Dubai, London" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">All Cities (comma-separated)</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">All Cities (comma-separated)</label>
                 <input className={inputCls} value={form.cities}
                   onChange={(e) => setForm((f) => ({ ...f, cities: e.target.value }))}
-                  placeholder="Lahore, Islamabad, Rawalpindi" />
+                  placeholder="e.g. Dubai, Abu Dhabi, London" />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Areas / Societies (comma-separated)</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Areas / Societies (comma-separated)</label>
                 <input className={inputCls} value={form.areas}
                   onChange={(e) => setForm((f) => ({ ...f, areas: e.target.value }))}
-                  placeholder="DHA Phase 5, Bahria Town, F-7" />
+                  placeholder="e.g. Downtown, Marina, Canary Wharf" />
               </div>
             </div>
           </div>
 
           {/* Specializations */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">Specializations</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">Specializations</p>
             <div className="grid grid-cols-2 gap-2">
               {SPECIALIZATION_OPTIONS.map((s) => (
-                <label key={s.value} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+                <label key={s.value} className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer select-none">
                   <input
                     type="checkbox"
-                    className="rounded border-gray-300 accent-blue-600"
+                    className="rounded border-[var(--border-strong)] accent-blue-600"
                     checked={form.specializations.includes(s.value)}
                     onChange={() => toggleSpec(s.value)}
                   />
@@ -286,7 +290,7 @@ export default function AgentProfilePage() {
             </div>
           </div>
 
-          <div className="flex gap-3 pt-2 border-t border-gray-100">
+          <div className="flex gap-3 pt-2 border-t border-[var(--border)]">
             <button
               onClick={() => updateMutation.mutate(form)}
               disabled={updateMutation.isPending}
@@ -296,18 +300,18 @@ export default function AgentProfilePage() {
             </button>
             <button
               onClick={() => setEditing(false)}
-              className="px-4 py-2 text-sm border rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 text-sm border rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors"
             >
               Cancel
             </button>
           </div>
           {updateMutation.isError && (
-            <p className="text-xs text-red-600">Failed to save — please try again.</p>
+            <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">Failed to save — please try again.</p>
           )}
         </div>
       ) : (
         /* Read-only profile */
-        <div className="bg-white rounded-xl border p-6 space-y-5">
+        <div className="bg-[var(--bg-surface)] rounded-xl border p-6 space-y-5">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <Field label="Phone" value={p.phone} />
             <Field label="WhatsApp" value={p.whatsapp_number || p.phone} />
@@ -322,22 +326,22 @@ export default function AgentProfilePage() {
 
           {p.bio && (
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">Bio</p>
-              <p className="text-sm text-gray-700 leading-relaxed">{p.bio}</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] mb-1">Bio</p>
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed">{p.bio}</p>
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 pt-2 border-t">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Cities</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] mb-2">Cities</p>
               <TagList items={p.cities ?? []} />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Areas</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] mb-2">Areas</p>
               <TagList items={p.areas ?? []} />
             </div>
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Specializations</p>
+              <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] mb-2">Specializations</p>
               <TagList items={(p.specializations ?? []).map(
                 (s) => SPECIALIZATION_OPTIONS.find((o) => o.value === s)?.label ?? s
               )} />
@@ -351,6 +355,7 @@ export default function AgentProfilePage() {
       )}
 
       <NotificationPreferencesPanel />
+      <PasswordChangeCard />
     </div>
   );
 }

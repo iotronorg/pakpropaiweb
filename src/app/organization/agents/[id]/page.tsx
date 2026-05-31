@@ -58,7 +58,7 @@ export default function OrgAgentDetailPage({
   if (!stats) {
     return (
       <div className="p-6">
-        <p className="text-sm text-gray-500">Agent not found.</p>
+        <p className="text-sm text-[var(--text-muted)]">Agent not found.</p>
       </div>
     );
   }
@@ -84,7 +84,7 @@ export default function OrgAgentDetailPage({
         <div>
           <Link
             href="/organization/agents"
-            className="mb-2 inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600"
+            className="mb-2 inline-flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-gray-600"
           >
             ← Back to Agent Performance
           </Link>
@@ -96,14 +96,14 @@ export default function OrgAgentDetailPage({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-xl font-bold text-gray-900">{stats.name}</h1>
+                <h1 className="text-xl font-bold text-[var(--text-primary)]">{stats.name}</h1>
                 {stats.is_verified && (
                   <Badge label="Verified" variant="green" />
                 )}
                 <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                   stats.availability_status === "available" ? "bg-green-100 text-green-700"
                   : stats.availability_status === "busy"    ? "bg-amber-100 text-amber-700"
-                  : "bg-gray-100 text-gray-500"
+                  : "bg-[var(--bg-subtle)] text-[var(--text-muted)]"
                 }`}>
                   <span className={`h-1.5 w-1.5 rounded-full ${
                     stats.availability_status === "available" ? "bg-green-500"
@@ -113,7 +113,7 @@ export default function OrgAgentDetailPage({
                   {stats.availability_status}
                 </span>
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">Agent ID #{stats.agent_id}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">Agent ID #{stats.agent_id}</p>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export default function OrgAgentDetailPage({
 
       {/* Funnel + Trend grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
           <SectionHeader
             title="Lead Pipeline"
             sub="All-time conversion funnel for this agent"
@@ -175,20 +175,20 @@ export default function OrgAgentDetailPage({
             color="blue"
             height={32}
           />
-          <div className="mt-4 pt-4 border-t border-gray-50 grid grid-cols-3 gap-3 text-center">
+          <div className="mt-4 pt-4 border-t border-[var(--border)] grid grid-cols-3 gap-3 text-center">
             <div>
-              <p className="text-lg font-bold text-gray-800 tabular-nums">{stats.total_leads}</p>
-              <p className="text-xs text-gray-400">Total</p>
+              <p className="text-lg font-bold text-[var(--text-primary)] tabular-nums">{stats.total_leads}</p>
+              <p className="text-xs text-[var(--text-muted)]">Total</p>
             </div>
             <div>
               <p className="text-lg font-bold text-emerald-600 tabular-nums">{stats.closed_leads}</p>
-              <p className="text-xs text-gray-400">Closed</p>
+              <p className="text-xs text-[var(--text-muted)]">Closed</p>
             </div>
             <div>
               <p className="text-lg font-bold text-blue-600 tabular-nums">
                 {stats.conversion_rate.toFixed(1)}%
               </p>
-              <p className="text-xs text-gray-400">Conversion</p>
+              <p className="text-xs text-[var(--text-muted)]">Conversion</p>
             </div>
           </div>
         </ChartCard>

@@ -1,4 +1,5 @@
 "use client";
+import { X } from "lucide-react";
 
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +22,7 @@ const STATUS_COLOR: Record<AppointmentStatus, "green" | "yellow" | "red" | "gray
   rescheduled: "gray",
 };
 
-const inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+const inputCls = "w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 // ── Lead search dropdown ───────────────────────────────────────────────────────
 
@@ -73,19 +74,20 @@ function LeadPicker({ value, label, onChange }: {
           onFocus={() => setOpen(true)}
         />
         {value && (
-          <button onClick={clear} className="text-gray-400 hover:text-red-500 text-lg leading-none px-1">×</button>
+          <button type="button" onClick={clear} aria-label="Clear filter" className="text-[var(--text-muted)] hover:text-red-500 transition-colors"><X size={14} aria-hidden="true" /></button>
         )}
       </div>
       {open && leads.length > 0 && !value && (
-        <div className="absolute z-50 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
+        <div className="absolute z-50 mt-1 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] shadow-lg">
           {leads.map((l) => (
             <button
               key={l.id}
+              type="button"
               onClick={() => select(l)}
-              className="w-full text-start px-3 py-2.5 text-sm hover:bg-blue-50 border-b border-gray-50 last:border-0"
+              className="w-full text-start px-3 py-2.5 text-sm hover:bg-[var(--bg-muted)] border-b border-[var(--border-subtle)] last:border-0"
             >
-              <span className="font-medium text-gray-800">{l.name || "Unknown"}</span>
-              <span className="ms-2 font-mono text-xs text-gray-400">{l.phone}</span>
+              <span className="font-medium text-[var(--text-primary)]">{l.name || "Unknown"}</span>
+              <span className="ms-2 font-mono text-xs text-[var(--text-muted)]">{l.phone}</span>
             </button>
           ))}
         </div>
@@ -130,15 +132,15 @@ function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h3 className="font-semibold text-gray-900">Book Appointment</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-labelledby="book-appt-title" onClick={(e) => e.stopPropagation()} className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] border border-[var(--border)] shadow-xl">
+        <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+          <h3 id="book-appt-title" className="font-semibold text-[var(--text-primary)]">Book Appointment</h3>
+          <button type="button" onClick={onClose} aria-label="Close" className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"><X size={16} aria-hidden="true" /></button>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Lead <span className="text-red-500">*</span></label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Lead <span className="text-red-500">*</span></label>
             <LeadPicker
               value={leadId}
               label={leadLabel}
@@ -147,7 +149,7 @@ function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Property ID (UUID, optional)</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Property ID (UUID, optional)</label>
             <input
               className={inputCls}
               placeholder="e.g. 550e8400-e29b-41d4-a716..."
@@ -157,7 +159,7 @@ function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Assign Agent (optional)</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Assign Agent (optional)</label>
             <select
               className={inputCls}
               value={agentId}
@@ -172,7 +174,7 @@ function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Scheduled At <span className="text-red-500">*</span></label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Scheduled At <span className="text-red-500">*</span></label>
               <input
                 type="datetime-local"
                 className={inputCls}
@@ -181,7 +183,7 @@ function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Duration (minutes)</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Duration (minutes)</label>
               <select className={inputCls} value={duration} onChange={(e) => setDuration(e.target.value)}>
                 {["30", "45", "60", "90", "120"].map((d) => (
                   <option key={d} value={d}>{d} min</option>
@@ -191,7 +193,7 @@ function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Notes</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Notes</label>
             <textarea
               rows={2}
               className={`${inputCls} resize-none`}
@@ -202,12 +204,13 @@ function CreateModal({ onClose, onCreated }: { onClose: () => void; onCreated: (
           </div>
 
           {error && (
-            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+            <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
           )}
 
-          <div className="flex justify-end gap-3 pt-1 border-t border-gray-100">
-            <button onClick={onClose} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+          <div className="flex justify-end gap-3 pt-1 border-t border-[var(--border)]">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]">Cancel</button>
             <button
+              type="button"
               onClick={() => createMutation.mutate()}
               disabled={!leadId || !scheduledAt || createMutation.isPending}
               className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
@@ -267,10 +270,11 @@ export default function AdminAppointmentsPage() {
     <div>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Appointments</h1>
-          <p className="mt-1 text-sm text-gray-500">All property visits and meetings</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Appointments</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">All property visits and meetings</p>
         </div>
         <button
+          type="button"
           onClick={() => setShowCreate(true)}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
         >
@@ -279,10 +283,12 @@ export default function AdminAppointmentsPage() {
       </div>
 
       <div className="mb-6">
+        <label className="sr-only" htmlFor="appt-status-filter">Filter by status</label>
         <select
+          id="appt-status-filter"
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="">All Statuses</option>
           {["scheduled", "confirmed", "completed", "cancelled", "rescheduled"].map((s) => (
@@ -294,10 +300,10 @@ export default function AdminAppointmentsPage() {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-[var(--border)] text-start text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 <th className="px-6 py-3">Lead</th>
                 <th className="px-6 py-3">Property</th>
                 <th className="px-6 py-3">Agent</th>
@@ -307,50 +313,61 @@ export default function AdminAppointmentsPage() {
                 <th className="px-6 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-[var(--border)]">
               {appointments.map((a) => (
-                <tr key={a.id} className="hover:bg-gray-50">
+                <tr key={a.id} className="hover:bg-[var(--bg-muted)]">
                   <td className="px-6 py-3">
-                    {a.lead_name && <p className="text-sm font-medium text-gray-800">{a.lead_name}</p>}
-                    <p className="font-mono text-xs text-gray-500">{a.lead_phone}</p>
+                    {a.lead_name && <p className="text-sm font-medium text-[var(--text-primary)]">{a.lead_name}</p>}
+                    <p className="font-mono text-xs text-[var(--text-muted)]">{a.lead_phone}</p>
                   </td>
-                  <td className="px-6 py-3 text-gray-600">
-                    {a.property_title || <span className="text-gray-300">—</span>}
+                  <td className="px-6 py-3 text-[var(--text-muted)]">
+                    {a.property_title || <span className="text-[var(--text-faint)]">—</span>}
                   </td>
-                  <td className="px-6 py-3 text-gray-600">
-                    {a.agent_name || <span className="text-gray-300">—</span>}
+                  <td className="px-6 py-3 text-[var(--text-muted)]">
+                    {a.agent_name || <span className="text-[var(--text-faint)]">—</span>}
                   </td>
-                  <td className="px-6 py-3 text-gray-700">{formatDate(a.scheduled_at)}</td>
-                  <td className="px-6 py-3 text-gray-500">{a.duration_minutes} min</td>
+                  <td className="px-6 py-3 text-[var(--text-muted)]">{formatDate(a.scheduled_at)}</td>
+                  <td className="px-6 py-3 text-[var(--text-muted)]">{a.duration_minutes} min</td>
                   <td className="px-6 py-3">
                     <Badge label={a.status} variant={STATUS_COLOR[a.status]} />
                   </td>
                   <td className="px-6 py-3">
                     <div className="flex gap-2">
                       {a.status === "scheduled" && (
-                        <button onClick={() => confirmMutation.mutate(a.id)} className="text-xs text-blue-600 hover:underline">
+                        <button type="button" onClick={() => confirmMutation.mutate(a.id)} disabled={confirmMutation.isPending} className="text-xs text-blue-600 hover:underline disabled:opacity-50">
                           Confirm
                         </button>
                       )}
                       {a.status === "confirmed" && (
-                        <button onClick={() => completeMutation.mutate(a.id)} className="text-xs text-green-600 hover:underline">
+                        <button type="button" onClick={() => completeMutation.mutate(a.id)} disabled={completeMutation.isPending} className="text-xs text-green-600 hover:underline disabled:opacity-50">
                           Complete
                         </button>
                       )}
                       {["scheduled", "confirmed"].includes(a.status) && (
                         <>
-                          <button onClick={() => cancelMutation.mutate(a.id)} className="text-xs text-red-500 hover:underline">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!window.confirm("Cancel this appointment?")) return;
+                              cancelMutation.mutate(a.id);
+                            }}
+                            disabled={cancelMutation.isPending}
+                            className="text-xs text-red-500 hover:underline disabled:opacity-50"
+                          >
                             Cancel
                           </button>
                           {rescheduleId === a.id ? (
                             <div className="flex items-center gap-1">
+                              <label className="sr-only" htmlFor={`reschedule-${a.id}`}>New date/time</label>
                               <input
+                                id={`reschedule-${a.id}`}
                                 type="datetime-local"
                                 value={rescheduleAt}
                                 onChange={(e) => setRescheduleAt(e.target.value)}
-                                className="rounded border border-gray-200 px-1.5 py-1 text-xs"
+                                className="rounded border border-[var(--border)] px-1.5 py-1 text-xs"
                               />
                               <button
+                                type="button"
                                 onClick={() => rescheduleMutation.mutate({ id: a.id, scheduledAt: rescheduleAt })}
                                 disabled={!rescheduleAt || rescheduleMutation.isPending}
                                 className="text-xs text-blue-600 hover:underline disabled:opacity-50"
@@ -358,14 +375,17 @@ export default function AdminAppointmentsPage() {
                                 Save
                               </button>
                               <button
+                                type="button"
+                                aria-label="Cancel reschedule"
                                 onClick={() => { setRescheduleId(null); setRescheduleAt(""); }}
-                                className="text-xs text-gray-400 hover:underline"
+                                className="text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]"
                               >
-                                ×
+                                <X size={12} aria-hidden="true" />
                               </button>
                             </div>
                           ) : (
                             <button
+                              type="button"
                               onClick={() => { setRescheduleId(a.id); setRescheduleAt(""); }}
                               className="text-xs text-yellow-600 hover:underline"
                             >
@@ -380,7 +400,7 @@ export default function AdminAppointmentsPage() {
               ))}
               {appointments.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={7} className="px-6 py-12 text-center text-[var(--text-muted)]">
                     No appointments found
                   </td>
                 </tr>

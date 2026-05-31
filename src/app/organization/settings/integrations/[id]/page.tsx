@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
+import { formatDate } from '@/lib/utils';
 import { useParams } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
@@ -15,11 +17,11 @@ import {
 import type { ExternalPlatformConnection, WebhookDeliveryRecord, SyncConflictAlert } from '@/types';
 
 const STATUS_COLORS: Record<string, string> = {
-  idle:      'bg-gray-100 text-gray-600',
+  idle:      'bg-[var(--bg-subtle)] text-[var(--text-muted)]',
   syncing:   'bg-blue-100 text-blue-700',
   error:     'bg-red-100 text-red-700',
   paused:    'bg-amber-100 text-amber-700',
-  pending:   'bg-gray-100 text-gray-500',
+  pending:   'bg-[var(--bg-subtle)] text-[var(--text-muted)]',
   delivered: 'bg-green-100 text-green-700',
   failed:    'bg-red-100 text-red-700',
 };
@@ -90,7 +92,11 @@ export default function ConnectionDetailPage() {
     : '';
 
   if (!conn) {
-    return <div className="p-6 text-gray-400">Loading connection…</div>;
+    return (
+      <div className="flex items-center justify-center py-20">
+        <Loader2 size={24} className="animate-spin text-[var(--text-muted)]" aria-label="Loading connection" />
+      </div>
+    );
   }
 
   return (
@@ -98,50 +104,54 @@ export default function ConnectionDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 capitalize">{conn.platform} Integration</h1>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] capitalize">{conn.platform} Integration</h1>
           <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[conn.sync_status]}`}>
             {conn.sync_status}
           </span>
         </div>
         <button
+          type="button"
           onClick={() => syncMutation.mutate()}
           disabled={conn.sync_status === 'syncing'}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
         >
           Sync Now
         </button>
       </div>
 
       {/* Config Panel */}
-      <section className="bg-white border border-gray-200 rounded-xl p-6">
-        <h2 className="font-semibold text-gray-800 mb-4">Configuration</h2>
+      <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
+        <h2 className="font-semibold text-[var(--text-primary)] mb-4">Configuration</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">API Key</label>
+            <label htmlFor="detail-api-key" className="block text-sm font-medium text-[var(--text-muted)] mb-1">API Key</label>
             <input
+              id="detail-api-key"
               type="text"
               defaultValue={conn.api_key || ''}
               placeholder={_MASK}
               onChange={e => setForm(f => ({ ...f, api_key: e.target.value }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">API Secret</label>
+            <label htmlFor="detail-api-secret" className="block text-sm font-medium text-[var(--text-muted)] mb-1">API Secret</label>
             <input
+              id="detail-api-secret"
               type="password"
               defaultValue=""
               placeholder={_MASK}
               onChange={e => setForm(f => ({ ...f, api_secret: e.target.value }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Sync Direction</label>
+            <label htmlFor="detail-sync-dir" className="block text-sm font-medium text-[var(--text-muted)] mb-1">Sync Direction</label>
             <select
+              id="detail-sync-dir"
               value={effectiveForm.sync_direction ?? conn.sync_direction}
               onChange={e => setForm(f => ({ ...f, sync_direction: e.target.value as 'inbound' | 'outbound' | 'bidirectional' }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm"
             >
               <option value="inbound">Inbound Only</option>
               <option value="outbound">Outbound Only</option>
@@ -149,11 +159,12 @@ export default function ConnectionDetailPage() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Conflict Resolution</label>
+            <label htmlFor="detail-conflict" className="block text-sm font-medium text-[var(--text-muted)] mb-1">Conflict Resolution</label>
             <select
+              id="detail-conflict"
               value={effectiveForm.conflict_resolution ?? conn.conflict_resolution}
               onChange={e => setForm(f => ({ ...f, conflict_resolution: e.target.value as 'internal_wins' | 'external_wins' | 'manual' }))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              className="w-full border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm"
             >
               <option value="internal_wins">Internal Wins</option>
               <option value="external_wins">External Wins</option>
@@ -162,12 +173,19 @@ export default function ConnectionDetailPage() {
           </div>
         </div>
         {testResult && (
-          <div className={`mt-3 text-sm px-3 py-2 rounded-lg ${testResult.status === 'connected' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-            {testResult.status === 'connected' ? '✓ ' : '✗ '}{testResult.detail}
+          <div role="status" className={`mt-3 text-sm px-3 py-2 rounded-lg flex items-center gap-2 ${testResult.status === 'connected' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-200'}`}>
+            {testResult.status === 'connected'
+              ? <CheckCircle2 size={14} aria-hidden="true" />
+              : <AlertCircle size={14} aria-hidden="true" />}
+            {testResult.detail}
           </div>
+        )}
+        {saveMutation.isError && (
+          <p role="alert" className="mt-2 text-xs text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">Failed to save. Please try again.</p>
         )}
         <div className="flex gap-3 mt-4">
           <button
+            type="button"
             onClick={() => saveMutation.mutate()}
             disabled={saveMutation.isPending || Object.keys(form).length === 0}
             className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
@@ -175,20 +193,22 @@ export default function ConnectionDetailPage() {
             {saveMutation.isPending ? 'Saving…' : 'Save'}
           </button>
           <button
+            type="button"
             onClick={() => testMutation.mutate()}
             disabled={testMutation.isPending}
-            className="border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50 disabled:opacity-50"
+            className="border border-[var(--border-strong)] px-4 py-2 rounded-lg text-sm hover:bg-[var(--bg-muted)] disabled:opacity-50 flex items-center gap-1.5"
           >
-            {testMutation.isPending ? 'Testing…' : 'Test Connection'}
+            {testMutation.isPending && <Loader2 size={13} className="animate-spin" aria-hidden="true" />}{testMutation.isPending ? 'Testing…' : 'Test Connection'}
           </button>
         </div>
       </section>
 
       {/* Field Mapping Editor */}
-      <section className="bg-white border border-gray-200 rounded-xl p-6">
+      <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-gray-800">Field Mappings</h2>
+          <h2 className="font-semibold text-[var(--text-primary)]">Field Mappings</h2>
           <button
+            type="button"
             onClick={() => setShowJsonView(v => !v)}
             className="text-sm text-blue-600 hover:underline"
           >
@@ -196,13 +216,13 @@ export default function ConnectionDetailPage() {
           </button>
         </div>
         {showJsonView ? (
-          <pre className="bg-gray-50 rounded-lg p-4 text-xs font-mono overflow-auto max-h-60">
+          <pre className="bg-[var(--bg-muted)] rounded-lg p-4 text-xs font-mono overflow-auto max-h-60">
             {fieldMappingJson}
           </pre>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="text-start text-gray-500 border-b">
+              <tr className="text-start text-[var(--text-muted)] border-b">
                 <th className="pb-2 font-medium">RealTron Field</th>
                 <th className="pb-2 font-medium">External Field Name</th>
                 <th className="pb-2" />
@@ -210,7 +230,7 @@ export default function ConnectionDetailPage() {
             </thead>
             <tbody>
               {mappingRows.map(([internal, external], i) => (
-                <tr key={i} className="border-b border-gray-100">
+                <tr key={i} className="border-b border-[var(--border)]">
                   <td className="py-2 pe-3">
                     <input
                       value={internal}
@@ -219,7 +239,7 @@ export default function ConnectionDetailPage() {
                         rows[i] = [e.target.value, external];
                         setMappingRows(rows);
                       }}
-                      className="border border-gray-300 rounded px-2 py-1 w-full text-sm"
+                      className="border border-[var(--border-strong)] rounded px-2 py-1 w-full text-sm"
                     />
                   </td>
                   <td className="py-2 pe-3">
@@ -230,7 +250,7 @@ export default function ConnectionDetailPage() {
                         rows[i] = [internal, e.target.value];
                         setMappingRows(rows);
                       }}
-                      className="border border-gray-300 rounded px-2 py-1 w-full text-sm"
+                      className="border border-[var(--border-strong)] rounded px-2 py-1 w-full text-sm"
                     />
                   </td>
                   <td className="py-2">
@@ -256,32 +276,32 @@ export default function ConnectionDetailPage() {
         )}
         <button
           onClick={() => saveMutation.mutate()}
-          className="mt-3 ms-4 bg-gray-100 text-gray-700 px-3 py-1.5 rounded-lg text-sm hover:bg-gray-200"
+          className="mt-3 ms-4 bg-[var(--bg-subtle)] text-[var(--text-muted)] px-3 py-1.5 rounded-lg text-sm hover:bg-gray-200"
         >
           Save Mappings
         </button>
       </section>
 
       {/* Sync Log */}
-      <section className="bg-white border border-gray-200 rounded-xl p-6">
-        <h2 className="font-semibold text-gray-800 mb-4">Sync Log <span className="text-gray-400 font-normal text-sm">(last 100)</span></h2>
+      <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
+        <h2 className="font-semibold text-[var(--text-primary)] mb-4">Sync Log <span className="text-[var(--text-muted)] font-normal text-sm">(last 100)</span></h2>
         {logs.length === 0 ? (
-          <p className="text-gray-400 text-sm">No delivery records yet.</p>
+          <p className="text-[var(--text-muted)] text-sm">No delivery records yet.</p>
         ) : (
           <div className="space-y-2">
             {logs.map(log => (
-              <div key={log.id} className="border border-gray-100 rounded-lg p-3">
+              <div key={log.id} className="border border-[var(--border)] rounded-lg p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[log.status]}`}>
                       {log.status}
                     </span>
-                    <span className="text-sm text-gray-700">{log.event_type || 'property.update'}</span>
-                    <span className="text-xs text-gray-400">attempt {log.attempt_count}</span>
+                    <span className="text-sm text-[var(--text-muted)]">{log.event_type || 'property.update'}</span>
+                    <span className="text-xs text-[var(--text-muted)]">attempt {log.attempt_count}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-xs text-gray-400">
-                      {log.delivered_at ? new Date(log.delivered_at).toLocaleString() : new Date(log.created_at).toLocaleString()}
+                    <span className="text-xs text-[var(--text-muted)]">
+                      {formatDate(log.delivered_at ?? log.created_at)}
                     </span>
                     {log.error_detail && (
                       <button
@@ -303,34 +323,34 @@ export default function ConnectionDetailPage() {
       </section>
 
       {/* Conflict Alerts */}
-      <section className="bg-white border border-gray-200 rounded-xl p-6">
-        <h2 className="font-semibold text-gray-800 mb-4">Conflict Alerts</h2>
+      <section className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-6">
+        <h2 className="font-semibold text-[var(--text-primary)] mb-4">Conflict Alerts</h2>
         {connConflicts.length === 0 ? (
-          <p className="text-gray-400 text-sm">No conflicts.</p>
+          <p className="text-[var(--text-muted)] text-sm">No conflicts.</p>
         ) : (
           <div className="space-y-3">
             {connConflicts.map(alert => (
               <div
                 key={alert.id}
-                className={`border rounded-lg p-4 ${alert.resolution === 'pending' ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}
+                className={`border rounded-lg p-4 ${alert.resolution === 'pending' ? 'border-amber-300 bg-amber-50' : 'border-[var(--border)]'}`}
               >
                 <div className="flex items-center justify-between mb-2">
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                    alert.resolution === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'
+                    alert.resolution === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-[var(--bg-subtle)] text-[var(--text-muted)]'
                   }`}>
                     {alert.resolution}
                   </span>
-                  <span className="text-xs text-gray-400">{new Date(alert.created_at).toLocaleString()}</span>
+                  <span className="text-xs text-[var(--text-muted)]">{formatDate(alert.created_at)}</span>
                 </div>
                 <details className="mt-2">
-                  <summary className="text-sm text-gray-600 cursor-pointer hover:text-gray-900">External delta</summary>
-                  <pre className="mt-1 text-xs bg-white rounded p-2 overflow-auto max-h-40">
+                  <summary className="text-sm text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-primary)]">External delta</summary>
+                  <pre className="mt-1 text-xs bg-[var(--bg-surface)] rounded p-2 overflow-auto max-h-40">
                     {JSON.stringify(alert.external_delta, null, 2)}
                   </pre>
                 </details>
                 <details className="mt-2">
-                  <summary className="text-sm text-gray-600 cursor-pointer hover:text-gray-900">Internal state</summary>
-                  <pre className="mt-1 text-xs bg-white rounded p-2 overflow-auto max-h-40">
+                  <summary className="text-sm text-[var(--text-muted)] cursor-pointer hover:text-[var(--text-primary)]">Internal state</summary>
+                  <pre className="mt-1 text-xs bg-[var(--bg-surface)] rounded p-2 overflow-auto max-h-40">
                     {JSON.stringify(alert.internal_state, null, 2)}
                   </pre>
                 </details>
@@ -339,9 +359,10 @@ export default function ConnectionDetailPage() {
                     {(['internal_wins', 'external_wins', 'manual'] as const).map(r => (
                       <button
                         key={r}
+                        type="button"
                         onClick={() => resolveMutation.mutate({ alertId: alert.id, resolution: r })}
                         disabled={resolveMutation.isPending}
-                        className="text-xs px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 capitalize"
+                        className="text-xs px-3 py-1.5 rounded-lg border border-[var(--border-strong)] hover:bg-[var(--bg-muted)] disabled:opacity-50 capitalize"
                       >
                         {r.replace('_', ' ')}
                       </button>

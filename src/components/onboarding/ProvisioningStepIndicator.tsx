@@ -1,6 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'framer-motion';
+import { Check, Loader2, X } from 'lucide-react';
 
 export type StepState = 'pending' | 'in_progress' | 'complete' | 'failed';
 
@@ -10,54 +11,51 @@ interface Props {
   timestamp?: string | null;
 }
 
-const stateConfig: Record<StepState, { color: string; icon: React.ReactNode }> = {
+const stateConfig: Record<StepState, { border: string; text: string; icon: React.ReactNode; ariaLabel: string }> = {
   pending: {
-    color: 'text-gray-400 border-gray-200',
-    icon: <span className="w-4 h-4 rounded-full border-2 border-gray-300 inline-block" />,
+    border: 'border-[var(--border)]',
+    text:   'text-[var(--text-muted)]',
+    icon:   <span className="w-4 h-4 rounded-full border-2 border-slate-300 inline-block" aria-hidden="true" />,
+    ariaLabel: 'Pending',
   },
   in_progress: {
-    color: 'text-blue-600 border-blue-300',
-    icon: (
-      <svg className="w-4 h-4 animate-spin text-blue-500" viewBox="0 0 24 24" fill="none">
-        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-      </svg>
-    ),
+    border: 'border-blue-300',
+    text:   'text-blue-600',
+    icon:   <Loader2 size={16} className="animate-spin text-blue-500" aria-hidden="true" />,
+    ariaLabel: 'In progress',
   },
   complete: {
-    color: 'text-green-600 border-green-300',
-    icon: (
-      <svg className="w-4 h-4 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-      </svg>
-    ),
+    border: 'border-emerald-300',
+    text:   'text-emerald-600',
+    icon:   <Check size={16} className="text-emerald-500" aria-hidden="true" />,
+    ariaLabel: 'Complete',
   },
   failed: {
-    color: 'text-red-600 border-red-300',
-    icon: (
-      <svg className="w-4 h-4 text-red-500" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-      </svg>
-    ),
+    border: 'border-red-300',
+    text:   'text-red-600',
+    icon:   <X size={16} className="text-red-500" aria-hidden="true" />,
+    ariaLabel: 'Failed',
   },
 };
 
 export function ProvisioningStepIndicator({ label, state, timestamp }: Props) {
-  const { color, icon } = stateConfig[state];
+  const { border, text, icon, ariaLabel } = stateConfig[state];
   return (
     <AnimatePresence mode="wait">
       <motion.div
         key={state}
+        role="listitem"
+        aria-label={`${label}: ${ariaLabel}`}
         initial={{ opacity: 0, x: -8 }}
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 8 }}
         transition={{ duration: 0.2 }}
-        className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${color} bg-white`}
+        className={`flex items-center gap-3 px-4 py-3 rounded-lg border ${border} bg-[var(--bg-surface)]`}
       >
         <span className="flex-shrink-0">{icon}</span>
-        <span className="font-medium text-sm">{label}</span>
+        <span className={`font-medium text-sm ${text}`}>{label}</span>
         {timestamp && (
-          <span className="ms-auto text-xs text-gray-400">
+          <span className="ms-auto text-xs text-[var(--text-muted)]">
             {new Date(timestamp).toLocaleTimeString()}
           </span>
         )}

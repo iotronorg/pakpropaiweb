@@ -23,7 +23,7 @@ function VerifyContent() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!phone.startsWith("+")) {
-      setError("Enter phone in international format, e.g. +923001234567");
+      setError("Enter phone in international format, e.g. +12025551234");
       return;
     }
     setError("");
@@ -99,7 +99,7 @@ function VerifyContent() {
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+923001234567"
+                    placeholder="+12025551234"
                     required
                     className="w-full ps-9 pe-4 py-3 rounded-xl bg-white/10 border border-white/10 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
                   />

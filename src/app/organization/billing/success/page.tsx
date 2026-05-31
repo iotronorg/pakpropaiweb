@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 
@@ -12,7 +12,6 @@ const PLAN_LABELS: Record<string, string> = {
 };
 
 function BillingSuccessContent() {
-  const router    = useRouter();
   const params    = useSearchParams();
   const qc        = useQueryClient();
   const plan      = params.get("plan") ?? "";
@@ -31,10 +30,10 @@ function BillingSuccessContent() {
         </svg>
       </div>
 
-      <h1 className="text-2xl font-bold text-gray-900">
+      <h1 className="text-2xl font-bold text-[var(--text-primary)]">
         {planLabel ? `Welcome to ${planLabel}!` : "Upgrade successful!"}
       </h1>
-      <p className="mt-2 max-w-md text-sm text-gray-500">
+      <p className="mt-2 max-w-md text-sm text-[var(--text-muted)]">
         Your subscription is now active. Your new plan limits are effective immediately —
         enjoy more agents, listings, and WhatsApp AI capacity.
       </p>
@@ -48,7 +47,7 @@ function BillingSuccessContent() {
         </Link>
         <Link
           href="/organization/settings"
-          className="rounded-lg border border-gray-200 px-5 py-2.5 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+          className="rounded-lg border border-[var(--border)] px-5 py-2.5 text-sm font-semibold text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors"
         >
           View settings
         </Link>

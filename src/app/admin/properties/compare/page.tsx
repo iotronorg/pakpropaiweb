@@ -56,18 +56,18 @@ export default function PropertyComparePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Property Comparison</h1>
-        <p className="text-sm text-gray-500 mt-1">Select up to {MAX_COMPARE} properties to compare side-by-side</p>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Property Comparison</h1>
+        <p className="text-sm text-[var(--text-muted)] mt-1">Select up to {MAX_COMPARE} properties to compare side-by-side</p>
       </div>
 
       {/* Search + selector */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+      <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg p-4 space-y-3">
         <input
           type="text"
           placeholder="Search properties…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-[var(--border-strong)] rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         {listLoading ? (
           <LoadingSpinner />
@@ -85,49 +85,49 @@ export default function PropertyComparePage() {
                     selected
                       ? "border-blue-500 bg-blue-50 text-blue-900"
                       : disabled
-                      ? "border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"
-                      : "border-gray-200 hover:border-blue-300 hover:bg-blue-50"
+                      ? "border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)] cursor-not-allowed"
+                      : "border-[var(--border)] hover:border-blue-300 hover:bg-blue-50"
                   }`}
                 >
                   <p className="font-medium truncate">{p.title}</p>
-                  <p className="text-xs font-mono text-gray-400">{p.ref_no}</p>
-                  <p className="text-xs text-gray-500">{p.city} · {p.property_type}</p>
+                  <p className="text-xs font-mono text-[var(--text-muted)]">{p.ref_no}</p>
+                  <p className="text-xs text-[var(--text-muted)]">{p.city} · {p.property_type}</p>
                 </button>
               );
             })}
           </div>
         )}
-        <p className="text-xs text-gray-400">{selectedIds.length}/{MAX_COMPARE} selected</p>
+        <p className="text-xs text-[var(--text-muted)]">{selectedIds.length}/{MAX_COMPARE} selected</p>
       </div>
 
       {/* Comparison table */}
       {selectedIds.length >= 2 && (
-        <div className="bg-white border border-gray-200 rounded-lg overflow-x-auto">
+        <div className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-lg overflow-x-auto">
           {comparing ? (
             <div className="p-8 text-center"><LoadingSpinner /></div>
           ) : compareData && compareData.length >= 2 ? (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <th className="text-start px-4 py-3 font-semibold text-gray-600 w-36">Field</th>
+                <tr className="border-b border-[var(--border)] bg-[var(--bg-muted)]">
+                  <th className="text-start px-4 py-3 font-semibold text-[var(--text-muted)] w-36">Field</th>
                   {compareData.map((p) => (
-                    <th key={p.id} className="text-start px-4 py-3 font-semibold text-gray-900">
+                    <th key={p.id} className="text-start px-4 py-3 font-semibold text-[var(--text-primary)]">
                       <span className="block truncate max-w-44">{p.title}</span>
-                      <span className="block text-xs font-mono font-normal text-gray-400">{p.ref_no}</span>
-                      <span className="text-xs font-normal text-gray-500">{p.city}</span>
+                      <span className="block text-xs font-mono font-normal text-[var(--text-muted)]">{p.ref_no}</span>
+                      <span className="text-xs font-normal text-[var(--text-muted)]">{p.city}</span>
                     </th>
                   ))}
                 </tr>
               </thead>
               <tbody>
                 {ROWS.map(({ label, key, format }) => (
-                  <tr key={key} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-4 py-2.5 font-medium text-gray-600 whitespace-nowrap">{label}</td>
+                  <tr key={key} className="border-b border-[var(--border)] hover:bg-[var(--bg-muted)]">
+                    <td className="px-4 py-2.5 font-medium text-[var(--text-muted)] whitespace-nowrap">{label}</td>
                     {compareData.map((p) => {
                       const raw = p[key];
                       const display = format ? format(raw) : (raw ?? "—");
                       return (
-                        <td key={p.id} className="px-4 py-2.5 text-gray-800">
+                        <td key={p.id} className="px-4 py-2.5 text-[var(--text-primary)]">
                           {key === "legal_status" ? (
                             <Badge
                               label={String(raw ?? "—")}
@@ -167,8 +167,8 @@ export default function PropertyComparePage() {
       )}
 
       {selectedIds.length < 2 && (
-        <div className="rounded-xl border border-dashed border-gray-300 py-12 text-center">
-          <p className="text-gray-400 text-sm">Select at least 2 properties above to compare</p>
+        <div className="rounded-xl border border-dashed border-[var(--border-strong)] py-12 text-center">
+          <p className="text-[var(--text-muted)] text-sm">Select at least 2 properties above to compare</p>
         </div>
       )}
     </div>

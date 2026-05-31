@@ -34,10 +34,10 @@ function KpiCard({
       variants={stagger}
       initial="hidden"
       animate="show"
-      className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+      className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 shadow-sm"
     >
-      <p className="text-xs font-medium uppercase tracking-wider text-gray-500">{label}</p>
-      <p className="mt-1 text-3xl font-bold text-gray-900">{value}</p>
+      <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">{label}</p>
+      <p className="mt-1 text-3xl font-bold text-[var(--text-primary)]">{value}</p>
       {badge && (
         <span className="mt-2 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800">
           {badge}
@@ -55,7 +55,7 @@ function StatusBadge({ status }: { status: string }) {
     failed: "bg-red-100 text-red-800",
   };
   return (
-    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${map[status] ?? "bg-gray-100 text-gray-800"}`}>
+    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${map[status] ?? "bg-[var(--bg-subtle)] text-[var(--text-primary)]"}`}>
       {status}
     </span>
   );
@@ -108,7 +108,7 @@ export default function PrivacyOperationsPage() {
   return (
     <div className="space-y-8 p-6">
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">Privacy Operations</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Privacy Operations</h1>
         <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
       </div>
 
@@ -126,17 +126,17 @@ export default function PrivacyOperationsPage() {
 
       <div className="grid gap-8 lg:grid-cols-2">
         {/* RTBF initiation */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-gray-800">Initiate Erasure (RTBF)</h2>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-sm">
+          <h2 className="mb-4 text-lg font-semibold text-[var(--text-primary)]">Initiate Erasure (RTBF)</h2>
           <div className="space-y-3">
             <input
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              placeholder="Phone (E.164, e.g. +923001234567)"
+              className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="Phone (E.164, e.g. +12025551234)"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
             <textarea
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               placeholder="Reason for erasure"
               rows={3}
               value={reason}
@@ -158,15 +158,15 @@ export default function PrivacyOperationsPage() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-4 rounded-lg bg-gray-50 p-3 text-sm"
+                className="mt-4 rounded-lg bg-[var(--bg-muted)] p-3 text-sm"
               >
-                <p className="font-medium text-gray-700">Request ID: <code className="text-xs">{requestId}</code></p>
+                <p className="font-medium text-[var(--text-muted)]">Request ID: <code className="text-xs">{requestId}</code></p>
                 <p className="mt-1 flex items-center gap-2">
                   Status: <StatusBadge status={rtbf.status ?? "pending"} />
                   {rtbf.isLoading && <span className="h-3 w-3 animate-spin rounded-full border-2 border-indigo-500 border-t-transparent" />}
                 </p>
                 {rtbf.completedAt && (
-                  <p className="mt-1 text-gray-500">Completed: {new Date(rtbf.completedAt).toLocaleString()}</p>
+                  <p className="mt-1 text-[var(--text-muted)]">Completed: {new Date(rtbf.completedAt).toLocaleString()}</p>
                 )}
               </motion.div>
             )}
@@ -174,20 +174,20 @@ export default function PrivacyOperationsPage() {
         </div>
 
         {/* PII detection summary */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-800">PII Detections (24h)</h2>
+            <h2 className="text-lg font-semibold text-[var(--text-primary)]">PII Detections (24h)</h2>
             <button onClick={handleExport} className="text-xs text-indigo-600 hover:underline">
               Export CSV
             </button>
           </div>
           {Object.keys(piiSummary).length === 0 ? (
-            <p className="text-sm text-gray-500">No detections in the last 24 hours.</p>
+            <p className="text-sm text-[var(--text-muted)]">No detections in the last 24 hours.</p>
           ) : (
             <ul className="space-y-2">
               {Object.entries(piiSummary).map(([pattern, count]) => (
-                <li key={pattern} className="flex items-center justify-between rounded-lg bg-gray-50 px-3 py-2 text-sm">
-                  <span className="font-medium capitalize text-gray-700">{pattern}</span>
+                <li key={pattern} className="flex items-center justify-between rounded-lg bg-[var(--bg-muted)] px-3 py-2 text-sm">
+                  <span className="font-medium capitalize text-[var(--text-muted)]">{pattern}</span>
                   <span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-bold text-red-700">{count}</span>
                 </li>
               ))}
@@ -197,12 +197,12 @@ export default function PrivacyOperationsPage() {
       </div>
 
       {/* RTBF audit log */}
-      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="mb-4 text-lg font-semibold text-gray-800">Privacy Audit Log</h2>
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 shadow-sm">
+        <h2 className="mb-4 text-lg font-semibold text-[var(--text-primary)]">Privacy Audit Log</h2>
         <div className="overflow-x-auto">
           <table className="w-full text-start text-sm">
             <thead>
-              <tr className="border-b text-xs uppercase tracking-wider text-gray-500">
+              <tr className="border-b text-xs uppercase tracking-wider text-[var(--text-muted)]">
                 <th className="pb-2 pe-4">Action</th>
                 <th className="pb-2 pe-4">Subject Hash</th>
                 <th className="pb-2 pe-4">Jurisdiction</th>
@@ -212,16 +212,16 @@ export default function PrivacyOperationsPage() {
             </thead>
             <tbody>
               {auditLog.slice(0, 50).map((entry) => (
-                <tr key={entry.id} className="border-b last:border-0 hover:bg-gray-50">
+                <tr key={entry.id} className="border-b last:border-0 hover:bg-[var(--bg-muted)]">
                   <td className="py-2 pe-4">
                     <StatusBadge status={entry.action.replace(/_/g, " ")} />
                   </td>
-                  <td className="py-2 pe-4 font-mono text-xs text-gray-500">
+                  <td className="py-2 pe-4 font-mono text-xs text-[var(--text-muted)]">
                     {entry.subject_identifier.slice(0, 12)}…
                   </td>
-                  <td className="py-2 pe-4 text-gray-700">{entry.jurisdiction || "—"}</td>
-                  <td className="py-2 pe-4 text-gray-700">{entry.regulation || "—"}</td>
-                  <td className="py-2 text-gray-500">
+                  <td className="py-2 pe-4 text-[var(--text-muted)]">{entry.jurisdiction || "—"}</td>
+                  <td className="py-2 pe-4 text-[var(--text-muted)]">{entry.regulation || "—"}</td>
+                  <td className="py-2 text-[var(--text-muted)]">
                     {new Date(entry.created_at).toLocaleDateString()}
                   </td>
                 </tr>
@@ -229,7 +229,7 @@ export default function PrivacyOperationsPage() {
             </tbody>
           </table>
           {auditLog.length === 0 && (
-            <p className="py-4 text-center text-sm text-gray-500">No audit entries yet.</p>
+            <p className="py-4 text-center text-sm text-[var(--text-muted)]">No audit entries yet.</p>
           )}
         </div>
       </div>
@@ -247,17 +247,17 @@ export default function PrivacyOperationsPage() {
               initial={{ scale: 0.9 }}
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
-              className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+              className="w-full max-w-md rounded-xl bg-[var(--bg-surface)] p-6 shadow-xl"
             >
               <h3 className="text-lg font-bold text-red-700">This action is irreversible</h3>
-              <p className="mt-2 text-sm text-gray-600">
+              <p className="mt-2 text-sm text-[var(--text-muted)]">
                 All personal data for <strong>{phone}</strong> will be permanently erased, including
                 messages, documents, and activity history.
               </p>
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   onClick={() => setConfirmOpen(false)}
-                  className="rounded-lg border border-gray-300 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  className="rounded-lg border border-[var(--border-strong)] px-4 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
                 >
                   Cancel
                 </button>

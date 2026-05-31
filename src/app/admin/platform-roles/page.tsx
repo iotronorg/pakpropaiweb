@@ -24,34 +24,36 @@ export default function PlatformRolesPage() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
   });
 
-  if (isLoading) return <div className="p-8 text-gray-500">Loading…</div>;
+  if (isLoading) return <div className="p-8 text-[var(--text-muted)]">Loading…</div>;
 
   return (
     <div className="max-w-4xl mx-auto p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Platform Role Management</h1>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-6">Platform Role Management</h1>
+      <div className="bg-[var(--bg-surface)] rounded-xl shadow-sm border border-[var(--border)] overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50 border-b">
+          <thead className="bg-[var(--bg-muted)] border-b border-[var(--border)]">
             <tr>
-              <th className="text-start px-4 py-3 font-medium text-gray-600">Admin User</th>
-              <th className="text-start px-4 py-3 font-medium text-gray-600">Platform Role</th>
+              <th className="text-start px-4 py-3 font-medium text-[var(--text-muted)]">Admin User</th>
+              <th className="text-start px-4 py-3 font-medium text-[var(--text-muted)]">Platform Role</th>
             </tr>
           </thead>
           <tbody>
             {admins.map((admin) => (
-              <tr key={admin.id} className="border-b last:border-0 hover:bg-gray-50">
+              <tr key={admin.id} className="border-b last:border-0 hover:bg-[var(--bg-muted)]">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-gray-900">{admin.name || admin.phone}</p>
-                  <p className="text-gray-500">{admin.phone}</p>
+                  <p className="font-medium text-[var(--text-primary)]">{admin.name || admin.phone}</p>
+                  <p className="text-[var(--text-muted)]">{admin.phone}</p>
                 </td>
                 <td className="px-4 py-3">
                   <select
                     value={admin.platform_role || ''}
-                    onChange={(e) => mutation.mutate({
-                      id: admin.id,
-                      role: (e.target.value as AdminUser['platform_role']) || null,
-                    })}
-                    className="border rounded-lg px-3 py-1.5 text-sm"
+                    onChange={(e) => {
+                      const newRole = (e.target.value as AdminUser['platform_role']) || null;
+                      const label = PLATFORM_ROLES.find(r => r.value === newRole)?.label ?? 'Unassigned';
+                      if (!window.confirm(`Change ${admin.name || admin.phone}'s platform role to "${label}"?`)) return;
+                      mutation.mutate({ id: admin.id, role: newRole });
+                    }}
+                    className="border border-[var(--border)] rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">— Unassigned —</option>
                     {PLATFORM_ROLES.map((r) => (

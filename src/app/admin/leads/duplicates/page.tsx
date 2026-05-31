@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getDuplicateLeads, mergeLeads } from "@/lib/api";
+import { CheckCircle2, X } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { formatDate } from "@/lib/utils";
 
@@ -29,10 +30,10 @@ const STATUS_COLOR: Record<string, string> = {
   new:           "bg-blue-50 text-blue-700",
   contacted:     "bg-yellow-50 text-yellow-700",
   interested:    "bg-green-50 text-green-700",
-  cold:          "bg-gray-100 text-gray-500",
+  cold:          "bg-[var(--bg-subtle)] text-[var(--text-muted)]",
   spam:          "bg-red-50 text-red-600",
   closed_won:    "bg-emerald-50 text-emerald-700",
-  closed_lost:   "bg-gray-100 text-gray-500",
+  closed_lost:   "bg-[var(--bg-subtle)] text-[var(--text-muted)]",
   unresponsive:  "bg-orange-50 text-orange-600",
 };
 
@@ -83,8 +84,8 @@ export default function AdminDuplicateLeadsPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Duplicate Leads</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Duplicate Leads</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Lead pairs that share the same normalized phone number — likely the same person.
           Merge to keep one canonical record.
         </p>
@@ -93,13 +94,13 @@ export default function AdminDuplicateLeadsPage() {
       {isLoading ? (
         <LoadingSpinner />
       ) : groups.length === 0 ? (
-        <div className="rounded-xl border border-gray-200 bg-white px-6 py-16 text-center">
-          <p className="text-4xl mb-3">✅</p>
-          <p className="text-sm text-gray-400">No duplicate leads detected.</p>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-6 py-16 text-center">
+          <CheckCircle2 size={36} className="mx-auto mb-3 text-emerald-500" aria-hidden="true" />
+          <p className="text-sm text-[var(--text-muted)]">No duplicate leads detected.</p>
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="text-xs text-gray-400">{data?.count ?? groups.length} duplicate group(s) found</p>
+          <p className="text-xs text-[var(--text-muted)]">{data?.count ?? groups.length} duplicate group(s) found</p>
           {groups.map((group, i) => (
             <div key={i} className="rounded-xl border border-amber-200 bg-amber-50/30 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3 border-b border-amber-100 bg-amber-50">
@@ -110,7 +111,7 @@ export default function AdminDuplicateLeadsPage() {
                 {group.leads.length === 2 && (
                   <button
                     onClick={() => openMergeModal(group)}
-                    className="rounded-lg border border-amber-300 bg-white px-3 py-1 text-xs font-medium text-amber-700 hover:bg-amber-50 transition-colors"
+                    className="rounded-lg border border-amber-300 bg-[var(--bg-surface)] px-3 py-1 text-xs font-medium text-amber-700 hover:bg-amber-50 transition-colors"
                   >
                     Merge →
                   </button>
@@ -118,7 +119,7 @@ export default function AdminDuplicateLeadsPage() {
               </div>
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-start text-xs font-semibold uppercase tracking-wider text-gray-400 border-b border-amber-100">
+                  <tr className="text-start text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] border-b border-amber-100">
                     <th className="px-5 py-2">Lead ID</th>
                     <th className="px-5 py-2">Phone (raw)</th>
                     <th className="px-5 py-2">Status</th>
@@ -129,15 +130,15 @@ export default function AdminDuplicateLeadsPage() {
                 <tbody className="divide-y divide-amber-50">
                   {group.leads.map((lead) => (
                     <tr key={lead.id} className="hover:bg-amber-50/50">
-                      <td className="px-5 py-2.5 font-mono text-xs text-gray-500">{lead.id.slice(0, 8)}…</td>
-                      <td className="px-5 py-2.5 font-mono text-xs text-gray-700">{lead.phone}</td>
+                      <td className="px-5 py-2.5 font-mono text-xs text-[var(--text-muted)]">{lead.id.slice(0, 8)}…</td>
+                      <td className="px-5 py-2.5 font-mono text-xs text-[var(--text-muted)]">{lead.phone}</td>
                       <td className="px-5 py-2.5">
-                        <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLOR[lead.status] ?? "bg-gray-100 text-gray-500"}`}>
+                        <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLOR[lead.status] ?? "bg-[var(--bg-subtle)] text-[var(--text-muted)]"}`}>
                           {lead.status.replace(/_/g, " ")}
                         </span>
                       </td>
-                      <td className="px-5 py-2.5 text-gray-600 capitalize">{lead.intent || "—"}</td>
-                      <td className="px-5 py-2.5 text-gray-400 text-xs">{formatDate(lead.created_at)}</td>
+                      <td className="px-5 py-2.5 text-[var(--text-muted)] capitalize">{lead.intent || "—"}</td>
+                      <td className="px-5 py-2.5 text-[var(--text-muted)] text-xs">{formatDate(lead.created_at)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -150,13 +151,13 @@ export default function AdminDuplicateLeadsPage() {
       {/* Merge confirmation modal */}
       {mergeModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4">
+          <div className="bg-[var(--bg-surface)] rounded-2xl w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">Merge Duplicate Leads</h2>
-              <button onClick={() => setMergeModal(null)} className="text-gray-400 hover:text-gray-600 text-xl">×</button>
+              <h2 className="font-semibold text-[var(--text-primary)]">Merge Duplicate Leads</h2>
+              <button type="button" onClick={() => setMergeModal(null)} aria-label="Close merge dialog" className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"><X size={16} aria-hidden="true" /></button>
             </div>
 
-            <p className="text-sm text-gray-600">
+            <p className="text-sm text-[var(--text-muted)]">
               All messages, appointments, and notes from the <span className="font-semibold text-red-600">secondary</span> lead
               will be transferred to the <span className="font-semibold text-blue-600">primary</span>.
               The secondary lead will be permanently deleted.
@@ -172,8 +173,8 @@ export default function AdminDuplicateLeadsPage() {
                         <span className={`text-xs font-bold uppercase ${isPrimary ? "text-blue-700" : "text-red-600"}`}>
                           {isPrimary ? "Keep (Primary)" : "Delete (Secondary)"}
                         </span>
-                        <p className="font-mono text-sm text-gray-700 mt-0.5">{lead.phone}</p>
-                        <p className="text-xs text-gray-500">{lead.status} · created {formatDate(lead.created_at)}</p>
+                        <p className="font-mono text-sm text-[var(--text-muted)] mt-0.5">{lead.phone}</p>
+                        <p className="text-xs text-[var(--text-muted)]">{lead.status} · created {formatDate(lead.created_at)}</p>
                       </div>
                     </div>
                   </div>
@@ -183,7 +184,7 @@ export default function AdminDuplicateLeadsPage() {
 
             <button
               onClick={swapMergeRoles}
-              className="w-full text-center text-xs text-gray-500 hover:text-blue-600 hover:underline"
+              className="w-full text-center text-xs text-[var(--text-muted)] hover:text-blue-600 hover:underline"
             >
               ⇅ Swap primary / secondary
             </button>
@@ -205,7 +206,7 @@ export default function AdminDuplicateLeadsPage() {
               </button>
               <button
                 onClick={() => setMergeModal(null)}
-                className="flex-1 py-2 text-sm border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50"
+                className="flex-1 py-2 text-sm border border-[var(--border)] text-[var(--text-muted)] rounded-lg hover:bg-[var(--bg-muted)]"
               >
                 Cancel
               </button>

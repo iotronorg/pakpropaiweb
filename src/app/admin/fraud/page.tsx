@@ -1,4 +1,5 @@
 "use client";
+import { Shield, User, CheckCircle2, AlertTriangle, FileText, Search, Home } from "lucide-react";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -65,14 +66,14 @@ interface FraudCheckResult {
 const SEVERITY_STYLES = {
   high:   "bg-red-100 text-red-700 border-red-200",
   medium: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  low:    "bg-gray-100 text-gray-600 border-gray-200",
+  low:    "bg-[var(--bg-subtle)] text-[var(--text-muted)] border-[var(--border)]",
 };
 
-const TYPE_ICONS = {
-  document_scan: "📄",
-  verification:  "🔍",
-  property:      "🏠",
-};
+const TYPE_ICON_CMP = {
+  document_scan: FileText,
+  verification:  Search,
+  property:      Home,
+} as const;
 
 function FraudCheckCard() {
   const [query, setQuery] = useState("");
@@ -102,22 +103,23 @@ function FraudCheckCard() {
   };
 
   return (
-    <div className="bg-white rounded-xl border p-5 space-y-4">
+    <div className="bg-[var(--bg-surface)] rounded-xl border p-5 space-y-4">
       <div>
-        <h3 className="font-semibold text-gray-900">Run Fraud Check</h3>
-        <p className="text-xs text-gray-500 mt-0.5">
+        <h3 className="font-semibold text-[var(--text-primary)]">Run Fraud Check</h3>
+        <p className="text-xs text-[var(--text-muted)] mt-0.5">
           Paste a listing link, phone number, property description, or screenshot text
         </p>
       </div>
       <div className="flex gap-2">
         <textarea
           rows={3}
-          className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-red-400"
-          placeholder="e.g. https://zameen.com/listing/... or '03001234567 selling plot in DHA Phase 6...'"
+          className="flex-1 rounded-lg border border-[var(--border)] px-3 py-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-red-400"
+          placeholder="e.g. https://listing-site.com/property/... or '+12125551234 selling unit in downtown...'"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button
+          type="button"
           onClick={handleCheck}
           disabled={loading || !query.trim()}
           className="self-start rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-50 transition-colors"
@@ -127,11 +129,11 @@ function FraudCheckCard() {
       </div>
 
       {error && (
-        <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+        <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
       )}
 
       {result && (
-        <div className={`rounded-xl border p-4 space-y-3 ${riskStyles[result.risk_level] ?? "bg-gray-50 border-gray-200"}`}>
+        <div className={`rounded-xl border p-4 space-y-3 ${riskStyles[result.risk_level] ?? "bg-[var(--bg-muted)] border-[var(--border)]"}`}>
           <div className="flex items-center gap-2">
             <span className={`rounded-full px-3 py-1 text-xs font-bold uppercase ${
               result.risk_level === "high" ? "bg-red-200 text-red-800"
@@ -173,10 +175,10 @@ function StatCard({
   label, value, sub, color,
 }: { label: string; value: number | string; sub?: string; color?: string }) {
   return (
-    <div className="bg-white rounded-xl border p-5">
-      <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-1">{label}</p>
-      <p className={`text-3xl font-bold ${color ?? "text-gray-900"}`}>{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-1">{sub}</p>}
+    <div className="bg-[var(--bg-surface)] rounded-xl border p-5">
+      <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-muted)] mb-1">{label}</p>
+      <p className={`text-3xl font-bold ${color ?? "text-[var(--text-primary)]"}`}>{value}</p>
+      {sub && <p className="text-xs text-[var(--text-muted)] mt-1">{sub}</p>}
     </div>
   );
 }
@@ -190,8 +192,8 @@ function AlertsTab() {
 
   if (isLoading) return <div className="flex justify-center py-12"><LoadingSpinner /></div>;
   if (!alerts.length) return (
-    <div className="text-center py-16 text-gray-400">
-      <p className="text-4xl mb-3">🛡️</p>
+    <div className="text-center py-16 text-[var(--text-muted)]">
+      <Shield size={36} className="mx-auto mb-3 text-[var(--text-muted)]" aria-hidden="true" />
       <p className="font-medium">No fraud alerts — all clear</p>
     </div>
   );
@@ -203,7 +205,7 @@ function AlertsTab() {
           key={`${a.type}-${a.id}-${i}`}
           className={`flex items-start gap-4 rounded-xl border p-4 ${SEVERITY_STYLES[a.severity]}`}
         >
-          <span className="text-2xl flex-shrink-0">{TYPE_ICONS[a.type]}</span>
+          {(() => { const Icon = TYPE_ICON_CMP[a.type] ?? Shield; return <Icon size={20} className="flex-shrink-0 mt-0.5" aria-hidden="true" />; })()}
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-xs font-bold uppercase">{a.severity}</span>
@@ -231,16 +233,16 @@ function FlaggedUsersTab() {
 
   if (isLoading) return <div className="flex justify-center py-12"><LoadingSpinner /></div>;
   if (!users.length) return (
-    <div className="text-center py-16 text-gray-400">
-      <p className="text-4xl mb-3">👤</p>
+    <div className="text-center py-16 text-[var(--text-muted)]">
+      <User size={36} className="mx-auto mb-3 text-[var(--text-muted)]" aria-hidden="true" />
       <p className="font-medium">No flagged users</p>
     </div>
   );
 
   return (
-    <div className="overflow-x-auto rounded-xl border bg-white">
+    <div className="overflow-x-auto rounded-xl border bg-[var(--bg-surface)]">
       <table className="w-full text-sm">
-        <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+        <thead className="bg-[var(--bg-muted)] text-xs uppercase text-[var(--text-muted)]">
           <tr>
             {["Phone", "Risk", "Reason", "Flags", "Last Seen"].map(h => (
               <th key={h} className="px-4 py-3 text-start font-medium">{h}</th>
@@ -249,16 +251,16 @@ function FlaggedUsersTab() {
         </thead>
         <tbody className="divide-y divide-gray-100">
           {users.map(u => (
-            <tr key={u.phone} className="hover:bg-gray-50">
+            <tr key={u.phone} className="hover:bg-[var(--bg-muted)]">
               <td className="px-4 py-3 font-mono text-xs">{u.phone}</td>
               <td className="px-4 py-3">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
                   u.risk === "high"   ? "bg-red-100 text-red-700"
                   : u.risk === "medium" ? "bg-yellow-100 text-yellow-700"
-                  : "bg-gray-100 text-gray-500"
+                  : "bg-[var(--bg-subtle)] text-[var(--text-muted)]"
                 }`}>{u.risk}</span>
               </td>
-              <td className="px-4 py-3 text-gray-700">{u.reason}</td>
+              <td className="px-4 py-3 text-[var(--text-muted)]">{u.reason}</td>
               <td className="px-4 py-3">
                 {u.flags.length ? (
                   <div className="flex flex-wrap gap-1">
@@ -268,9 +270,9 @@ function FlaggedUsersTab() {
                       </span>
                     ))}
                   </div>
-                ) : <span className="text-gray-300">—</span>}
+                ) : <span className="text-[var(--text-faint)]">—</span>}
               </td>
-              <td className="px-4 py-3 text-gray-400 text-xs">{formatDate(u.last_seen)}</td>
+              <td className="px-4 py-3 text-[var(--text-muted)] text-xs">{formatDate(u.last_seen)}</td>
             </tr>
           ))}
         </tbody>
@@ -315,11 +317,11 @@ function BlacklistTab() {
   return (
     <div className="space-y-5">
       {/* Add form */}
-      <div className="bg-white rounded-xl border p-5">
+      <div className="bg-[var(--bg-surface)] rounded-xl border p-5">
         <h3 className="font-semibold mb-4">Add to Blacklist</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-3">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Token / Keyword *</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Token / Keyword *</label>
             <input
               className="w-full border rounded-lg px-3 py-2 text-sm"
               placeholder="e.g. 'sky residencia', '03001234567'"
@@ -328,7 +330,7 @@ function BlacklistTab() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Reason</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Reason</label>
             <input
               className="w-full border rounded-lg px-3 py-2 text-sm"
               placeholder="Why is this flagged?"
@@ -337,7 +339,7 @@ function BlacklistTab() {
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Expires After (days)</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Expires After (days)</label>
             <input
               className="w-full border rounded-lg px-3 py-2 text-sm"
               type="number"
@@ -349,6 +351,7 @@ function BlacklistTab() {
           </div>
         </div>
         <button
+          type="button"
           onClick={() => addMutation.mutate()}
           disabled={!token.trim() || addMutation.isPending}
           className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
@@ -361,30 +364,34 @@ function BlacklistTab() {
       {isLoading ? (
         <div className="flex justify-center py-8"><LoadingSpinner /></div>
       ) : entries.length === 0 ? (
-        <p className="text-center text-gray-400 py-8">Blacklist is empty.</p>
+        <p className="text-center text-[var(--text-muted)] py-8">Blacklist is empty.</p>
       ) : (
-        <div className="overflow-x-auto rounded-xl border bg-white">
+        <div className="overflow-x-auto rounded-xl border bg-[var(--bg-surface)]">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+            <thead className="bg-[var(--bg-muted)] text-xs uppercase text-[var(--text-muted)]">
               <tr>
                 {["Token", "Reason", "Added By", "Expires", "Added", ""].map(h => (
                   <th key={h} className="px-4 py-3 text-start font-medium">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[var(--border)]">
               {entries.map(e => (
-                <tr key={e.id} className="hover:bg-gray-50">
+                <tr key={e.id} className="hover:bg-[var(--bg-muted)]">
                   <td className="px-4 py-3 font-mono text-xs font-semibold text-red-700">{e.token}</td>
-                  <td className="px-4 py-3 text-gray-600">{e.reason || "—"}</td>
-                  <td className="px-4 py-3 font-mono text-xs text-gray-400">{e.added_by}</td>
-                  <td className="px-4 py-3 text-xs text-gray-400">
+                  <td className="px-4 py-3 text-[var(--text-muted)]">{e.reason || "—"}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-[var(--text-muted)]">{e.added_by}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--text-muted)]">
                     {e.expires_at ? formatDate(e.expires_at) : "Never"}
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-400">{formatDate(e.created_at)}</td>
+                  <td className="px-4 py-3 text-xs text-[var(--text-muted)]">{formatDate(e.created_at)}</td>
                   <td className="px-4 py-3">
                     <button
-                      onClick={() => removeMutation.mutate(e.id)}
+                      type="button"
+                      onClick={() => {
+                        if (!window.confirm("Remove this token from the blacklist?")) return;
+                        removeMutation.mutate(e.id);
+                      }}
                       disabled={removeMutation.isPending}
                       className="text-xs text-red-500 hover:text-red-700 disabled:opacity-50"
                     >
@@ -417,7 +424,7 @@ export default function FraudMonitorPage() {
 
   const TABS: { id: Tab; label: string }[] = [
     { id: "alerts",    label: "🚨 Alerts" },
-    { id: "users",     label: "👤 Flagged Users" },
+    { id: "users",     label: "Flagged Users" },
     { id: "blacklist", label: "🚫 Blacklist" },
   ];
 
@@ -426,7 +433,7 @@ export default function FraudMonitorPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold">Fraud Monitoring</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-[var(--text-muted)] mt-1">
           Real-time fraud signals, suspicious activity, and blacklist management
         </p>
       </div>
@@ -475,29 +482,32 @@ export default function FraudMonitorPage() {
           label="Blacklisted Tokens"
           value={stats?.blacklisted_tokens ?? "—"}
           sub="Active blacklist entries"
-          color="text-gray-700"
+          color="text-[var(--text-muted)]"
         />
         <div className="bg-gradient-to-br from-red-50 to-orange-50 rounded-xl border border-red-100 p-5 flex flex-col justify-center">
           <p className="text-xs font-semibold uppercase tracking-wide text-red-400 mb-1">System</p>
           <p className="text-sm font-bold text-red-700">
             {stats?.alerts_last_7_days === 0
-              ? "✅ All Clear"
-              : `⚠️ ${stats?.alerts_last_7_days} Alert${(stats?.alerts_last_7_days ?? 0) > 1 ? "s" : ""}`}
+              ? "All Clear"
+              : `${stats?.alerts_last_7_days} Alert${(stats?.alerts_last_7_days ?? 0) > 1 ? "s" : ""}`}
           </p>
           <p className="text-xs text-red-400 mt-0.5">Last 7 days</p>
         </div>
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-2 border-b">
+      <div role="tablist" aria-label="Fraud monitor views" className="flex gap-2 border-b border-[var(--border)]">
         {TABS.map(t => (
           <button
             key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
-            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               tab === t.id
                 ? "border-red-500 text-red-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             {t.label}

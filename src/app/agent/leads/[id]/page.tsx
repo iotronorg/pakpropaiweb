@@ -27,8 +27,8 @@ const APPT_COLORS: Record<AppointmentStatus, "green" | "yellow" | "red" | "gray"
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <h3 className="text-sm font-semibold text-gray-700 mb-4">{title}</h3>
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+      <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-4">{title}</h3>
       {children}
     </div>
   );
@@ -38,7 +38,7 @@ const ACTION_COLORS: Record<string, string> = {
   created:   "bg-blue-100 text-blue-700",
   assigned:  "bg-purple-100 text-purple-700",
   status:    "bg-yellow-100 text-yellow-700",
-  note:      "bg-gray-100 text-gray-600",
+  note:      "bg-[var(--bg-subtle)] text-[var(--text-muted)]",
   contacted: "bg-green-100 text-green-700",
   scored:    "bg-orange-100 text-orange-700",
   deal_lock: "bg-red-100 text-red-700",
@@ -56,8 +56,8 @@ function ActivitySection({
   if (activities.length === 0 && scoreHistory.length === 0) return null;
 
   return (
-    <div className="mt-8 rounded-xl border border-gray-200 bg-white">
-      <div className="flex gap-1 border-b border-gray-100 px-4 pt-3">
+    <div className="mt-8 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+      <div className="flex gap-1 border-b border-[var(--border)] px-4 pt-3">
         {(["activity", "score"] as const).map((t) => (
           <button
             key={t}
@@ -65,7 +65,7 @@ function ActivitySection({
             className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
               tab === t
                 ? "border-blue-500 text-blue-600"
-                : "border-transparent text-gray-400 hover:text-gray-600"
+                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-muted)]"
             }`}
           >
             {t === "activity" ? `Activity (${activities.length})` : `Score History (${scoreHistory.length})`}
@@ -77,16 +77,16 @@ function ActivitySection({
         {tab === "activity" && (
           <div className="space-y-3">
             {activities.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">No activity recorded yet</p>
+              <p className="text-sm text-[var(--text-muted)] text-center py-4">No activity recorded yet</p>
             ) : (
               activities.map((a) => (
                 <div key={a.id} className="flex items-start gap-3">
-                  <span className={`mt-0.5 text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${ACTION_COLORS[a.action] ?? "bg-gray-100 text-gray-600"}`}>
+                  <span className={`mt-0.5 text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${ACTION_COLORS[a.action] ?? "bg-[var(--bg-subtle)] text-[var(--text-muted)]"}`}>
                     {a.action.replace("_", " ")}
                   </span>
                   <div className="flex-1 min-w-0">
-                    {a.notes && <p className="text-sm text-gray-700">{a.notes}</p>}
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    {a.notes && <p className="text-sm text-[var(--text-muted)]">{a.notes}</p>}
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">
                       {a.actor_name || a.actor_phone || "System"} · {formatDate(a.created_at)}
                     </p>
                   </div>
@@ -99,20 +99,20 @@ function ActivitySection({
         {tab === "score" && (
           <div className="space-y-3">
             {scoreHistory.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">No score changes recorded yet</p>
+              <p className="text-sm text-[var(--text-muted)] text-center py-4">No score changes recorded yet</p>
             ) : (
               scoreHistory.map((s) => (
                 <div key={s.id} className="flex items-center gap-3">
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <span className="text-sm font-bold text-gray-500">{s.old_score}</span>
-                    <span className="text-gray-300">→</span>
-                    <span className={`text-sm font-bold ${s.new_score > s.old_score ? "text-green-600" : s.new_score < s.old_score ? "text-red-500" : "text-gray-500"}`}>
+                    <span className="text-sm font-bold text-[var(--text-muted)]">{s.old_score}</span>
+                    <span className="text-[var(--text-faint)]">→</span>
+                    <span className={`text-sm font-bold ${s.new_score > s.old_score ? "text-green-600" : s.new_score < s.old_score ? "text-red-500" : "text-[var(--text-muted)]"}`}>
                       {s.new_score}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    {s.reason && <p className="text-xs text-gray-600">{s.reason}</p>}
-                    <p className="text-xs text-gray-400">
+                    {s.reason && <p className="text-xs text-[var(--text-muted)]">{s.reason}</p>}
+                    <p className="text-xs text-[var(--text-muted)]">
                       {s.changed_by_phone || "System"} · {formatDate(s.created_at)}
                     </p>
                   </div>
@@ -264,7 +264,7 @@ export default function LeadDetailPage() {
   }
   if (!lead) {
     return (
-      <div className="py-20 text-center text-gray-400">
+      <div className="py-20 text-center text-[var(--text-muted)]">
         <p className="text-4xl mb-3">📋</p>
         <p className="font-medium">Lead not found</p>
         <button onClick={() => router.back()} className="mt-4 text-sm text-blue-600 hover:underline">
@@ -274,22 +274,22 @@ export default function LeadDetailPage() {
     );
   }
 
-  const inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+  const inputCls = "w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
 
   return (
     <div className="space-y-6 pb-10 max-w-6xl">
 
       {/* Back + header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => router.back()} className="text-gray-400 hover:text-gray-600 text-sm">
+        <button onClick={() => router.back()} className="text-[var(--text-muted)] hover:text-[var(--text-muted)] text-sm">
           ← Back
         </button>
       </div>
 
       <div className="flex items-start justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{lead.name || lead.phone}</h1>
-          <p className="text-sm text-gray-400 font-mono mt-0.5">{lead.phone}</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">{lead.name || lead.phone}</h1>
+          <p className="text-sm text-[var(--text-muted)] font-mono mt-0.5">{lead.phone}</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           {lead.wa_session_id && (
@@ -308,7 +308,7 @@ export default function LeadDetailPage() {
               </button>
             </>
           )}
-          <span className="text-xs text-gray-500">Status:</span>
+          <span className="text-xs text-[var(--text-muted)]">Status:</span>
           {STATUS_OPTIONS.map((s) => (
             <button
               key={s}
@@ -317,7 +317,7 @@ export default function LeadDetailPage() {
               className={`px-3 py-1 rounded-full text-xs font-semibold capitalize transition-colors ${
                 lead.status === s
                   ? "bg-blue-600 text-white"
-                  : "bg-gray-100 text-gray-500 hover:bg-gray-200"
+                  : "bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:bg-gray-200"
               }`}
             >
               {s}
@@ -334,54 +334,54 @@ export default function LeadDetailPage() {
           <Section title="Lead Information">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-500">Status</span>
+                <span className="text-xs text-[var(--text-muted)]">Status</span>
                 <Badge label={lead.status} variant={STATUS_COLORS[lead.status] ?? "gray"} />
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-500">Intent</span>
-                <span className="text-xs font-medium text-gray-700 capitalize">{lead.intent ?? "—"}</span>
+                <span className="text-xs text-[var(--text-muted)]">Intent</span>
+                <span className="text-xs font-medium text-[var(--text-muted)] capitalize">{lead.intent ?? "—"}</span>
               </div>
               <div>
-                <span className="text-xs text-gray-500">Intent Score</span>
+                <span className="text-xs text-[var(--text-muted)]">Intent Score</span>
                 <div className="mt-3 flex flex-col gap-3">
                   <ScoreGauge score={lead.intent_score ?? null} />
                   <ScoreFactorBars factors={lead.score_factors ?? null} />
                 </div>
               </div>
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Location</span>
-                <span className="text-xs font-medium text-gray-700">{lead.location_interest ?? "—"}</span>
+                <span className="text-xs text-[var(--text-muted)]">Location</span>
+                <span className="text-xs font-medium text-[var(--text-muted)]">{lead.location_interest ?? "—"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Budget Min</span>
-                <span className="text-xs font-medium text-gray-700">
+                <span className="text-xs text-[var(--text-muted)]">Budget Min</span>
+                <span className="text-xs font-medium text-[var(--text-muted)]">
                   {lead.budget_min ? formatCurrency(lead.budget_min, lead.budget_currency ?? "PKR") : "—"}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Budget Max</span>
-                <span className="text-xs font-medium text-gray-700">
+                <span className="text-xs text-[var(--text-muted)]">Budget Max</span>
+                <span className="text-xs font-medium text-[var(--text-muted)]">
                   {lead.budget_max ? formatCurrency(lead.budget_max, lead.budget_currency ?? "PKR") : "—"}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Assigned To</span>
-                <span className="text-xs font-medium text-gray-700">{lead.assigned_agent_name ?? "—"}</span>
+                <span className="text-xs text-[var(--text-muted)]">Assigned To</span>
+                <span className="text-xs font-medium text-[var(--text-muted)]">{lead.assigned_agent_name ?? "—"}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Source</span>
+                <span className="text-xs text-[var(--text-muted)]">Source</span>
                 <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${
                   lead.source === "whatsapp" ? "bg-green-50 text-green-700"
                   : lead.source === "web"    ? "bg-blue-50 text-blue-700"
-                  : lead.source === "manual" ? "bg-gray-100 text-gray-500"
-                  : "bg-gray-50 text-gray-400"
+                  : lead.source === "manual" ? "bg-[var(--bg-subtle)] text-[var(--text-muted)]"
+                  : "bg-[var(--bg-muted)] text-[var(--text-muted)]"
                 }`}>
                   {lead.source ?? "—"}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-xs text-gray-500">Created</span>
-                <span className="text-xs text-gray-400">{formatDate(lead.created_at)}</span>
+                <span className="text-xs text-[var(--text-muted)]">Created</span>
+                <span className="text-xs text-[var(--text-muted)]">{formatDate(lead.created_at)}</span>
               </div>
             </div>
           </Section>
@@ -391,8 +391,8 @@ export default function LeadDetailPage() {
               <div className="space-y-1.5">
                 {Object.entries(lead.intent_signals).map(([key, val]) => (
                   <div key={key} className="flex justify-between items-center">
-                    <span className="text-xs text-gray-500 capitalize">{key.replace(/_/g, " ")}</span>
-                    <span className="text-xs font-medium text-gray-700">
+                    <span className="text-xs text-[var(--text-muted)] capitalize">{key.replace(/_/g, " ")}</span>
+                    <span className="text-xs font-medium text-[var(--text-muted)]">
                       {typeof val === "number" ? val : String(val)}
                     </span>
                   </div>
@@ -421,7 +421,7 @@ export default function LeadDetailPage() {
                   </button>
                   <button
                     onClick={() => setNotesEditing(false)}
-                    className="flex-1 py-1.5 text-xs border border-gray-200 text-gray-500 rounded-lg hover:bg-gray-50"
+                    className="flex-1 py-1.5 text-xs border border-[var(--border)] text-[var(--text-muted)] rounded-lg hover:bg-[var(--bg-muted)]"
                   >
                     Cancel
                   </button>
@@ -429,8 +429,8 @@ export default function LeadDetailPage() {
               </div>
             ) : (
               <div>
-                <p className="text-sm text-gray-600 whitespace-pre-wrap min-h-[60px]">
-                  {lead.notes || <span className="text-gray-300">No notes yet</span>}
+                <p className="text-sm text-[var(--text-muted)] whitespace-pre-wrap min-h-[60px]">
+                  {lead.notes || <span className="text-[var(--text-faint)]">No notes yet</span>}
                 </p>
                 <button
                   onClick={() => { setNotes(lead.notes || ""); setNotesEditing(true); }}
@@ -446,18 +446,18 @@ export default function LeadDetailPage() {
           <Section title="Appointments">
             <div className="space-y-2 mb-3">
               {appointments.length === 0 ? (
-                <p className="text-xs text-gray-400">No appointments booked</p>
+                <p className="text-xs text-[var(--text-muted)]">No appointments booked</p>
               ) : (
                 appointments.map((a) => (
-                  <div key={a.id} className="rounded-lg border border-gray-100 p-3">
+                  <div key={a.id} className="rounded-lg border border-[var(--border)] p-3">
                     <div className="flex items-center justify-between mb-1">
                       <Badge label={a.status} variant={APPT_COLORS[a.status]} />
-                      <span className="text-xs text-gray-400">{formatDate(a.scheduled_at)}</span>
+                      <span className="text-xs text-[var(--text-muted)]">{formatDate(a.scheduled_at)}</span>
                     </div>
                     {a.property_title && (
-                      <p className="text-xs text-gray-600">{a.property_title}</p>
+                      <p className="text-xs text-[var(--text-muted)]">{a.property_title}</p>
                     )}
-                    {a.notes && <p className="text-xs text-gray-400 mt-1">{a.notes}</p>}
+                    {a.notes && <p className="text-xs text-[var(--text-muted)] mt-1">{a.notes}</p>}
                     {a.status === "scheduled" && (
                       <div className="flex gap-1.5 mt-2">
                         <button
@@ -491,9 +491,9 @@ export default function LeadDetailPage() {
         <div className="lg:col-span-2 space-y-4">
 
           {/* AI Summary panel */}
-          <div className="rounded-xl border border-gray-200 bg-white p-5">
+          <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-semibold text-gray-700">AI Summary</h3>
+              <h3 className="text-sm font-semibold text-[var(--text-muted)]">AI Summary</h3>
               <button
                 onClick={handleSummarize}
                 disabled={summarizing || messages.length === 0}
@@ -503,9 +503,9 @@ export default function LeadDetailPage() {
               </button>
             </div>
             {summary ? (
-              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{summary}</p>
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed whitespace-pre-wrap">{summary}</p>
             ) : (
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-[var(--text-muted)]">
                 {messages.length === 0
                   ? "No conversation to summarize yet."
                   : "Click Summarize to get an AI-written overview of this lead's conversation."}
@@ -520,7 +520,7 @@ export default function LeadDetailPage() {
                 {msgsLoading ? (
                   <div className="flex justify-center py-8"><LoadingSpinner /></div>
                 ) : messages.length === 0 ? (
-                  <p className="text-center text-sm text-gray-400 py-10">No messages yet</p>
+                  <p className="text-center text-sm text-[var(--text-muted)] py-10">No messages yet</p>
                 ) : (
                   messages.map((m) => (
                     <div key={m.id} className={`flex ${m.direction === "outbound" ? "justify-end" : "justify-start"}`}>
@@ -528,11 +528,11 @@ export default function LeadDetailPage() {
                         className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm ${
                           m.direction === "outbound"
                             ? "bg-blue-600 text-white rounded-br-sm"
-                            : "bg-gray-100 text-gray-800 rounded-bl-sm"
+                            : "bg-[var(--bg-subtle)] text-[var(--text-primary)] rounded-bl-sm"
                         }`}
                       >
                         <p className="leading-snug">{m.body}</p>
-                        <p className={`text-xs mt-1 ${m.direction === "outbound" ? "text-blue-200" : "text-gray-400"}`}>
+                        <p className={`text-xs mt-1 ${m.direction === "outbound" ? "text-blue-200" : "text-[var(--text-muted)]"}`}>
                           {m.sender_name
                             ? `${m.sender_name} · ${formatDate(m.created_at)}`
                             : formatDate(m.created_at)}
@@ -558,7 +558,7 @@ export default function LeadDetailPage() {
                   ))}
                   <button
                     onClick={() => setSuggestions([])}
-                    className="rounded-full border border-gray-200 px-2.5 py-1.5 text-xs text-gray-400 hover:bg-gray-50"
+                    className="rounded-full border border-[var(--border)] px-2.5 py-1.5 text-xs text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
                   >
                     ×
                   </button>
@@ -566,7 +566,7 @@ export default function LeadDetailPage() {
               )}
 
               {/* Composer */}
-              <div className="space-y-2 pt-3 border-t border-gray-100">
+              <div className="space-y-2 pt-3 border-t border-[var(--border)]">
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -579,7 +579,7 @@ export default function LeadDetailPage() {
                       }
                     }}
                     placeholder="Type a WhatsApp message…"
-                    className="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                   <button
                     onClick={() => message.trim() && sendMutation.mutate(message.trim())}
@@ -608,13 +608,13 @@ export default function LeadDetailPage() {
       {/* ── Book appointment modal ─────────────────────────────────────────── */}
       {showBookModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-md p-6 space-y-4">
+          <div className="bg-[var(--bg-surface)] rounded-2xl w-full max-w-md p-6 space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="font-semibold text-gray-900">Book Appointment</h2>
-              <button onClick={() => setShowBookModal(false)} className="text-gray-400 hover:text-gray-600 text-xl">×</button>
+              <h2 className="font-semibold text-[var(--text-primary)]">Book Appointment</h2>
+              <button onClick={() => setShowBookModal(false)} className="text-[var(--text-muted)] hover:text-[var(--text-muted)] text-xl">×</button>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1 block">Date & Time</label>
+              <label className="text-xs font-medium text-[var(--text-muted)] mb-1 block">Date & Time</label>
               <input
                 type="datetime-local"
                 value={apptForm.scheduled_at}
@@ -623,7 +623,7 @@ export default function LeadDetailPage() {
               />
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1 block">Duration (minutes)</label>
+              <label className="text-xs font-medium text-[var(--text-muted)] mb-1 block">Duration (minutes)</label>
               <select
                 value={apptForm.duration_minutes}
                 onChange={(e) => setApptForm((f) => ({ ...f, duration_minutes: e.target.value }))}
@@ -635,7 +635,7 @@ export default function LeadDetailPage() {
               </select>
             </div>
             <div>
-              <label className="text-xs font-medium text-gray-600 mb-1 block">Notes (optional)</label>
+              <label className="text-xs font-medium text-[var(--text-muted)] mb-1 block">Notes (optional)</label>
               <textarea
                 value={apptForm.notes}
                 onChange={(e) => setApptForm((f) => ({ ...f, notes: e.target.value }))}
@@ -654,7 +654,7 @@ export default function LeadDetailPage() {
               </button>
               <button
                 onClick={() => setShowBookModal(false)}
-                className="flex-1 py-2 text-sm border border-gray-200 text-gray-600 rounded-lg hover:bg-gray-50"
+                className="flex-1 py-2 text-sm border border-[var(--border)] text-[var(--text-muted)] rounded-lg hover:bg-[var(--bg-muted)]"
               >
                 Cancel
               </button>

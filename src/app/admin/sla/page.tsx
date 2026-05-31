@@ -28,7 +28,7 @@ function stateBadge(state: CircuitState) {
     case "CLOSED":    return `${base} bg-green-100 text-green-700`;
     case "OPEN":      return `${base} bg-red-100 text-red-700`;
     case "HALF_OPEN": return `${base} bg-amber-100 text-amber-700`;
-    default:          return `${base} bg-gray-100 text-gray-600`;
+    default:          return `${base} bg-[var(--bg-subtle)] text-[var(--text-muted)]`;
   }
 }
 
@@ -60,10 +60,10 @@ function CircuitCard({
       variants={stagger}
       initial="hidden"
       animate="show"
-      className="rounded-xl border border-gray-200 bg-white p-5 space-y-3"
+      className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 space-y-3"
     >
       <div className="flex items-center justify-between">
-        <span className="font-semibold text-gray-900 text-sm">{SERVICE_LABELS[service] ?? service}</span>
+        <span className="font-semibold text-[var(--text-primary)] text-sm">{SERVICE_LABELS[service] ?? service}</span>
         <AnimatePresence mode="wait">
           <motion.span
             key={state}
@@ -79,12 +79,12 @@ function CircuitCard({
       </div>
 
       {outage && (
-        <div className="space-y-1 text-xs text-gray-500">
+        <div className="space-y-1 text-xs text-[var(--text-muted)]">
           <div className="flex items-center justify-between">
             <span>Error rate</span>
-            <span className="font-mono text-gray-700">{(outage.error_rate * 100).toFixed(1)}%</span>
+            <span className="font-mono text-[var(--text-muted)]">{(outage.error_rate * 100).toFixed(1)}%</span>
           </div>
-          <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+          <div className="h-2 w-full rounded-full bg-[var(--bg-subtle)] overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${outage.error_rate >= 0.15 ? "bg-red-500" : "bg-green-500"}`}
               style={{ width: `${Math.min(100, outage.error_rate * 100).toFixed(1)}%` }}
@@ -94,9 +94,10 @@ function CircuitCard({
       )}
 
       <button
+        type="button"
         onClick={handleReset}
         disabled={resetting || state === "CLOSED"}
-        className="w-full rounded-lg border border-gray-200 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-40 transition-colors"
+        className="w-full rounded-lg border border-[var(--border)] py-1.5 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] disabled:opacity-40 transition-colors"
       >
         {resetting ? "Resetting…" : "Force Reset"}
       </button>
@@ -106,9 +107,9 @@ function CircuitCard({
 
 function SkeletonCard() {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3 animate-pulse">
-      <div className="h-4 w-32 rounded bg-gray-100" />
-      <div className="h-2 w-full rounded-full bg-gray-100" />
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 space-y-3 animate-pulse">
+      <div className="h-4 w-32 rounded bg-[var(--bg-subtle)]" />
+      <div className="h-2 w-full rounded-full bg-[var(--bg-subtle)]" />
     </div>
   );
 }
@@ -123,8 +124,8 @@ export default function SlaPage() {
     <div className="space-y-8 p-6 max-w-4xl mx-auto">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <h1 className="text-xl font-semibold text-gray-900">SLA Monitor</h1>
-        <span className="flex items-center gap-1.5 text-xs font-medium text-gray-500">
+        <h1 className="text-xl font-semibold text-[var(--text-primary)]">SLA Monitor</h1>
+        <span className="flex items-center gap-1.5 text-xs font-medium text-[var(--text-muted)]">
           <span
             className={`h-2 w-2 rounded-full animate-pulse ${anyOpen ? "bg-red-500" : "bg-green-500"}`}
           />
@@ -134,7 +135,7 @@ export default function SlaPage() {
 
       {/* Section 1 — Circuit Breaker States */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Circuit Breaker States</h2>
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">Circuit Breaker States</h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           {isLoading
             ? SERVICES.map((s) => <SkeletonCard key={s} />)
@@ -152,7 +153,7 @@ export default function SlaPage() {
 
       {/* Section 2 — Component Uptime KPIs */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Component Uptime</h2>
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">Component Uptime</h2>
         <div className="grid grid-cols-3 gap-4">
           {SERVICES.map((service, i) => {
             const isOpen = status?.outages[service]?.is_open ?? false;
@@ -165,10 +166,10 @@ export default function SlaPage() {
                 variants={stagger}
                 initial="hidden"
                 animate="show"
-                className="rounded-xl border border-gray-200 bg-white p-4 text-center"
+                className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4 text-center"
               >
                 <p className={`text-2xl font-bold ${color}`}>{pct}%</p>
-                <p className="mt-1 text-xs text-gray-500">{SERVICE_LABELS[service]}</p>
+                <p className="mt-1 text-xs text-[var(--text-muted)]">{SERVICE_LABELS[service]}</p>
               </motion.div>
             );
           })}
@@ -177,14 +178,14 @@ export default function SlaPage() {
 
       {/* Section 3 — Tenant Queue Isolation */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Tenant Queue Isolation</h2>
-        <div className="rounded-xl border border-gray-200 bg-white p-5">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">Tenant Queue Isolation</h2>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
           {isLoading ? (
-            <div className="h-10 rounded bg-gray-100 animate-pulse" />
+            <div className="h-10 rounded bg-[var(--bg-subtle)] animate-pulse" />
           ) : (
             <>
               <div className="flex items-center justify-between mb-4">
-                <span className="text-sm text-gray-700">Isolated Organizations</span>
+                <span className="text-sm text-[var(--text-muted)]">Isolated Organizations</span>
                 <span
                   className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
                     (status?.queue_isolation.isolated_orgs.length ?? 0) > 0
@@ -196,13 +197,13 @@ export default function SlaPage() {
                 </span>
               </div>
               {(status?.queue_isolation.isolated_orgs ?? []).length === 0 ? (
-                <p className="text-xs text-gray-400">No tenants currently isolated.</p>
+                <p className="text-xs text-[var(--text-muted)]">No tenants currently isolated.</p>
               ) : (
                 <div className="space-y-1">
                   {status!.queue_isolation.isolated_orgs.map((id) => (
                     <div key={id} className="flex items-center gap-2 text-xs">
                       <span className="h-2 w-2 rounded-full bg-amber-400" />
-                      <span className="font-mono text-gray-600">{id}</span>
+                      <span className="font-mono text-[var(--text-muted)]">{id}</span>
                       <span className="rounded bg-amber-50 px-1.5 py-0.5 text-amber-600">Isolated</span>
                     </div>
                   ))}
@@ -215,8 +216,8 @@ export default function SlaPage() {
 
       {/* Section 4 — Latency Distribution (deferred to OTel) */}
       <section className="space-y-4">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">Latency Distribution</h2>
-        <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 p-6 text-center text-sm text-gray-400">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">Latency Distribution</h2>
+        <div className="rounded-xl border border-dashed border-[var(--border)] bg-[var(--bg-muted)] p-6 text-center text-sm text-[var(--text-muted)]">
           Full latency data available after OTel setup — see Platform Operations panel.
         </div>
       </section>

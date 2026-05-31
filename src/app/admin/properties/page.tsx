@@ -1,4 +1,5 @@
 "use client";
+import { X, ChevronUp, ChevronDown } from "lucide-react";
 
 import { useRef, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -70,18 +71,20 @@ function AiAnalysisSection({ analysis }: { analysis: Record<string, unknown> }) 
   return (
     <div className="col-span-2 border border-blue-100 rounded-lg bg-blue-50/40 overflow-hidden">
       <button
+        type="button"
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
         className="w-full flex items-center justify-between px-4 py-2.5 text-start"
       >
         <span className="text-xs font-semibold text-blue-800">AI Analysis (Gemini)</span>
-        <span className="text-blue-400 text-xs">{open ? "▲" : "▼"}</span>
+        {open ? <ChevronUp size={14} className="text-blue-400" aria-hidden="true" /> : <ChevronDown size={14} className="text-blue-400" aria-hidden="true" />}
       </button>
       {open && (
         <div className="px-4 pb-3 space-y-1.5 border-t border-blue-100">
           {Object.entries(analysis).map(([key, val]) => (
             <div key={key} className="flex justify-between items-start gap-4">
               <span className="text-xs text-blue-700 font-medium capitalize flex-shrink-0">{key.replace(/_/g, " ")}</span>
-              <span className="text-xs text-gray-700 text-right">
+              <span className="text-xs text-[var(--text-muted)] text-right">
                 {typeof val === "object" ? JSON.stringify(val) : String(val ?? "—")}
               </span>
             </div>
@@ -112,7 +115,7 @@ function PropertyImagesSection({ propertyId, images }: {
   return (
     <div className="mt-3">
       <div className="flex items-center justify-between mb-2">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+        <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">
           Photos ({images.length})
         </p>
         <div>
@@ -140,19 +143,21 @@ function PropertyImagesSection({ propertyId, images }: {
       {images.length > 0 ? (
         <div className="grid grid-cols-3 gap-2">
           {images.map((img) => (
-            <div key={img.id} className="relative group rounded-lg overflow-hidden bg-gray-100 h-24">
+            <div key={img.id} className="relative group rounded-lg overflow-hidden bg-[var(--bg-subtle)] h-24">
               <img src={img.url} alt={img.caption || ""} className="w-full h-full object-cover" />
               <button
+                type="button"
                 onClick={() => deleteMutation.mutate(img.id)}
-                className="absolute top-1 right-1 hidden group-hover:flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-xs"
+                aria-label="Remove photo"
+                className="absolute top-1 end-1 hidden group-hover:flex items-center justify-center w-6 h-6 rounded-full bg-red-500 text-white"
               >
-                ×
+                <X size={10} aria-hidden="true" />
               </button>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-xs text-gray-400 italic">No photos yet</p>
+        <p className="text-xs text-[var(--text-muted)] italic">No photos yet</p>
       )}
     </div>
   );
@@ -266,8 +271,8 @@ export default function PropertiesPage() {
       <div className="mb-6">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Properties</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="text-2xl font-bold text-[var(--text-primary)]">Properties</h1>
+            <p className="mt-1 text-sm text-[var(--text-muted)]">
               {isLoading ? "Loading…" : `${properties.length} listing${properties.length !== 1 ? "s" : ""}`}
               {" · "}create, verify, rescore and manage listings
             </p>
@@ -277,9 +282,10 @@ export default function PropertiesPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search properties…"
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-56"
+              className="rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 w-56"
             />
             <button
+              type="button"
               onClick={() => rescoreAll.mutate()}
               disabled={rescoreAll.isPending}
               className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-700 disabled:opacity-50 transition-colors"
@@ -287,6 +293,7 @@ export default function PropertiesPage() {
               {rescoreAll.isPending ? "Rescoring…" : "Rescore All"}
             </button>
             <button
+              type="button"
               onClick={() => { setShowAdd(true); setAddForm(BLANK_FORM); setFormError(""); }}
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 transition-colors"
             >
@@ -306,10 +313,10 @@ export default function PropertiesPage() {
         <LoadingSpinner />
       ) : (
         <>
-        <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-[var(--border)] text-start text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 <th className="px-5 py-3">Ref No</th>
                 <th className="px-5 py-3">Title</th>
                 <th className="px-5 py-3">City</th>
@@ -321,21 +328,21 @@ export default function PropertiesPage() {
                 <th className="px-5 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-[var(--border)]">
               {properties.map((p) => (
-                <tr key={p.id} className="hover:bg-gray-50">
-                  <td className="px-5 py-3 font-mono text-xs text-gray-500 whitespace-nowrap">
+                <tr key={p.id} className="hover:bg-[var(--bg-muted)]">
+                  <td className="px-5 py-3 font-mono text-xs text-[var(--text-muted)] whitespace-nowrap">
                     {p.ref_no || "—"}
                   </td>
-                  <td className="px-5 py-3 font-medium text-gray-900 max-w-[200px] truncate">
+                  <td className="px-5 py-3 font-medium text-[var(--text-primary)] max-w-[200px] truncate">
                     {p.title || `Property #${p.id.slice(0, 8)}`}
                   </td>
-                  <td className="px-5 py-3 text-gray-600">{p.city}</td>
-                  <td className="px-5 py-3 text-gray-700">{p.price ? formatCurrency(p.price, p.currency) : "—"}</td>
+                  <td className="px-5 py-3 text-[var(--text-muted)]">{p.city}</td>
+                  <td className="px-5 py-3 text-[var(--text-muted)]">{p.price ? formatCurrency(p.price, p.currency) : "—"}</td>
                   <td className="px-5 py-3">
                     <Badge label={p.property_type} />
                   </td>
-                  <td className="px-5 py-3 text-gray-500">
+                  <td className="px-5 py-3 text-[var(--text-muted)]">
                     {p.ai_score != null ? `${p.ai_score}/100` : "—"}
                   </td>
                   <td className="px-5 py-3">
@@ -347,23 +354,26 @@ export default function PropertiesPage() {
                       }
                     />
                   </td>
-                  <td className="px-5 py-3 text-gray-400 whitespace-nowrap">{formatDate(p.created_at)}</td>
+                  <td className="px-5 py-3 text-[var(--text-muted)] whitespace-nowrap">{formatDate(p.created_at)}</td>
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <button
+                        type="button"
                         onClick={() => setDetailProp(p)}
-                        className="text-xs px-2.5 py-1 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 font-medium"
+                        className="text-xs px-2.5 py-1 rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)] font-medium"
                       >
                         View
                       </button>
                       <button
+                        type="button"
                         onClick={() => openEdit(p)}
-                        className="text-xs px-2.5 py-1 rounded-md border border-gray-200 text-blue-600 hover:bg-blue-50 font-medium"
+                        className="text-xs px-2.5 py-1 rounded-md border border-[var(--border)] text-blue-600 hover:bg-blue-50 font-medium"
                       >
                         Edit
                       </button>
                       {p.legal_status !== "verified" && (
                         <button
+                          type="button"
                           onClick={() => verify.mutate(p.id)}
                           disabled={verify.isPending}
                           className="text-xs px-2.5 py-1 rounded-md bg-green-600 text-white hover:bg-green-700 disabled:opacity-50 font-medium"
@@ -372,6 +382,7 @@ export default function PropertiesPage() {
                         </button>
                       )}
                       <button
+                        type="button"
                         onClick={() => rescore.mutate(p.id)}
                         disabled={rescore.isPending}
                         className="text-xs px-2.5 py-1 rounded-md bg-purple-100 text-purple-700 hover:bg-purple-200 disabled:opacity-50 font-medium"
@@ -379,6 +390,7 @@ export default function PropertiesPage() {
                         Rescore
                       </button>
                       <button
+                        type="button"
                         onClick={() => setDeleteId(p.id)}
                         className="text-xs px-2.5 py-1 rounded-md border border-red-100 text-red-400 hover:bg-red-50 font-medium"
                       >
@@ -390,7 +402,7 @@ export default function PropertiesPage() {
               ))}
               {properties.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-5 py-10 text-center text-gray-400">
+                  <td colSpan={9} className="px-5 py-10 text-center text-[var(--text-muted)]">
                     No properties found
                   </td>
                 </tr>
@@ -480,17 +492,22 @@ export default function PropertiesPage() {
       {/* ── Delete Confirm ────────────────────────────────────────────────────── */}
       {deleteId && (
         <Modal title="Delete Property" onClose={() => setDeleteId(null)}>
-          <p className="text-sm text-gray-600 mb-6">
+          <p className="text-sm text-[var(--text-muted)] mb-3">
             Are you sure you want to permanently delete this property? This cannot be undone.
+          </p>
+          <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-5">
+            All associated images, documents, and deal locks will be affected.
           </p>
           <div className="flex justify-end gap-3">
             <button
+              type="button"
               onClick={() => setDeleteId(null)}
-              className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700"
+              className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             >
               Cancel
             </button>
             <button
+              type="button"
               onClick={() => deleteMutation.mutate(deleteId)}
               disabled={deleteMutation.isPending}
               className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
@@ -529,7 +546,7 @@ function PropertyForm({
         <Field label="Title" required>
           <input
             type="text" value={form.title} onChange={set("title")}
-            placeholder="e.g. 5 Marla House DHA Lahore Phase 5"
+            placeholder="e.g. 3-Bed Villa in Marina District"
             className={inputCls}
           />
         </Field>
@@ -555,14 +572,14 @@ function PropertyForm({
           <Field label="City" required>
             <input
               type="text" value={form.city} onChange={set("city")}
-              placeholder="e.g. Lahore"
+              placeholder="e.g. Dubai, London, Karachi"
               className={inputCls}
             />
           </Field>
-          <Field label="Area / Society" required>
+          <Field label="Area / District" required>
             <input
               type="text" value={form.location} onChange={set("location")}
-              placeholder="e.g. DHA Phase 5, Block E"
+              placeholder="e.g. Downtown, Mayfair, Block E"
               className={inputCls}
             />
           </Field>
@@ -572,7 +589,7 @@ function PropertyForm({
       {/* Size & Price */}
       <Section label="Size & Price">
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Area (Marla)">
+          <Field label="Area (Marla / sqm)">
             <input
               type="number" min="0" step="0.5"
               value={form.area_marla} onChange={set("area_marla")}
@@ -580,11 +597,11 @@ function PropertyForm({
               className={inputCls}
             />
           </Field>
-          <Field label="Price (PKR)">
+          <Field label="Price">
             <input
               type="number" min="0"
               value={form.price} onChange={set("price")}
-              placeholder="e.g. 15000000"
+              placeholder="e.g. 1500000"
               className={inputCls}
             />
           </Field>
@@ -646,8 +663,8 @@ function PropertyForm({
         </p>
       )}
 
-      <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
-        <button onClick={onCancel} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
+      <div className="flex justify-end gap-3 pt-2 border-t border-[var(--border)]">
+        <button onClick={onCancel} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
           Cancel
         </button>
         <button
@@ -669,12 +686,13 @@ function Modal({
 }: {
   title: string; onClose: () => void; children: React.ReactNode; wide?: boolean;
 }) {
+  const titleId = `prop-modal-${title.replace(/\s+/g, "-").toLowerCase()}`;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className={`w-full ${wide ? "max-w-2xl" : "max-w-md"} rounded-xl bg-white shadow-xl`}>
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h3 className="font-semibold text-gray-900">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-labelledby={titleId} onClick={(e) => e.stopPropagation()} className={`w-full ${wide ? "max-w-2xl" : "max-w-md"} rounded-xl bg-[var(--bg-surface)] shadow-xl`}>
+        <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+          <h3 id={titleId} className="font-semibold text-[var(--text-primary)]">{title}</h3>
+          <button type="button" onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors" aria-label="Close"><X size={14} aria-hidden="true" /></button>
         </div>
         <div className="px-6 py-5">{children}</div>
       </div>
@@ -685,7 +703,7 @@ function Modal({
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">{label}</p>
       <div className="space-y-3">{children}</div>
     </div>
   );
@@ -694,7 +712,7 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">
         {label}{required && <span className="text-red-500 ms-0.5">*</span>}
       </label>
       {children}
@@ -708,10 +726,10 @@ function DetailRow({
   label: string; value?: string | null; mono?: boolean; children?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between py-1.5 border-b border-gray-50 last:border-0">
-      <span className="text-sm text-gray-500 w-32 flex-shrink-0">{label}</span>
+    <div className="flex items-start justify-between py-1.5 border-b border-[var(--border-subtle)] last:border-0">
+      <span className="text-sm text-[var(--text-muted)] w-32 flex-shrink-0">{label}</span>
       {children ?? (
-        <span className={`text-sm text-right ${mono ? "font-mono" : ""} ${!value ? "text-gray-300" : "text-gray-800"}`}>
+        <span className={`text-sm text-right ${mono ? "font-mono" : ""} ${!value ? "text-[var(--text-faint)]" : "text-[var(--text-primary)]"}`}>
           {value || "—"}
         </span>
       )}
@@ -765,15 +783,15 @@ function OwnerPicker({
     return (
       <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3">
         <div>
-          <p className="text-sm font-medium text-gray-800">
+          <p className="text-sm font-medium text-[var(--text-primary)]">
             {selected.name || "—"}
             <Badge
               label={ROLE_LABEL[selected.role] ?? selected.role}
               variant={ROLE_VARIANT[selected.role] ?? "gray"}
             />
           </p>
-          <p className="text-xs font-mono text-gray-500 mt-0.5">{selected.phone}</p>
-          {selected.email && <p className="text-xs text-gray-400">{selected.email}</p>}
+          <p className="text-xs font-mono text-[var(--text-muted)] mt-0.5">{selected.phone}</p>
+          {selected.email && <p className="text-xs text-[var(--text-muted)]">{selected.email}</p>}
         </div>
         <button
           type="button"
@@ -788,7 +806,7 @@ function OwnerPicker({
 
   return (
     <div className="space-y-2">
-      <p className="text-xs text-gray-400">Search by phone number or name to find the owner.</p>
+      <p className="text-xs text-[var(--text-muted)]">Search by phone number or name to find the owner.</p>
       <div className="flex gap-2">
         <input
           type="text"
@@ -802,18 +820,18 @@ function OwnerPicker({
           type="button"
           onClick={handleSearch}
           disabled={loading || !query.trim()}
-          className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 whitespace-nowrap"
+          className="rounded-lg border border-[var(--border-strong)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] disabled:opacity-50 whitespace-nowrap"
         >
           {loading ? "Searching…" : "Search"}
         </button>
       </div>
 
       {searched && results.length === 0 && !loading && (
-        <p className="text-xs text-gray-400 py-1">No users found. Try a different phone or name.</p>
+        <p className="text-xs text-[var(--text-muted)] py-1">No users found. Try a different phone or name.</p>
       )}
 
       {results.length > 0 && (
-        <div className="rounded-lg border border-gray-200 divide-y divide-gray-50 max-h-48 overflow-y-auto">
+        <div className="rounded-lg border border-[var(--border)] divide-y divide-[var(--border)] max-h-48 overflow-y-auto">
           {results.map((u) => (
             <button
               key={u.id}
@@ -822,11 +840,11 @@ function OwnerPicker({
               className="w-full flex items-center justify-between px-4 py-2.5 hover:bg-blue-50 text-start transition-colors"
             >
               <div>
-                <span className="text-sm font-medium text-gray-800">{u.name || "(no name)"}</span>
+                <span className="text-sm font-medium text-[var(--text-primary)]">{u.name || "(no name)"}</span>
                 <span className="ms-2">
                   <Badge label={ROLE_LABEL[u.role] ?? u.role} variant={ROLE_VARIANT[u.role] ?? "gray"} />
                 </span>
-                <p className="text-xs font-mono text-gray-500">{u.phone}</p>
+                <p className="text-xs font-mono text-[var(--text-muted)]">{u.phone}</p>
               </div>
               <span className="text-xs text-blue-600 font-medium ms-3">Select</span>
             </button>
@@ -834,7 +852,7 @@ function OwnerPicker({
         </div>
       )}
 
-      <p className="text-xs text-gray-300 italic">Leave empty to create an anonymous listing.</p>
+      <p className="text-xs text-[var(--text-faint)] italic">Leave empty to create an anonymous listing.</p>
     </div>
   );
 }
@@ -842,7 +860,7 @@ function OwnerPicker({
 // ── Utilities ─────────────────────────────────────────────────────────────────
 
 const inputCls =
-  "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
+  "w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
 
 function formToPayload(form: PropertyForm): Record<string, unknown> {
   return {

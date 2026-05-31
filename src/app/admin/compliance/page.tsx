@@ -78,7 +78,7 @@ export default function AdminCompliancePage() {
 
   return (
     <div className="space-y-6 p-6">
-      <h1 className="text-2xl font-bold text-gray-900">Compliance Dashboard</h1>
+      <h1 className="text-2xl font-bold text-[var(--text-primary)]">Compliance Dashboard</h1>
 
       {/* KPI cards */}
       <motion.div
@@ -86,14 +86,14 @@ export default function AdminCompliancePage() {
         className="grid grid-cols-4 gap-4"
       >
         {[
-          { label: "Total Screenings", value: totalScreenings, color: "text-gray-900" },
+          { label: "Total Screenings", value: totalScreenings, color: "text-[var(--text-primary)]" },
           { label: "Flagged",          value: flaggedCount,    color: "text-amber-600" },
           { label: "Blocked",          value: blockedCount,    color: "text-red-600" },
           { label: "Clear Rate",       value: `${clearRate}%`, color: "text-green-600" },
         ].map(({ label, value, color }) => (
-          <motion.div key={label} variants={item} className="rounded-xl border bg-white p-5 shadow-sm">
+          <motion.div key={label} variants={item} className="rounded-xl border bg-[var(--bg-surface)] p-5 shadow-sm">
             <div className={`text-3xl font-bold ${color}`}>{value}</div>
-            <div className="mt-1 text-sm text-gray-500">{label}</div>
+            <div className="mt-1 text-sm text-[var(--text-muted)]">{label}</div>
           </motion.div>
         ))}
       </motion.div>
@@ -101,16 +101,16 @@ export default function AdminCompliancePage() {
       {/* Screening history */}
       <motion.div
         variants={stagger} initial="hidden" animate="visible"
-        className="rounded-xl border bg-white shadow-sm"
+        className="rounded-xl border bg-[var(--bg-surface)] shadow-sm"
       >
         <div className="flex items-center justify-between border-b px-5 py-4">
-          <h2 className="font-semibold text-gray-800">All-Org Screening History</h2>
+          <h2 className="font-semibold text-[var(--text-primary)]">All-Org Screening History</h2>
           <div className="flex gap-2">
             <input
               value={orgFilter}
               onChange={(e) => setOrgFilter(e.target.value)}
               placeholder="Org UUID for export filter"
-              className="rounded-lg border px-3 py-1.5 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-blue-400"
+              className="rounded-lg border px-3 py-1.5 text-sm text-[var(--text-muted)] outline-none focus:ring-2 focus:ring-blue-400"
             />
             <button
               onClick={handleExport}
@@ -122,11 +122,11 @@ export default function AdminCompliancePage() {
         </div>
         <div className="overflow-x-auto px-5 py-4">
           {screenings.length === 0 ? (
-            <p className="text-sm text-gray-500">No screening records.</p>
+            <p className="text-sm text-[var(--text-muted)]">No screening records.</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-start text-xs text-gray-500">
+                <tr className="border-b text-start text-xs text-[var(--text-muted)]">
                   <th className="pb-2 pe-4">Name</th>
                   <th className="pb-2 pe-4">Org</th>
                   <th className="pb-2 pe-4">List</th>
@@ -136,20 +136,20 @@ export default function AdminCompliancePage() {
                   <th className="pb-2">Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-[var(--border)]">
                 {screenings.map((sr) => (
                   <motion.tr key={sr.screening_id} variants={item}>
-                    <td className="py-2 pe-4 font-medium text-gray-800">{sr.screened_name}</td>
-                    <td className="py-2 pe-4 font-mono text-xs text-gray-500">{sr.org_id?.slice(0, 8) || "—"}</td>
-                    <td className="py-2 pe-4 text-gray-600">{sr.list_source || "—"}</td>
-                    <td className="py-2 pe-4 capitalize text-gray-600">{sr.match_type || "—"}</td>
-                    <td className="py-2 pe-4 text-gray-600">{sr.risk_score}</td>
+                    <td className="py-2 pe-4 font-medium text-[var(--text-primary)]">{sr.screened_name}</td>
+                    <td className="py-2 pe-4 font-mono text-xs text-[var(--text-muted)]">{sr.org_id?.slice(0, 8) || "—"}</td>
+                    <td className="py-2 pe-4 text-[var(--text-muted)]">{sr.list_source || "—"}</td>
+                    <td className="py-2 pe-4 capitalize text-[var(--text-muted)]">{sr.match_type || "—"}</td>
+                    <td className="py-2 pe-4 text-[var(--text-muted)]">{sr.risk_score}</td>
                     <td className="py-2 pe-4">
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${statusColor(sr.status)}`}>
                         {sr.status}
                       </span>
                     </td>
-                    <td className="py-2 text-xs text-gray-400">
+                    <td className="py-2 text-xs text-[var(--text-muted)]">
                       {new Date(sr.screened_at).toLocaleDateString()}
                     </td>
                   </motion.tr>
@@ -163,14 +163,14 @@ export default function AdminCompliancePage() {
       {/* Sanction list management */}
       <motion.div
         variants={stagger} initial="hidden" animate="visible"
-        className="rounded-xl border bg-white shadow-sm"
+        className="rounded-xl border bg-[var(--bg-surface)] shadow-sm"
       >
         <div className="border-b px-5 py-4">
-          <h2 className="font-semibold text-gray-800">Sanction List Management</h2>
+          <h2 className="font-semibold text-[var(--text-primary)]">Sanction List Management</h2>
         </div>
         <div className="px-5 py-4 space-y-4">
           {/* Add record form */}
-          <div className="grid grid-cols-2 gap-3 rounded-lg bg-gray-50 p-4">
+          <div className="grid grid-cols-2 gap-3 rounded-lg bg-[var(--bg-muted)] p-4">
             <input
               value={newSanction.name}
               onChange={(e) => setNewSanction((s) => ({ ...s, name: e.target.value }))}
@@ -223,11 +223,11 @@ export default function AdminCompliancePage() {
 
           {/* Existing records */}
           {sanctions.length === 0 ? (
-            <p className="text-sm text-gray-500">No sanction records.</p>
+            <p className="text-sm text-[var(--text-muted)]">No sanction records.</p>
           ) : (
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b text-start text-xs text-gray-500">
+                <tr className="border-b text-start text-xs text-[var(--text-muted)]">
                   <th className="pb-2 pe-4">Name</th>
                   <th className="pb-2 pe-4">Type</th>
                   <th className="pb-2 pe-4">List</th>
@@ -235,12 +235,12 @@ export default function AdminCompliancePage() {
                   <th className="pb-2">Action</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-[var(--border)]">
                 {sanctions.map((rec) => (
                   <motion.tr key={rec.id} variants={item}>
-                    <td className="py-2 pe-4 font-medium text-gray-800">{rec.name}</td>
-                    <td className="py-2 pe-4 uppercase text-xs text-gray-500">{rec.id_type || "—"}</td>
-                    <td className="py-2 pe-4 text-gray-600">{rec.list_source}</td>
+                    <td className="py-2 pe-4 font-medium text-[var(--text-primary)]">{rec.name}</td>
+                    <td className="py-2 pe-4 uppercase text-xs text-[var(--text-muted)]">{rec.id_type || "—"}</td>
+                    <td className="py-2 pe-4 text-[var(--text-muted)]">{rec.list_source}</td>
                     <td className={`py-2 pe-4 font-semibold text-sm ${riskColor(rec.risk_level)}`}>
                       {rec.risk_level}
                     </td>

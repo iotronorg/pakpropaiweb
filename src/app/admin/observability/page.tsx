@@ -30,7 +30,7 @@ function SectionTitle({ title, index }: { title: string; index: number }) {
       variants={stagger}
       initial="hidden"
       animate="show"
-      className="text-lg font-semibold text-gray-800"
+      className="text-lg font-semibold text-[var(--text-primary)]"
     >
       {title}
     </motion.h2>
@@ -38,7 +38,7 @@ function SectionTitle({ title, index }: { title: string; index: number }) {
 }
 
 function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-lg bg-gray-100 ${className}`} />;
+  return <div className={`animate-pulse rounded-lg bg-[var(--bg-subtle)] ${className}`} />;
 }
 
 function latencyColor(ms: number): string {
@@ -63,14 +63,14 @@ function ErrorBarChart({ data }: { data: { label: string; count: number }[] }) {
         return (
           <div key={d.label} className="flex flex-col items-center flex-1 h-full justify-end min-w-0">
             {d.count > 0 && (
-              <span className="text-[11px] font-semibold text-gray-600 mb-0.5">{d.count}</span>
+              <span className="text-[11px] font-semibold text-[var(--text-muted)] mb-0.5">{d.count}</span>
             )}
             <div
               className="w-full rounded-t bg-red-500 transition-all"
               style={{ height: `${heightPct}%` }}
               title={`${d.label}: ${d.count}`}
             />
-            <span className="text-[10px] text-gray-400 mt-1.5 truncate w-full text-center leading-tight">
+            <span className="text-[10px] text-[var(--text-muted)] mt-1.5 truncate w-full text-center leading-tight">
               {d.label.replace(".", "​.")}
             </span>
           </div>
@@ -105,10 +105,10 @@ function LatencyBarChart({ data }: { data: { route: string; ms: number }[] }) {
         const widthPct = Math.max((d.ms / maxMs) * 100, 1);
         return (
           <div key={d.route} className="flex items-center gap-3">
-            <span className="text-[10px] text-gray-500 w-28 shrink-0 truncate text-right leading-tight">
+            <span className="text-[10px] text-[var(--text-muted)] w-28 shrink-0 truncate text-right leading-tight">
               {d.route}
             </span>
-            <div className="flex-1 relative h-6 bg-gray-100 rounded-full overflow-visible">
+            <div className="flex-1 relative h-6 bg-[var(--bg-subtle)] rounded-full overflow-visible">
               {/* SLO line inside the bar track */}
               <div
                 className="absolute top-0 bottom-0 w-px bg-slate-400 z-10"
@@ -156,7 +156,7 @@ export default function ObservabilityPage() {
     <div className="space-y-8 p-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">Platform Operations</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Platform Operations</h1>
         <AnimatePresence>
           {!isLoading && (
             <motion.span
@@ -192,7 +192,7 @@ export default function ObservabilityPage() {
             variants={stagger}
             initial="hidden"
             animate="show"
-            className="rounded-xl border border-gray-200 bg-white p-4"
+            className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4"
           >
             <ErrorBarChart data={errorData} />
           </motion.div>
@@ -206,8 +206,8 @@ export default function ObservabilityPage() {
           {isLoading ? (
             <Skeleton className="h-20 w-48" />
           ) : (
-            <div className="inline-flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-6 py-4 shadow-sm">
-              <span className="text-4xl font-bold text-gray-900">{metrics?.dlq_depth ?? 0}</span>
+            <div className="inline-flex items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-6 py-4 shadow-sm">
+              <span className="text-4xl font-bold text-[var(--text-primary)]">{metrics?.dlq_depth ?? 0}</span>
               {(metrics?.dlq_depth ?? 0) === 0 ? (
                 <span className="rounded-full bg-green-100 px-3 py-1 text-sm font-medium text-green-700">
                   No backlog
@@ -237,10 +237,10 @@ export default function ObservabilityPage() {
             variants={stagger}
             initial="hidden"
             animate="show"
-            className="rounded-xl border border-gray-200 bg-white p-4"
+            className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4"
           >
             {latencyData.length === 0 ? (
-              <p className="text-sm text-gray-400 py-8 text-center">No latency data yet</p>
+              <p className="text-sm text-[var(--text-muted)] py-8 text-center">No latency data yet</p>
             ) : (
               <LatencyBarChart data={latencyData} />
             )}
@@ -271,13 +271,13 @@ export default function ObservabilityPage() {
                 key={`${item.key}-${conns[item.key]}`}
                 initial={{ scale: 0.95 }}
                 animate={{ scale: 1 }}
-                className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+                className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4 shadow-sm"
               >
-                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-gray-500">
+                <div className="flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
                   <span>{item.icon}</span>
                   {item.label}
                 </div>
-                <p className="mt-1 text-3xl font-bold text-gray-900">
+                <p className="mt-1 text-3xl font-bold text-[var(--text-primary)]">
                   {isLoading ? "—" : conns[item.key]}
                 </p>
               </motion.div>
@@ -293,7 +293,7 @@ export default function ObservabilityPage() {
           <select
             value={selectedRoute}
             onChange={(e) => setSelectedRoute(e.target.value)}
-            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             {ROUTES.map((r) => (
               <option key={r} value={r}>
@@ -304,18 +304,18 @@ export default function ObservabilityPage() {
 
           <div className="grid grid-cols-3 gap-4">
             {(["p50_ms", "p95_ms", "p99_ms"] as const).map((pct) => (
-              <div key={pct} className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <p className="text-xs font-medium uppercase tracking-wider text-gray-500">
+              <div key={pct} className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-4 shadow-sm">
+                <p className="text-xs font-medium uppercase tracking-wider text-[var(--text-muted)]">
                   {pct.replace("_ms", "").toUpperCase()}
                 </p>
-                <p className="mt-1 text-2xl font-bold text-gray-900">
+                <p className="mt-1 text-2xl font-bold text-[var(--text-primary)]">
                   {stats ? `${stats[pct]}ms` : "—"}
                 </p>
               </div>
             ))}
           </div>
           {stats && (
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-[var(--text-muted)]">
               {stats.sample_count} samples in window
             </p>
           )}

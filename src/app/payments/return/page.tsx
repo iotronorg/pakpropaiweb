@@ -5,9 +5,10 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
 import { getDealLock } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { roleHomePath } from "@/lib/utils";
+import { roleHomePath, formatCurrency } from "@/lib/utils";
 import { useAuthStore } from "@/store/auth";
 import { DealLock } from "@/types";
+import { CheckCircle2, XCircle, AlertTriangle } from "lucide-react";
 
 function PaymentReturnContent() {
   const params = useSearchParams();
@@ -44,25 +45,30 @@ function PaymentReturnContent() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-dvh flex items-center justify-center bg-[var(--bg-base)]">
         <LoadingSpinner />
       </div>
     );
   }
 
+  const StatusIcon = isSuccess ? CheckCircle2 : isCancelled ? XCircle : AlertTriangle;
+  const iconColor  = isSuccess ? "text-emerald-500" : isCancelled ? "text-red-500" : "text-amber-500";
+  const iconBg     = isSuccess ? "bg-emerald-50 border border-emerald-100" : isCancelled ? "bg-red-50 border border-red-100" : "bg-amber-50 border border-amber-100";
+
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-lg max-w-md w-full p-8 text-center">
-        <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${
-          isSuccess ? "bg-green-100" : "bg-red-100"
-        }`}>
-          <span className="text-4xl">
-            {isSuccess ? "✅" : isCancelled ? "❌" : "⚠️"}
-          </span>
+    <div className="min-h-dvh bg-[var(--bg-base)] flex items-center justify-center p-4">
+      <div
+        role="main"
+        aria-live="polite"
+        aria-atomic="true"
+        className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-2xl shadow-lg max-w-md w-full p-8 text-center"
+      >
+        <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${iconBg}`} aria-hidden="true">
+          <StatusIcon size={40} className={iconColor} />
         </div>
 
         <h1 className={`text-2xl font-bold mb-2 ${
-          isSuccess ? "text-green-700" : "text-red-700"
+          isSuccess ? "text-emerald-700" : isCancelled ? "text-red-700" : "text-amber-700"
         }`}>
           {isSuccess
             ? "Payment Successful"
@@ -72,33 +78,35 @@ function PaymentReturnContent() {
         </h1>
 
         {deal && (
-          <div className="bg-gray-50 rounded-xl p-4 my-5 text-start space-y-2">
+          <div className="bg-[var(--bg-muted)] rounded-xl p-4 my-5 text-start space-y-2" role="region" aria-label="Deal summary">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Property</span>
-              <span className="font-medium text-gray-900">{deal.property_title}</span>
+              <span className="text-[var(--text-muted)]">Property</span>
+              <span className="font-medium text-[var(--text-primary)]">{deal.property_title}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">City</span>
-              <span className="text-gray-700">{deal.property_city}</span>
+              <span className="text-[var(--text-muted)]">City</span>
+              <span className="text-[var(--text-muted)]">{deal.property_city}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Token Amount</span>
-              <span className="font-semibold text-gray-900">{deal.currency} {deal.token_amount.toLocaleString()}</span>
+              <span className="text-[var(--text-muted)]">Token Amount</span>
+              <span className="font-semibold text-[var(--text-primary)]">
+                {formatCurrency(deal.token_amount, deal.currency)}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-500">Gateway</span>
-              <span className="text-gray-700 capitalize">{deal.payment_gateway}</span>
+              <span className="text-[var(--text-muted)]">Gateway</span>
+              <span className="text-[var(--text-muted)] capitalize">{deal.payment_gateway}</span>
             </div>
             {deal.payment_ref && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-500">Reference</span>
-                <span className="font-mono text-xs text-gray-600">{deal.payment_ref}</span>
+                <span className="text-[var(--text-muted)]">Reference</span>
+                <span className="font-mono text-xs text-[var(--text-muted)]">{deal.payment_ref}</span>
               </div>
             )}
           </div>
         )}
 
-        <p className="text-sm text-gray-600 mb-6">
+        <p className="text-sm text-[var(--text-muted)] mb-4">
           {isSuccess
             ? "Your token payment has been received. The deal lock is now active. Both parties will be notified via WhatsApp."
             : isCancelled
@@ -106,16 +114,17 @@ function PaymentReturnContent() {
             : "We could not confirm your payment status. Please contact support if you were charged."}
         </p>
 
-        <p className="text-xs text-gray-400 mb-4">
+        <p aria-live="polite" className="text-xs text-[var(--text-muted)] mb-4">
           Redirecting to dashboard in {countdown}s…
         </p>
 
         <button
+          type="button"
           onClick={() => router.replace(roleHomePath(user?.role ?? "agent"))}
           className={`w-full py-3 rounded-xl text-sm font-semibold transition-colors cursor-pointer ${
             isSuccess
-              ? "bg-green-600 text-white hover:bg-green-700"
-              : "bg-gray-800 text-white hover:bg-gray-900"
+              ? "bg-emerald-600 text-white hover:bg-emerald-700"
+              : "bg-slate-800 text-white hover:bg-slate-900"
           }`}
         >
           Go to Dashboard
@@ -128,7 +137,7 @@ function PaymentReturnContent() {
 export default function PaymentReturnPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-dvh flex items-center justify-center bg-[var(--bg-base)]">
         <LoadingSpinner />
       </div>
     }>

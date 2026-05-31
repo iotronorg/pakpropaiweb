@@ -7,7 +7,7 @@ interface Props {
 export default async function DealLockPage({ params }: Props) {
   const { id } = await params;
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-[var(--bg-base)] flex items-center justify-center p-4">
       <DealLockCard dealId={id} />
     </div>
   );

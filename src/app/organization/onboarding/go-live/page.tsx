@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { useProvisioningStatus } from '@/hooks/useProvisioningStatus';
 import { ProvisioningStepIndicator } from '@/components/onboarding/ProvisioningStepIndicator';
 import type { StepState } from '@/components/onboarding/ProvisioningStepIndicator';
@@ -21,6 +23,7 @@ function stepState(
 
 export default function GoLivePage() {
   const qc = useQueryClient();
+  const prefersReduced = useReducedMotion();
   const { record, status, isPolling } = useProvisioningStatus();
   const [started, setStarted] = useState(false);
 
@@ -40,10 +43,9 @@ export default function GoLivePage() {
   });
 
   const isProvisioning = status === 'provisioning' || isPolling;
-  const isFailed = status === 'failed';
-  const isProduction = status === 'production';
-
-  const lastStep = record?.last_step ?? '';
+  const isFailed       = status === 'failed';
+  const isProduction   = status === 'production';
+  const lastStep       = record?.last_step ?? '';
 
   const wabaState = stepState(
     record?.waba_verified_at ?? null,
@@ -68,86 +70,75 @@ export default function GoLivePage() {
 
   if (isProduction) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-dvh flex items-center justify-center bg-[var(--bg-base)]">
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
+          initial={prefersReduced ? false : { scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-          className="bg-white rounded-2xl shadow-xl p-10 max-w-md w-full text-center"
+          transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+          className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-xl p-10 max-w-md w-full text-center mx-4"
         >
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: [0, 1.3, 1] }}
-            transition={{ duration: 0.5, delay: 0.1 }}
-            className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-6"
+            initial={prefersReduced ? false : { scale: 0 }}
+            animate={{ scale: [0, 1.2, 1] }}
+            transition={{ duration: prefersReduced ? 0 : 0.45, delay: prefersReduced ? 0 : 0.1 }}
+            className="w-20 h-20 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center mx-auto mb-6"
+            aria-hidden="true"
           >
-            <svg className="w-10 h-10 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
+            <CheckCircle2 size={40} className="text-emerald-500" />
           </motion.div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">You're live!</h1>
-          <p className="text-gray-500 mb-2">
+
+          <h1 className="text-2xl font-bold text-[var(--text-primary)] mb-2">You&apos;re live!</h1>
+          <p className="text-[var(--text-muted)] mb-4">
             Your WhatsApp Business integration is active and ready to serve clients.
           </p>
+
           {record && (
-            <div className="text-sm text-gray-400 mb-6 space-y-1">
+            <div className="text-sm text-[var(--text-muted)] mb-6 space-y-1 bg-[var(--bg-muted)] rounded-xl p-4">
               <div>{record.sandbox_leads_migrated} leads migrated</div>
               <div>{record.sandbox_sessions_migrated} sessions migrated</div>
               <div>{record.sandbox_properties_migrated} properties migrated</div>
             </div>
           )}
-          <a
-            href="/organization/dashboard"
-            className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
+
+          <Link
+            href="/organization"
+            className="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-emerald-700 transition-colors"
           >
             Go to Dashboard
-          </a>
+            <ArrowRight size={15} aria-hidden="true" />
+          </Link>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-[var(--bg-base)] flex items-center justify-center p-4">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={prefersReduced ? false : { opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-2xl shadow-xl p-8 max-w-lg w-full"
+        transition={{ duration: prefersReduced ? 0 : 0.3 }}
+        className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border)] shadow-xl p-8 max-w-lg w-full"
       >
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Go Live</h1>
-          <p className="text-gray-500 mt-1">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Go Live</h1>
+          <p className="text-[var(--text-muted)] mt-1">
             Connect your WhatsApp Business Account to start serving real clients.
           </p>
         </div>
 
-        <div className="space-y-3 mb-8">
-          <ProvisioningStepIndicator
-            label="WABA Verification"
-            state={wabaState}
-            timestamp={record?.waba_verified_at}
-          />
-          <ProvisioningStepIndicator
-            label="Webhook Handshake"
-            state={webhookState}
-            timestamp={record?.webhook_verified_at}
-          />
-          <ProvisioningStepIndicator
-            label="Template Approval"
-            state={templatesState}
-            timestamp={record?.templates_approved_at}
-          />
-          <ProvisioningStepIndicator
-            label="Data Migration"
-            state={dataState}
-            timestamp={record?.data_migrated_at}
-          />
+        <div className="space-y-3 mb-8" role="list" aria-label="Provisioning steps">
+          <ProvisioningStepIndicator label="WABA Verification"  state={wabaState}      timestamp={record?.waba_verified_at} />
+          <ProvisioningStepIndicator label="Webhook Handshake"  state={webhookState}   timestamp={record?.webhook_verified_at} />
+          <ProvisioningStepIndicator label="Template Approval"  state={templatesState} timestamp={record?.templates_approved_at} />
+          <ProvisioningStepIndicator label="Data Migration"     state={dataState}      timestamp={record?.data_migrated_at} />
         </div>
 
         <AnimatePresence mode="wait">
           {isFailed && record?.error_detail && (
             <motion.div
               key="error"
+              role="alert"
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
@@ -159,7 +150,7 @@ export default function GoLivePage() {
         </AnimatePresence>
 
         {startMutation.isError && (
-          <p className="text-red-600 text-sm mb-4">
+          <p role="alert" className="text-red-600 text-sm mb-4 bg-red-50 border border-red-200 rounded-lg px-4 py-3">
             {(startMutation.error as Error)?.message ?? 'Failed to start provisioning.'}
           </p>
         )}
@@ -167,28 +158,33 @@ export default function GoLivePage() {
         <div className="flex gap-3">
           {!started && !isProvisioning && !isFailed && (
             <button
+              type="button"
               onClick={() => startMutation.mutate()}
               disabled={startMutation.isPending}
-              className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors"
+              className="flex-1 bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
             >
-              {startMutation.isPending ? 'Starting…' : 'Launch'}
+              {startMutation.isPending
+                ? <><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Starting…</>
+                : 'Launch'}
             </button>
           )}
+
           {isFailed && (
             <button
+              type="button"
               onClick={() => retryMutation.mutate()}
               disabled={retryMutation.isPending}
-              className="flex-1 bg-orange-500 text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-600 disabled:opacity-50 transition-colors"
+              className="flex-1 bg-amber-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-amber-600 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
             >
-              {retryMutation.isPending ? 'Retrying…' : 'Retry'}
+              {retryMutation.isPending
+                ? <><Loader2 size={15} className="animate-spin" aria-hidden="true" /> Retrying…</>
+                : 'Retry'}
             </button>
           )}
+
           {isProvisioning && (
-            <div className="flex-1 flex items-center justify-center gap-2 text-blue-600">
-              <svg className="w-5 h-5 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-              </svg>
+            <div className="flex-1 flex items-center justify-center gap-2 text-blue-600 py-3">
+              <Loader2 size={18} className="animate-spin" aria-hidden="true" />
               <span className="font-medium">Provisioning in progress…</span>
             </div>
           )}

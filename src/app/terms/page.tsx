@@ -8,19 +8,19 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-[var(--bg-surface)]">
       <div className="mx-auto max-w-3xl px-6 py-16">
         <Link href="/" className="text-sm text-indigo-600 hover:underline mb-8 inline-block">
           ← Back to home
         </Link>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Terms of Service</h1>
-        <p className="text-sm text-gray-500 mb-10">Last updated: May 2026 · Pending legal review</p>
+        <h1 className="text-3xl font-bold text-[var(--text-primary)] mb-2">Terms of Service</h1>
+        <p className="text-sm text-[var(--text-muted)] mb-10">Last updated: May 2026 · Pending legal review</p>
 
-        <div className="prose prose-gray max-w-none space-y-8 text-gray-700">
+        <div className="prose prose-gray max-w-none space-y-8 text-[var(--text-secondary)]">
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Acceptance of Terms</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">1. Acceptance of Terms</h2>
             <p>
               By accessing or using the RealTron AI platform (&ldquo;the Service&rdquo;), you agree
               to be bound by these Terms of Service. If you are using the Service on behalf of an
@@ -29,7 +29,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Description of Service</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">2. Description of Service</h2>
             <p>
               RealTron AI provides an AI-powered sales infrastructure platform for real estate
               organisations, including CRM, WhatsApp automation, lead management, AI assistance,
@@ -38,7 +38,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Subscription and Billing</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">3. Subscription and Billing</h2>
             <ul className="list-disc ps-5 space-y-1">
               <li>Subscriptions are billed monthly or annually in advance</li>
               <li>All fees are non-refundable except where required by law</li>
@@ -48,7 +48,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">4. Acceptable Use</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">4. Acceptable Use</h2>
             <p className="mb-2">You agree not to use the Service to:</p>
             <ul className="list-disc ps-5 space-y-1">
               <li>Send unsolicited bulk messages (spam) via WhatsApp</li>
@@ -60,7 +60,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Data Ownership</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">5. Data Ownership</h2>
             <p>
               You retain ownership of all data you upload to the platform — leads, inventory,
               conversation history, and analytics. We process this data to provide the Service.
@@ -69,7 +69,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Intellectual Property</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">6. Intellectual Property</h2>
             <p>
               The RealTron AI platform, including its AI models, UI, and documentation, is our
               proprietary property. You are granted a limited, non-exclusive licence to use the
@@ -78,7 +78,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">7. Limitation of Liability</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">7. Limitation of Liability</h2>
             <p>
               To the maximum extent permitted by law, RealTron AI shall not be liable for any
               indirect, incidental, special, or consequential damages arising from your use of
@@ -87,7 +87,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Termination</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">8. Termination</h2>
             <p>
               Either party may terminate the subscription at any time. Upon termination, your
               access ends at the close of the current billing period. We will retain your data
@@ -96,7 +96,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">9. Governing Law</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">9. Governing Law</h2>
             <p>
               These Terms are governed by the laws of the jurisdiction in which the operating
               entity is registered. Disputes will be resolved through binding arbitration unless
@@ -105,7 +105,7 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-xl font-semibold text-gray-900 mb-3">10. Contact</h2>
+            <h2 className="text-xl font-semibold text-[var(--text-primary)] mb-3">10. Contact</h2>
             <p>
               For any questions about these Terms, contact us at{" "}
               <a href="mailto:legal@realtron.ai" className="text-indigo-600 hover:underline">
@@ -115,7 +115,7 @@ export default function TermsPage() {
             </p>
           </section>
 
-          <p className="text-xs text-gray-400 border-t pt-6">
+          <p className="text-xs text-[var(--text-subtle)] border-t border-[var(--border)] pt-6">
             These Terms are pending formal legal review before EU/UK/UAE market launch.
           </p>
         </div>

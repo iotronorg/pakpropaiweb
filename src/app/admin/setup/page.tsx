@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Eye, EyeOff, Check, CheckCircle2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getConfig, updateConfig } from "@/lib/api";
 import { SystemConfig } from "@/types";
@@ -25,13 +26,15 @@ function Toggle({
   return (
     <button
       type="button"
+      role="switch"
+      aria-checked={enabled}
       onClick={() => onChange(!enabled)}
-      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${
-        enabled ? "bg-blue-600" : "bg-gray-300"
+      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--border-focus)] ${
+        enabled ? "bg-blue-600" : "bg-[var(--bg-subtle)]"
       }`}
     >
       <span
-        className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+        className={`inline-block h-4 w-4 transform rounded-full bg-[var(--bg-surface)] shadow transition-transform ${
           enabled ? "translate-x-6" : "translate-x-1"
         }`}
       />
@@ -63,14 +66,15 @@ function SensitiveInput({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={isConfigured ? "Leave blank to keep current value" : placeholder}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 pe-16 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        className="w-full rounded-lg border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] px-3 py-2 pe-10 text-sm font-mono outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all"
       />
       <button
         type="button"
+        aria-label={show ? "Hide value" : "Show value"}
         onClick={() => setShow((s) => !s)}
-        className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600"
+        className="absolute end-2 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
       >
-        {show ? "Hide" : "Show"}
+        {show ? <EyeOff size={14} aria-hidden="true" /> : <Eye size={14} aria-hidden="true" />}
       </button>
     </div>
   );
@@ -81,7 +85,7 @@ function StatusBadge({ configured }: { configured: boolean }) {
   if (configured)
     return (
       <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-        ✓ Configured
+        <Check size={10} aria-hidden="true" /> Configured
       </span>
     );
   return (
@@ -200,7 +204,7 @@ export default function SetupPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-40 text-gray-400 text-sm">
+      <div className="flex items-center justify-center h-40 text-[var(--text-muted)] text-sm">
         Loading configuration…
       </div>
     );
@@ -212,8 +216,8 @@ export default function SetupPage() {
   const FEATURE_DEFS: { key: keyof SystemConfig; label: string; desc: string }[] = [
     { key: "feature_property_search",       label: "Property Search",       desc: "Users can search listings by location, price, and type" },
     { key: "feature_property_listing",      label: "Property Listing",      desc: "Users can submit properties for sale via WhatsApp" },
-    { key: "feature_tax_advice",            label: "Tax Advice",            desc: "Section 7E, CGT, and rental tax calculations" },
-    { key: "feature_loan_eligibility",      label: "Loan Eligibility",      desc: "Apna Ghar scheme and bank eligibility checks" },
+    { key: "feature_tax_advice",            label: "Tax Advice",            desc: "Tax liability calculations and regional tax advice" },
+    { key: "feature_loan_eligibility",      label: "Loan Eligibility",      desc: "Mortgage eligibility and bank financing checks" },
     { key: "feature_scam_check",            label: "Scam / Fraud Check",    desc: "Users can report deals or agents for fraud analysis" },
     { key: "feature_document_verification", label: "Document Verification", desc: "Users can send document photos for OCR verification" },
     { key: "feature_property_audit",        label: "Property Audit",        desc: "Full PDF audit reports with risk scores and investment grade" },
@@ -227,8 +231,8 @@ export default function SetupPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">System Setup</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">System Setup</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Configure API credentials, payment gateway, and WhatsApp feature availability
         </p>
       </div>
@@ -250,7 +254,7 @@ export default function SetupPage() {
 
       {setupComplete && (
         <div className="mb-6 rounded-lg border border-green-200 bg-green-50 px-5 py-3">
-          <p className="text-sm font-semibold text-green-800">✓ System is fully configured</p>
+          <p className="text-sm font-semibold text-green-800 flex items-center gap-1"><CheckCircle2 size={14} aria-hidden="true" /> System is fully configured</p>
           <p className="text-sm text-green-700">All required settings are in place. The WhatsApp bot is active.</p>
         </div>
       )}
@@ -258,14 +262,14 @@ export default function SetupPage() {
       <div className="space-y-6">
 
         {/* ── Section 1: WhatsApp API ── */}
-        <div className="rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="font-semibold text-gray-900">WhatsApp Cloud API</h2>
-            <p className="mt-0.5 text-sm text-gray-500">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+          <div className="border-b border-[var(--border)] px-6 py-5">
+            <h2 className="font-semibold text-[var(--text-primary)]">WhatsApp Cloud API</h2>
+            <p className="mt-0.5 text-sm text-[var(--text-muted)]">
               Meta WhatsApp Business API credentials — required for the bot to send and receive messages
             </p>
           </div>
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-[var(--border)]">
             {[
               { key: "wa_access_token",      label: "Access Token",      sensitive: true,  placeholder: "EAAxxxx…",          help: "Meta Dev Portal → WhatsApp → API Setup" },
               { key: "wa_phone_number_id",   label: "Phone Number ID",   sensitive: false, placeholder: "123456789",          help: "Shown under WhatsApp → API Setup in Meta Dev Portal" },
@@ -275,7 +279,7 @@ export default function SetupPage() {
             ].map(({ key, label, sensitive, placeholder, help }) => (
               <div key={key} className="px-6 py-4">
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-sm font-medium text-gray-700">{label}</label>
+                  <label className="text-sm font-medium text-[var(--text-muted)]">{label}</label>
                   {sensitive && (
                     <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />
                   )}
@@ -294,10 +298,10 @@ export default function SetupPage() {
                     value={waVals[key] ?? ""}
                     onChange={(e) => setWaVals((prev) => ({ ...prev, [key]: e.target.value }))}
                     placeholder={placeholder}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                   />
                 )}
-                {help && <p className="mt-1 text-xs text-gray-400">{help}</p>}
+                {help && <p className="mt-1 text-xs text-[var(--text-muted)]">{help}</p>}
               </div>
             ))}
           </div>
@@ -309,18 +313,18 @@ export default function SetupPage() {
         </div>
 
         {/* ── Section 2: AI Backend ── */}
-        <div className="rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="font-semibold text-gray-900">AI Backend</h2>
-            <p className="mt-0.5 text-sm text-gray-500">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+          <div className="border-b border-[var(--border)] px-6 py-5">
+            <h2 className="font-semibold text-[var(--text-primary)]">AI Backend</h2>
+            <p className="mt-0.5 text-sm text-[var(--text-muted)]">
               Gemini (cloud) or Ollama (local) — controls which model powers the assistant
             </p>
           </div>
-          <div className="divide-y divide-gray-50">
+          <div className="divide-y divide-[var(--border)]">
             {/* Gemini API Key */}
             <div className="px-6 py-4">
               <div className="flex items-center justify-between mb-1">
-                <label className="text-sm font-medium text-gray-700">Gemini API Key</label>
+                <label className="text-sm font-medium text-[var(--text-muted)]">Gemini API Key</label>
                 <StatusBadge configured={config?.gemini_api_key === SENTINEL} />
               </div>
               <SensitiveInput
@@ -330,46 +334,46 @@ export default function SetupPage() {
                 onChange={(v) => setAiVals((p) => ({ ...p, gemini_api_key: v }))}
                 placeholder="AIzaSy…"
               />
-              <p className="mt-1 text-xs text-gray-400">Google AI Studio → Get API Key (free)</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">Google AI Studio → Get API Key (free)</p>
             </div>
             {/* Gemini Model */}
             <div className="px-6 py-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Gemini Model</label>
+              <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">Gemini Model</label>
               <input
                 type="text"
                 value={aiVals.gemini_model ?? ""}
                 onChange={(e) => setAiVals((p) => ({ ...p, gemini_model: e.target.value }))}
                 placeholder="gemini-2.5-flash-lite"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
-              <p className="mt-1 text-xs text-gray-400">Default: gemini-2.5-flash-lite (free tier)</p>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">Default: gemini-2.5-flash-lite (free tier)</p>
             </div>
             {/* AI Backend */}
             <div className="px-6 py-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">AI Backend</label>
+              <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">AI Backend</label>
               <select
                 value={aiVals.ai_backend ?? "gemini"}
                 onChange={(e) => setAiVals((p) => ({ ...p, ai_backend: e.target.value }))}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               >
                 <option value="gemini">Gemini (cloud)</option>
                 <option value="local">Local (Ollama)</option>
               </select>
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
                 Use &apos;local&apos; for free unlimited testing with Ollama
               </p>
             </div>
             {/* Base URL */}
             <div className="px-6 py-4">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Backend Base URL</label>
+              <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">Backend Base URL</label>
               <input
                 type="text"
                 value={aiVals.base_url ?? ""}
                 onChange={(e) => setAiVals((p) => ({ ...p, base_url: e.target.value }))}
                 placeholder="https://yourapp.onrender.com"
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
               />
-              <p className="mt-1 text-xs text-gray-400">
+              <p className="mt-1 text-xs text-[var(--text-muted)]">
                 Public URL of this backend — used in WhatsApp PDF links and payment redirects
               </p>
             </div>
@@ -382,10 +386,10 @@ export default function SetupPage() {
         </div>
 
         {/* ── Section 3: Billing Gateway ── */}
-        <div className="rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="font-semibold text-gray-900">Billing Gateway</h2>
-            <p className="mt-0.5 text-sm text-gray-500">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+          <div className="border-b border-[var(--border)] px-6 py-5">
+            <h2 className="font-semibold text-[var(--text-primary)]">Billing Gateway</h2>
+            <p className="mt-0.5 text-sm text-[var(--text-muted)]">
               Controls which gateway organizations use to upgrade their SaaS plan. Stripe for global payments; Safepay/bSecure for Pakistan.
             </p>
           </div>
@@ -405,14 +409,14 @@ export default function SetupPage() {
                   className={`rounded-lg border-2 p-4 text-start transition-all ${
                     billingGwVal === value
                       ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      : "border-[var(--border)] bg-[var(--bg-surface)] hover:border-[var(--border-strong)]"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <div className={`h-4 w-4 rounded-full border-2 flex-shrink-0 ${billingGwVal === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
-                    <span className="text-sm font-semibold text-gray-900">{label}</span>
+                    <div className={`h-4 w-4 rounded-full border-2 flex-shrink-0 ${billingGwVal === value ? "border-blue-500 bg-blue-500" : "border-[var(--border-strong)]"}`} />
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">{label}</span>
                   </div>
-                  <p className="text-xs text-gray-500 ms-6">{desc}</p>
+                  <p className="text-xs text-[var(--text-muted)] ms-6">{desc}</p>
                 </button>
               ))}
             </div>
@@ -431,7 +435,7 @@ export default function SetupPage() {
                   ].map(({ key, label, sensitive, placeholder, help }) => (
                     <div key={key}>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-xs font-medium text-gray-700">{label}</label>
+                        <label className="text-xs font-medium text-[var(--text-muted)]">{label}</label>
                         {sensitive && <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />}
                       </div>
                       {sensitive ? (
@@ -448,10 +452,10 @@ export default function SetupPage() {
                           value={billingGwVals[key] ?? ""}
                           onChange={(e) => setBillingGwVals((p) => ({ ...p, [key]: e.target.value }))}
                           placeholder={placeholder}
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono outline-none focus:border-blue-500"
+                          className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm font-mono outline-none focus:border-blue-500"
                         />
                       )}
-                      {help && <p className="mt-1 text-xs text-gray-400">{help}</p>}
+                      {help && <p className="mt-1 text-xs text-[var(--text-muted)]">{help}</p>}
                     </div>
                   ))}
                 </div>
@@ -473,7 +477,7 @@ export default function SetupPage() {
                 ].map(({ key, label, sensitive, placeholder }) => (
                   <div key={key}>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-xs font-medium text-gray-700">{label}</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">{label}</label>
                       {sensitive && <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />}
                     </div>
                     {sensitive ? (
@@ -488,7 +492,7 @@ export default function SetupPage() {
                       <select
                         value={billingGwVals[key] ?? "sandbox"}
                         onChange={(e) => setBillingGwVals((p) => ({ ...p, [key]: e.target.value }))}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500"
                       >
                         <option value="sandbox">Sandbox (testing)</option>
                         <option value="production">Production (live)</option>
@@ -499,7 +503,7 @@ export default function SetupPage() {
                 <p className="text-xs text-blue-600 border-t border-blue-100 pt-3">
                   Register webhook at: <code className="font-mono text-xs bg-blue-100 px-1 rounded">POST /api/v1/billing/webhook/safepay/</code>
                 </p>
-                <BillingPkrPrices vals={billingGwVals} onChange={(k, v) => setBillingGwVals((p) => ({ ...p, [k]: v }))} />
+                <BillingPlanPrices vals={billingGwVals} onChange={(k, v) => setBillingGwVals((p) => ({ ...p, [k]: v }))} />
               </div>
             )}
 
@@ -514,7 +518,7 @@ export default function SetupPage() {
                 ].map(({ key, label, sensitive, placeholder }) => (
                   <div key={key}>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-xs font-medium text-gray-700">{label}</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">{label}</label>
                       {sensitive && <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />}
                     </div>
                     {sensitive ? (
@@ -529,7 +533,7 @@ export default function SetupPage() {
                       <select
                         value={billingGwVals[key] ?? "sandbox"}
                         onChange={(e) => setBillingGwVals((p) => ({ ...p, [key]: e.target.value }))}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500"
                       >
                         <option value="sandbox">Sandbox (testing)</option>
                         <option value="production">Production (live)</option>
@@ -540,12 +544,12 @@ export default function SetupPage() {
                 <p className="text-xs text-purple-600 border-t border-purple-100 pt-3">
                   Register webhook at: <code className="font-mono text-xs bg-purple-100 px-1 rounded">POST /api/v1/billing/webhook/bsecure/</code>
                 </p>
-                <BillingPkrPrices vals={billingGwVals} onChange={(k, v) => setBillingGwVals((p) => ({ ...p, [k]: v }))} />
+                <BillingPlanPrices vals={billingGwVals} onChange={(k, v) => setBillingGwVals((p) => ({ ...p, [k]: v }))} />
               </div>
             )}
 
             {billingGwVal === "manual" && (
-              <div className="rounded-lg border border-gray-100 bg-gray-50 px-4 py-3 text-sm text-gray-600">
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-muted)] px-4 py-3 text-sm text-[var(--text-muted)]">
                 Manual mode — when an organization upgrades their plan, you will receive a notification and must activate the plan via Django admin.
               </div>
             )}
@@ -563,10 +567,10 @@ export default function SetupPage() {
         </div>
 
         {/* ── Section 5: Deal-Lock Payment Gateway ── */}
-        <div className="rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="font-semibold text-gray-900">Deal-Lock Payment Gateway</h2>
-            <p className="mt-0.5 text-sm text-gray-500">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+          <div className="border-b border-[var(--border)] px-6 py-5">
+            <h2 className="font-semibold text-[var(--text-primary)]">Deal-Lock Payment Gateway</h2>
+            <p className="mt-0.5 text-sm text-[var(--text-muted)]">
               Gateway used for client token payments (deal lock feature). Separate from the SaaS billing gateway above.
             </p>
           </div>
@@ -585,18 +589,18 @@ export default function SetupPage() {
                   className={`rounded-lg border-2 p-4 text-start transition-all ${
                     gwVal === value
                       ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 bg-white hover:border-gray-300"
+                      : "border-[var(--border)] bg-[var(--bg-surface)] hover:border-[var(--border-strong)]"
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
                     <div
                       className={`h-4 w-4 rounded-full border-2 flex-shrink-0 ${
-                        gwVal === value ? "border-blue-500 bg-blue-500" : "border-gray-300"
+                        gwVal === value ? "border-blue-500 bg-blue-500" : "border-[var(--border-strong)]"
                       }`}
                     />
-                    <span className="text-sm font-semibold text-gray-900">{label}</span>
+                    <span className="text-sm font-semibold text-[var(--text-primary)]">{label}</span>
                   </div>
-                  <p className="text-xs text-gray-500 ms-6">{desc}</p>
+                  <p className="text-xs text-[var(--text-muted)] ms-6">{desc}</p>
                 </button>
               ))}
             </div>
@@ -612,7 +616,7 @@ export default function SetupPage() {
                 ].map(({ key, label, sensitive, placeholder }) => (
                   <div key={key}>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-xs font-medium text-gray-700">{label}</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">{label}</label>
                       {sensitive && (
                         <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />
                       )}
@@ -629,7 +633,7 @@ export default function SetupPage() {
                       <select
                         value={gwCredsVals[key] ?? "sandbox"}
                         onChange={(e) => setGwCredsVals((p) => ({ ...p, [key]: e.target.value }))}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500"
                       >
                         <option value="sandbox">Sandbox (testing)</option>
                         <option value="production">Production (live)</option>
@@ -651,7 +655,7 @@ export default function SetupPage() {
                 ].map(({ key, label, sensitive, placeholder }) => (
                   <div key={key}>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="text-xs font-medium text-gray-700">{label}</label>
+                      <label className="text-xs font-medium text-[var(--text-muted)]">{label}</label>
                       {sensitive && (
                         <StatusBadge configured={(config as unknown as Record<string, string>)?.[key] === SENTINEL} />
                       )}
@@ -668,7 +672,7 @@ export default function SetupPage() {
                       <select
                         value={gwCredsVals[key] ?? "sandbox"}
                         onChange={(e) => setGwCredsVals((p) => ({ ...p, [key]: e.target.value }))}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                        className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500"
                       >
                         <option value="sandbox">Sandbox (testing)</option>
                         <option value="production">Production (live)</option>
@@ -692,10 +696,10 @@ export default function SetupPage() {
         </div>
 
         {/* ── Section 6: WhatsApp Features ── */}
-        <div className="rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 px-6 py-5">
-            <h2 className="font-semibold text-gray-900">WhatsApp Features</h2>
-            <p className="mt-0.5 text-sm text-gray-500">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+          <div className="border-b border-[var(--border)] px-6 py-5">
+            <h2 className="font-semibold text-[var(--text-primary)]">WhatsApp Features</h2>
+            <p className="mt-0.5 text-sm text-[var(--text-muted)]">
               Enable or disable features visible to WhatsApp users. Disabled features are hidden from the greeting
               and cannot be used.
             </p>
@@ -705,11 +709,11 @@ export default function SetupPage() {
               {FEATURE_DEFS.map(({ key, label, desc }) => (
                 <div
                   key={key}
-                  className="flex items-start justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3"
+                  className="flex items-start justify-between rounded-lg border border-[var(--border)] bg-[var(--bg-muted)] px-4 py-3"
                 >
                   <div className="me-4">
-                    <p className="text-sm font-medium text-gray-800">{label}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)]">{label}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-0.5">{desc}</p>
                   </div>
                   <Toggle
                     enabled={featureVals[key] ?? true}
@@ -721,12 +725,12 @@ export default function SetupPage() {
           </div>
 
           {/* Search settings sub-section */}
-          <div className="border-t border-gray-100 px-6 py-5">
-            <h3 className="text-sm font-semibold text-gray-800 mb-1">Search Settings</h3>
-            <div className="flex items-start justify-between rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
+          <div className="border-t border-[var(--border)] px-6 py-5">
+            <h3 className="text-sm font-semibold text-[var(--text-primary)] mb-1">Search Settings</h3>
+            <div className="flex items-start justify-between rounded-lg border border-[var(--border)] bg-[var(--bg-muted)] px-4 py-3">
               <div className="me-4">
-                <p className="text-sm font-medium text-gray-800">Allow third-party search</p>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-sm font-medium text-[var(--text-primary)]">Allow third-party search</p>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">
                   When enabled, searches also pull listings from Zameen, Graana, and OLX. When disabled,
                   only your own database listings are returned.
                 </p>
@@ -747,7 +751,7 @@ export default function SetupPage() {
   );
 }
 
-function BillingPkrPrices({
+function BillingPlanPrices({
   vals,
   onChange,
 }: {
@@ -755,11 +759,11 @@ function BillingPkrPrices({
   onChange: (key: string, value: string) => void;
 }) {
   return (
-    <div className="border-t border-gray-200 pt-3 space-y-2">
-      <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Plan Prices (per market / month)</p>
+    <div className="border-t border-[var(--border)] pt-3 space-y-2">
+      <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Plan Prices (per market / month)</p>
       {([
         {
-          market: "🇵🇰 Pakistan (PKR)",
+          market: "Pakistan (PKR)",
           rows: [
             { key: "billing_price_basic_pkr",        label: "Basic",        placeholder: "13000" },
             { key: "billing_price_professional_pkr", label: "Professional", placeholder: "40000" },
@@ -767,7 +771,7 @@ function BillingPkrPrices({
           ],
         },
         {
-          market: "🇦🇪 UAE (AED)",
+          market: "UAE (AED)",
           rows: [
             { key: "billing_price_basic_aed",        label: "Basic",        placeholder: "299" },
             { key: "billing_price_professional_aed", label: "Professional", placeholder: "899" },
@@ -775,7 +779,7 @@ function BillingPkrPrices({
           ],
         },
         {
-          market: "🌐 Global (USD)",
+          market: "Global (USD)",
           rows: [
             { key: "billing_price_basic_usd",        label: "Basic",        placeholder: "49" },
             { key: "billing_price_professional_usd", label: "Professional", placeholder: "149" },
@@ -784,17 +788,17 @@ function BillingPkrPrices({
         },
       ] as const).map(({ market, rows }) => (
         <div key={market} className="pt-1">
-          <p className="text-xs text-gray-400 mb-1.5">{market}</p>
+          <p className="text-xs text-[var(--text-muted)] mb-1.5">{market}</p>
           {rows.map(({ key, label, placeholder }) => (
             <div key={key} className="flex items-center gap-3 mb-1.5">
-              <label className="w-28 text-xs text-gray-600 shrink-0">{label}</label>
+              <label className="w-28 text-xs text-[var(--text-muted)] shrink-0">{label}</label>
               <input
                 type="number"
                 min={0}
                 value={vals[key] ?? ""}
                 onChange={(e) => onChange(key, e.target.value)}
                 placeholder={placeholder}
-                className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-mono outline-none focus:border-blue-500"
+                className="flex-1 rounded-lg border border-[var(--border-strong)] px-3 py-1.5 text-sm font-mono outline-none focus:border-blue-500"
               />
             </div>
           ))}
@@ -814,11 +818,12 @@ function SectionFooter({
   onSave: () => void;
 }) {
   return (
-    <div className="flex items-center justify-end gap-3 border-t border-gray-100 px-6 py-4">
+    <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] px-6 py-4">
       {saved && !saving && (
-        <span className="text-sm text-green-600 font-medium">Saved ✓</span>
+        <span className="text-sm text-green-600 font-medium flex items-center gap-1"><Check size={13} aria-hidden="true" />Saved</span>
       )}
       <button
+        type="button"
         onClick={onSave}
         disabled={saving}
         className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"

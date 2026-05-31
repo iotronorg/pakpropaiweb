@@ -8,10 +8,10 @@ import { Badge } from "@/components/ui/Badge";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { StatsCard } from "@/components/ui/StatsCard";
 import { formatDate } from "@/lib/utils";
-import { Users, TrendingUp, Building2 } from "lucide-react";
+import { Users, TrendingUp, Building2, X, ArrowLeft } from "lucide-react";
 import type { AdminOrganizationDetail } from "@/types";
 
-const inputCls = "w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
+const inputCls = "w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
 
 const FEATURE_LABELS: Record<string, { label: string; desc: string }> = {
   feature_property_search:       { label: "Property Search",       desc: "AI-powered natural language property search" },
@@ -65,38 +65,38 @@ function EditModal({ org, onClose }: { org: AdminOrganizationDetail; onClose: ()
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-lg rounded-xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h3 className="font-semibold text-gray-900">Edit Organization</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-labelledby="edit-org-title" onClick={(e) => e.stopPropagation()} className="w-full max-w-lg rounded-xl bg-[var(--bg-surface)] shadow-xl">
+        <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+          <h3 id="edit-org-title" className="font-semibold text-[var(--text-primary)]">Edit Organization</h3>
+          <button type="button" onClick={onClose} aria-label="Close" className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"><X size={16} aria-hidden="true" /></button>
         </div>
         <div className="px-6 py-5 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Name</label>
             <input className={inputCls} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Email</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Email</label>
               <input className={inputCls} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Phone</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Phone</label>
               <input className={inputCls} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
             </div>
           </div>
           <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Website</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Website</label>
             <input className={inputCls} value={form.website} onChange={(e) => setForm({ ...form, website: e.target.value })} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">City</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">City</label>
               <input className={inputCls} value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Address</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Address</label>
               <input className={inputCls} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
             </div>
           </div>
@@ -108,14 +108,15 @@ function EditModal({ org, onClose }: { org: AdminOrganizationDetail; onClose: ()
               onChange={(e) => setForm({ ...form, is_verified: e.target.checked })}
               className="rounded"
             />
-            <label htmlFor="is_verified" className="text-sm text-gray-700">Verified organization</label>
+            <label htmlFor="is_verified" className="text-sm text-[var(--text-muted)]">Verified organization</label>
           </div>
           {error && (
-            <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
+            <p role="alert" className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>
           )}
-          <div className="flex justify-end gap-3 pt-1 border-t border-gray-100">
-            <button onClick={onClose} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">Cancel</button>
+          <div className="flex justify-end gap-3 pt-1 border-t border-[var(--border)]">
+            <button type="button" onClick={onClose} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">Cancel</button>
             <button
+              type="button"
               onClick={() => mutation.mutate()}
               disabled={!form.name || mutation.isPending}
               className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50"
@@ -134,8 +135,8 @@ function EditModal({ org, onClose }: { org: AdminOrganizationDetail; onClose: ()
 function InfoRow({ label, value }: { label: string; value: string | null | undefined }) {
   return (
     <div className="flex gap-2 text-sm">
-      <span className="w-32 shrink-0 text-gray-400">{label}</span>
-      <span className="text-gray-800 break-all">{value || <span className="text-gray-300">—</span>}</span>
+      <span className="w-32 shrink-0 text-[var(--text-muted)]">{label}</span>
+      <span className="text-[var(--text-primary)] break-all">{value || <span className="text-[var(--text-faint)]">—</span>}</span>
     </div>
   );
 }
@@ -193,8 +194,8 @@ export default function AdminOrgDetailPage({ params }: { params: { id: string } 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <Link href="/admin/organizations" className="mb-2 inline-flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600">
-            ← Back to Organizations
+          <Link href="/admin/organizations" className="mb-2 inline-flex items-center gap-1 text-xs text-[var(--text-muted)] hover:text-[var(--text-primary)]">
+            <ArrowLeft size={12} aria-hidden="true" /> Back to Organizations
           </Link>
           <div className="flex items-center gap-3 mt-1">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100">
@@ -202,7 +203,7 @@ export default function AdminOrgDetailPage({ params }: { params: { id: string } 
             </div>
             <div>
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl font-bold text-gray-900">{org.name}</h1>
+                <h1 className="text-xl font-bold text-[var(--text-primary)]">{org.name}</h1>
                 <Badge
                   label={org.plan.charAt(0).toUpperCase() + org.plan.slice(1)}
                   variant={org.plan === "enterprise" ? "blue" : org.plan === "professional" ? "green" : "gray"}
@@ -210,20 +211,25 @@ export default function AdminOrgDetailPage({ params }: { params: { id: string } 
                 <Badge label={org.is_active ? "Active" : "Suspended"} variant={org.is_active ? "green" : "red"} />
                 {org.is_verified && <Badge label="Verified" variant="green" />}
               </div>
-              <p className="text-xs text-gray-400 mt-0.5">{org.country} · Created {formatDate(org.created_at)}</p>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">{org.country} · Created {formatDate(org.created_at)}</p>
             </div>
           </div>
         </div>
         <div className="flex gap-2 shrink-0">
           <button
+            type="button"
             onClick={() => setShowEdit(true)}
-            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+            className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
           >
             Edit
           </button>
           {org.is_active ? (
             <button
-              onClick={() => suspendMutation.mutate()}
+              type="button"
+              onClick={() => {
+                if (!window.confirm(`Suspend "${org.name}"? They will lose platform access immediately.`)) return;
+                suspendMutation.mutate();
+              }}
               disabled={suspendMutation.isPending}
               className="rounded-lg bg-amber-500 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-600 disabled:opacity-50"
             >
@@ -231,6 +237,7 @@ export default function AdminOrgDetailPage({ params }: { params: { id: string } 
             </button>
           ) : (
             <button
+              type="button"
               onClick={() => activateMutation.mutate()}
               disabled={activateMutation.isPending}
               className="rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
@@ -250,27 +257,27 @@ export default function AdminOrgDetailPage({ params }: { params: { id: string } 
 
       {/* Info grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700">Contact</h3>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-[var(--text-muted)]">Contact</h3>
           <InfoRow label="Email"   value={org.email} />
           <InfoRow label="Phone"   value={org.phone} />
           <InfoRow label="Website" value={org.website} />
           <InfoRow label="Admin"   value={org.admin_phone} />
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700">Location</h3>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-[var(--text-muted)]">Location</h3>
           <InfoRow label="Country" value={org.country} />
           <InfoRow label="City"    value={org.city} />
           <InfoRow label="Address" value={org.address} />
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700">Settings</h3>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-[var(--text-muted)]">Settings</h3>
           <InfoRow label="Language"    value={org.language} />
           <InfoRow label="Measurement" value={org.measurement_system} />
           <InfoRow label="Type"        value={org.org_type.replace(/_/g, ' ')} />
         </div>
-        <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-gray-700">Account</h3>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-[var(--text-muted)]">Account</h3>
           <InfoRow label="ID"      value={org.id} />
           <InfoRow label="Slug"    value={org.slug} />
           <InfoRow label="Updated" value={formatDate(org.updated_at)} />
@@ -278,14 +285,14 @@ export default function AdminOrgDetailPage({ params }: { params: { id: string } 
       </div>
 
       {/* Feature Flags */}
-      <div className="rounded-xl border border-gray-200 bg-white">
-        <div className="border-b border-gray-100 px-6 py-4">
-          <h3 className="text-sm font-semibold text-gray-700">Feature Flags</h3>
-          <p className="text-xs text-gray-400 mt-0.5">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+        <div className="border-b border-[var(--border)] px-6 py-4">
+          <h3 className="text-sm font-semibold text-[var(--text-muted)]">Feature Flags</h3>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Override platform defaults for this organization. Amber badge = org-level override active.
           </p>
         </div>
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-[var(--border)]">
           {Object.entries(FEATURE_LABELS).map(([key, { label, desc }]) => {
             const isEnabled  = features[key] === true;
             const isOverride = overrides.includes(key);
@@ -293,35 +300,40 @@ export default function AdminOrgDetailPage({ params }: { params: { id: string } 
               <div key={key} className="flex items-center justify-between px-6 py-3">
                 <div className="flex-1 min-w-0 pe-4">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900">{label}</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)]">{label}</p>
                     {isOverride && (
                       <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 uppercase tracking-wide">
                         Override
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">{desc}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {isOverride && (
                     <button
+                      type="button"
                       onClick={() => resetFlagMutation.mutate(key)}
                       disabled={resetFlagMutation.isPending}
-                      className="text-xs text-gray-400 hover:text-gray-600 hover:underline"
+                      className="text-xs text-[var(--text-muted)] hover:underline disabled:opacity-50"
                     >
                       Reset
                     </button>
                   )}
                   <button
+                    type="button"
+                    role="switch"
+                    aria-checked={isEnabled}
+                    aria-label={`${label}: ${isEnabled ? "enabled" : "disabled"}`}
                     onClick={() => toggleMutation.mutate({ key, value: !isEnabled })}
                     disabled={toggleMutation.isPending}
-                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus:outline-none disabled:opacity-50 ${
-                      isEnabled ? "bg-blue-600" : "bg-gray-200"
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 disabled:opacity-50 ${
+                      isEnabled ? "bg-blue-600" : "bg-[var(--bg-muted)]"
                     }`}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 mt-0.5 ${
-                        isEnabled ? "translate-x-4" : "translate-x-0.5"
+                      className={`inline-block h-5 w-5 transform rounded-full bg-[var(--bg-surface)] shadow-sm transition-transform duration-200 mt-0.5 ${
+                        isEnabled ? "translate-x-5" : "translate-x-0.5"
                       }`}
                     />
                   </button>

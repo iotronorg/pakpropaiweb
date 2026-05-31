@@ -56,12 +56,13 @@ export default function OrgTeamPage() {
     <div className="space-y-6 pb-10">
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Team</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage your organization's agents and pending applications
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">My Team</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
+            Manage your organization&apos;s agents and pending applications
           </p>
         </div>
         <button
+          type="button"
           onClick={() => setShowAdd(!showAdd)}
           className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
         >
@@ -78,18 +79,18 @@ export default function OrgTeamPage() {
               placeholder="Full Name"
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
             <input
               placeholder="Phone (E.164, e.g. +12025550123)"
               value={form.phone}
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-blue-100"
             />
             <select
               value={form.employment_type}
               onChange={(e) => setForm((f) => ({ ...f, employment_type: e.target.value }))}
-              className="rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-100"
+              className="rounded-lg border border-[var(--border)] bg-[var(--bg-surface)] px-3 py-2 text-sm text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-blue-100"
             >
               <option value="internal">Internal</option>
               <option value="freelance">Freelance</option>
@@ -97,6 +98,7 @@ export default function OrgTeamPage() {
           </div>
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={() => createMutation.mutate(form)}
               disabled={!form.name || !form.phone || createMutation.isPending}
               className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
@@ -104,8 +106,9 @@ export default function OrgTeamPage() {
               {createMutation.isPending ? "Adding…" : "Add Agent"}
             </button>
             <button
+              type="button"
               onClick={() => setShowAdd(false)}
-              className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+              className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors"
             >
               Cancel
             </button>
@@ -117,15 +120,16 @@ export default function OrgTeamPage() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1 w-fit">
+      <div className="flex gap-1 rounded-xl border border-[var(--border)] bg-[var(--bg-muted)] p-1 w-fit">
         {STATUS_TABS.map((t) => (
           <button
+            type="button"
             key={t.key}
             onClick={() => setTab(t.key)}
             className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
               tab === t.key
-                ? "bg-white text-blue-600 shadow-sm border border-gray-200"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-[var(--bg-surface)] text-blue-600 shadow-sm border border-[var(--border)]"
+                : "text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             {t.label}
@@ -134,32 +138,32 @@ export default function OrgTeamPage() {
       </div>
 
       {/* Table */}
-      <div className="rounded-xl border border-gray-200 bg-white">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <LoadingSpinner />
           </div>
         ) : agents.length === 0 ? (
-          <p className="text-center py-12 text-sm text-gray-400">No agents in this category</p>
+          <p className="text-center py-12 text-sm text-[var(--text-muted)]">No agents in this category</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
+                <tr className="border-b border-[var(--border)]">
                   {["Agent", "Phone", "Type", "Status", "Verified", "Leads", "Deals", "Rating", "Actions"].map((h) => (
-                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide whitespace-nowrap">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide whitespace-nowrap">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-[var(--border)]">
                 {agents.map((a: {
                   id: number; name: string; phone: string; employment_type: string;
                   registration_status: string; is_verified: boolean; is_active: boolean;
                   total_leads: number; closed_deals: number; rating: number | null;
                 }) => (
-                  <tr key={a.id} className="hover:bg-gray-50/50 transition-colors">
+                  <tr key={a.id} className="hover:bg-[var(--bg-muted)]/50 transition-colors">
                     <td className="px-5 py-3">
                       <div className="flex items-center gap-2.5">
                         <div className="h-7 w-7 rounded-full bg-violet-100 flex items-center justify-center shrink-0">
@@ -167,11 +171,11 @@ export default function OrgTeamPage() {
                             {a.name.slice(0, 2).toUpperCase()}
                           </span>
                         </div>
-                        <span className="font-medium text-gray-900">{a.name}</span>
+                        <span className="font-medium text-[var(--text-primary)]">{a.name}</span>
                       </div>
                     </td>
-                    <td className="px-5 py-3 text-gray-500 tabular-nums">{a.phone}</td>
-                    <td className="px-5 py-3 capitalize text-gray-600">{a.employment_type}</td>
+                    <td className="px-5 py-3 text-[var(--text-muted)] tabular-nums">{a.phone}</td>
+                    <td className="px-5 py-3 capitalize text-[var(--text-muted)]">{a.employment_type}</td>
                     <td className="px-5 py-3">
                       <Badge
                         label={a.registration_status}
@@ -185,15 +189,18 @@ export default function OrgTeamPage() {
                     <td className="px-5 py-3">
                       <Badge label={a.is_verified ? "Yes" : "No"} variant={a.is_verified ? "green" : "gray"} />
                     </td>
-                    <td className="px-5 py-3 tabular-nums text-gray-600">{a.total_leads}</td>
-                    <td className="px-5 py-3 tabular-nums text-gray-600">{a.closed_deals}</td>
+                    <td className="px-5 py-3 tabular-nums text-[var(--text-muted)]">{a.total_leads}</td>
+                    <td className="px-5 py-3 tabular-nums text-[var(--text-muted)]">{a.closed_deals}</td>
                     <td className="px-5 py-3">
-                      {a.rating !== null ? `⭐ ${a.rating.toFixed(1)}` : <span className="text-gray-400">—</span>}
+                      {a.rating !== null
+                        ? `⭐ ${a.rating.toFixed(1)}`
+                        : <span className="text-[var(--text-muted)]">—</span>}
                     </td>
                     <td className="px-5 py-3">
                       {a.registration_status === "pending" ? (
                         <div className="flex items-center gap-2">
                           <button
+                            type="button"
                             onClick={() => approveMutation.mutate(a.id)}
                             disabled={approveMutation.isPending}
                             className="text-xs px-2.5 py-1 rounded bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
@@ -205,9 +212,10 @@ export default function OrgTeamPage() {
                               placeholder="Reason"
                               value={rejectReason[a.id] ?? ""}
                               onChange={(e) => setRejectReason((r) => ({ ...r, [a.id]: e.target.value }))}
-                              className="text-xs border border-gray-200 rounded px-1.5 py-1 w-24 focus:outline-none"
+                              className="text-xs border border-[var(--border)] rounded px-1.5 py-1 w-24 bg-[var(--bg-surface)] focus:outline-none"
                             />
                             <button
+                              type="button"
                               onClick={() => rejectMutation.mutate({ id: a.id, reason: rejectReason[a.id] ?? "" })}
                               disabled={rejectMutation.isPending}
                               className="text-xs px-2 py-1 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
@@ -217,7 +225,7 @@ export default function OrgTeamPage() {
                           </div>
                         </div>
                       ) : (
-                        <span className="text-gray-300 text-xs">—</span>
+                        <span className="text-[var(--text-muted)] text-xs">—</span>
                       )}
                     </td>
                   </tr>

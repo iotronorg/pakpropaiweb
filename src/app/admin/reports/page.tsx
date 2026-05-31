@@ -22,7 +22,7 @@ function formatPeriodLabel(p: string, period: Period): string {
 
 function BarChart({ data, period, color = "blue" }: { data: TrendPoint[]; period: Period; color?: "blue" | "emerald" }) {
   if (!data.length) {
-    return <p className="text-xs text-gray-400 py-4">No trend data yet</p>;
+    return <p className="text-xs text-[var(--text-muted)] py-4">No trend data yet</p>;
   }
   const max = Math.max(...data.map((d) => d.count), 1);
   const barColor = color === "emerald" ? "bg-emerald-500" : "bg-blue-500";
@@ -30,13 +30,13 @@ function BarChart({ data, period, color = "blue" }: { data: TrendPoint[]; period
     <div className="flex items-end gap-1.5 h-28 pt-2">
       {data.map((d) => (
         <div key={d.period} className="flex flex-col items-center flex-1 min-w-0 h-full justify-end">
-          <span className="text-[10px] text-gray-500 font-medium mb-1">{d.count || ""}</span>
+          <span className="text-[10px] text-[var(--text-muted)] font-medium mb-1">{d.count || ""}</span>
           <div
             className={`w-full rounded-t ${barColor} transition-all`}
             style={{ height: `${Math.max((d.count / max) * 80, d.count > 0 ? 4 : 0)}%` }}
             title={`${formatPeriodLabel(d.period, period)}: ${d.count}`}
           />
-          <span className="text-[9px] text-gray-400 mt-1.5 truncate w-full text-center leading-tight">
+          <span className="text-[9px] text-[var(--text-muted)] mt-1.5 truncate w-full text-center leading-tight">
             {formatPeriodLabel(d.period, period)}
           </span>
         </div>
@@ -47,23 +47,24 @@ function BarChart({ data, period, color = "blue" }: { data: TrendPoint[]; period
 
 function StatCard({ label, value, sub }: { label: string; value: string | number; sub?: string }) {
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5">
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-gray-900">{value}</p>
-      {sub && <p className="mt-0.5 text-xs text-gray-400">{sub}</p>}
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+      <p className="text-sm text-[var(--text-muted)]">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-[var(--text-primary)]">{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-[var(--text-muted)]">{sub}</p>}
     </div>
   );
 }
 
 function PeriodToggle({ value, onChange }: { value: Period; onChange: (p: Period) => void }) {
   return (
-    <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-medium">
+    <div className="flex rounded-lg border border-[var(--border)] overflow-hidden text-xs font-medium">
       {(["weekly", "monthly"] as Period[]).map((p) => (
         <button
+          type="button"
           key={p}
           onClick={() => onChange(p)}
           className={`px-3 py-1.5 capitalize transition-colors ${
-            value === p ? "bg-blue-600 text-white" : "text-gray-500 hover:bg-gray-50"
+            value === p ? "bg-blue-600 text-white" : "text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
           }`}
         >
           {p}
@@ -92,7 +93,7 @@ async function handleDownload(id: string, reportType: string) {
 
 const REPORT_TYPES: { value: ReportType; label: string; description: string }[] = [
   { value: "property_analysis", label: "Property Analysis", description: "AI audit of a specific property" },
-  { value: "tax_advisory",      label: "Tax Advisory",      description: "Tax liability estimate (7E, CGT, WHT)" },
+  { value: "tax_advisory",      label: "Tax Advisory",      description: "Tax liability estimate" },
   { value: "loan_eligibility",  label: "Loan Eligibility",  description: "Bank financing eligibility check" },
   { value: "fraud_check",       label: "Fraud Check",       description: "Risk and fraud indicators for a property" },
 ];
@@ -122,54 +123,55 @@ function GenerateReportCard() {
   });
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-6 mb-8">
-      <h2 className="text-sm font-semibold text-gray-700 mb-4">Generate New Report</h2>
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-6 mb-8">
+      <h2 className="text-sm font-semibold text-[var(--text-muted)] mb-4">Generate New Report</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="lg:col-span-1">
-          <label className="block text-xs font-medium text-gray-500 mb-1">Report Type</label>
+          <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Report Type</label>
           <select
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value as ReportType)}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             {REPORT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
-          <p className="mt-1 text-xs text-gray-400">
+          <p className="mt-1 text-xs text-[var(--text-muted)]">
             {REPORT_TYPES.find((t) => t.value === selectedType)?.description}
           </p>
         </div>
         {["property_analysis", "tax_advisory", "fraud_check"].includes(selectedType) && (
           <div>
-            <label className="block text-xs font-medium text-gray-500 mb-1">Property ID (UUID)</label>
+            <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Property ID (UUID)</label>
             <input
               type="text" placeholder="550e8400-e29b-41d4-a716…"
               value={propertyId} onChange={(e) => setPropertyId(e.target.value)}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         )}
         {selectedType === "loan_eligibility" && (
           <>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Monthly Income</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Monthly Income</label>
               <input
                 type="number" placeholder="e.g. 150000"
                 value={monthlyIncome} onChange={(e) => setMonthlyIncome(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-gray-500 mb-1">Property Value</label>
+              <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Property Value</label>
               <input
                 type="number" placeholder="e.g. 10000000"
                 value={propertyValue} onChange={(e) => setPropertyValue(e.target.value)}
-                className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
           </>
         )}
         <div className="flex items-end">
           <button
+            type="button"
             onClick={() => generateMutation.mutate()}
             disabled={generateMutation.isPending}
             className="rounded-lg bg-blue-600 px-5 py-2 text-sm font-semibold text-white hover:bg-blue-700 disabled:opacity-50 whitespace-nowrap"
@@ -215,8 +217,8 @@ export default function AdminReportsPage() {
     <div>
       <div className="mb-8 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Platform Reports</h1>
-          <p className="mt-1 text-sm text-gray-500">Analytics across leads, agents, and properties</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Platform Reports</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">Analytics across leads, agents, and properties</p>
         </div>
         <PeriodToggle value={period} onChange={setPeriod} />
       </div>
@@ -225,27 +227,27 @@ export default function AdminReportsPage() {
 
       {/* Generated Reports List */}
       {((myReports as Report[] | undefined) ?? []).length > 0 && (
-        <div className="rounded-xl border border-gray-200 bg-white mb-8 overflow-x-auto">
-          <div className="border-b border-gray-100 px-6 py-4">
-            <h2 className="text-sm font-semibold text-gray-700">Generated Reports</h2>
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] mb-8 overflow-x-auto">
+          <div className="border-b border-[var(--border)] px-6 py-4">
+            <h2 className="text-sm font-semibold text-[var(--text-muted)]">Generated Reports</h2>
           </div>
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-[var(--border)] text-start text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 <th className="px-6 py-3">Type</th>
                 <th className="px-6 py-3">Status</th>
                 <th className="px-6 py-3">Created</th>
                 <th className="px-6 py-3">Download</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-[var(--border)]">
               {((myReports as Report[] | undefined) ?? []).map((r: Report) => (
-                <tr key={r.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-3 text-gray-700 capitalize">{r.report_type.replace(/_/g, " ")}</td>
+                <tr key={r.id} className="hover:bg-[var(--bg-muted)]">
+                  <td className="px-6 py-3 text-[var(--text-muted)] capitalize">{r.report_type.replace(/_/g, " ")}</td>
                   <td className="px-6 py-3">
                     <Badge label={r.status} variant={STATUS_COLOR[r.status] ?? "gray"} />
                   </td>
-                  <td className="px-6 py-3 text-gray-400 text-xs">{r.created_at ? new Date(r.created_at).toLocaleDateString() : "—"}</td>
+                  <td className="px-6 py-3 text-[var(--text-muted)] text-xs">{r.created_at ? new Date(r.created_at).toLocaleDateString() : "—"}</td>
                   <td className="px-6 py-3">
                     {r.status === "ready" ? (
                       <button
@@ -255,7 +257,7 @@ export default function AdminReportsPage() {
                         Download PDF
                       </button>
                     ) : (
-                      <span className="text-xs text-gray-300">—</span>
+                      <span className="text-xs text-[var(--text-faint)]">—</span>
                     )}
                   </td>
                 </tr>
@@ -271,7 +273,7 @@ export default function AdminReportsPage() {
         <div className="space-y-10">
           {/* Lead Analytics */}
           <section>
-            <h2 className="text-base font-semibold text-gray-700 mb-4">Lead Funnel</h2>
+            <h2 className="text-base font-semibold text-[var(--text-muted)] mb-4">Lead Funnel</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
               <StatCard label="Total Leads" value={leadData?.total ?? 0} />
               <StatCard label="Hot Leads" value={leadData?.hot_leads ?? 0} sub="Score ≥ 70" />
@@ -281,8 +283,8 @@ export default function AdminReportsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {leadData?.trend && (
-                <div className="rounded-xl border border-gray-200 bg-white p-5">
-                  <h3 className="text-sm font-semibold text-gray-600 mb-2 capitalize">
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+                  <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-2 capitalize">
                     New Leads — {period === "weekly" ? "last 8 weeks" : "last 6 months"}
                   </h3>
                   <BarChart data={leadData.trend} period={period} />
@@ -290,8 +292,8 @@ export default function AdminReportsPage() {
               )}
 
               {leadData?.by_status && (
-                <div className="rounded-xl border border-gray-200 bg-white p-5">
-                  <h3 className="text-sm font-semibold text-gray-600 mb-3">By Status</h3>
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+                  <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">By Status</h3>
                   <div className="space-y-2">
                     {Object.entries(leadData.by_status).map(([s, c]) => {
                       const total = leadData.total || 1;
@@ -299,10 +301,10 @@ export default function AdminReportsPage() {
                       return (
                         <div key={s}>
                           <div className="flex justify-between text-xs mb-0.5">
-                            <span className="font-medium text-gray-700 capitalize">{s}</span>
-                            <span className="text-gray-400">{String(c)}</span>
+                            <span className="font-medium text-[var(--text-muted)] capitalize">{s}</span>
+                            <span className="text-[var(--text-muted)]">{String(c)}</span>
                           </div>
-                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-1.5 bg-[var(--bg-subtle)] rounded-full overflow-hidden">
                             <div className="h-full bg-blue-400 rounded-full" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
@@ -316,7 +318,7 @@ export default function AdminReportsPage() {
 
           {/* Property Stats */}
           <section>
-            <h2 className="text-base font-semibold text-gray-700 mb-4">Property Inventory</h2>
+            <h2 className="text-base font-semibold text-[var(--text-muted)] mb-4">Property Inventory</h2>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-4">
               <StatCard label="Total Active" value={propData?.total ?? 0} />
               <StatCard label="Avg AI Score" value={propData?.avg_ai_score ?? "—"} />
@@ -326,8 +328,8 @@ export default function AdminReportsPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               {propData?.trend && (
-                <div className="rounded-xl border border-gray-200 bg-white p-5">
-                  <h3 className="text-sm font-semibold text-gray-600 mb-2 capitalize">
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+                  <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-2 capitalize">
                     New Listings — {period === "weekly" ? "last 8 weeks" : "last 6 months"}
                   </h3>
                   <BarChart data={propData.trend} period={period} color="emerald" />
@@ -335,12 +337,12 @@ export default function AdminReportsPage() {
               )}
 
               {propData?.by_risk_level && (
-                <div className="rounded-xl border border-gray-200 bg-white p-5">
-                  <h3 className="text-sm font-semibold text-gray-600 mb-3">By Risk Level</h3>
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5">
+                  <h3 className="text-sm font-semibold text-[var(--text-muted)] mb-3">By Risk Level</h3>
                   <div className="flex gap-6">
                     {Object.entries(propData.by_risk_level).map(([level, count]) => (
                       <div key={level} className="text-center">
-                        <p className="text-2xl font-bold text-gray-800">{String(count)}</p>
+                        <p className="text-2xl font-bold text-[var(--text-primary)]">{String(count)}</p>
                         <Badge
                           label={level}
                           variant={level === "high" ? "red" : level === "medium" ? "yellow" : "green"}
@@ -355,11 +357,11 @@ export default function AdminReportsPage() {
 
           {/* Agent Performance */}
           <section>
-            <h2 className="text-base font-semibold text-gray-700 mb-4">Agent Performance</h2>
-            <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+            <h2 className="text-base font-semibold text-[var(--text-muted)] mb-4">Agent Performance</h2>
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
+                  <tr className="border-b border-[var(--border)] text-start text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                     <th className="px-6 py-3">Agent</th>
                     <th className="px-6 py-3">City</th>
                     <th className="px-6 py-3">Total Leads</th>
@@ -369,22 +371,22 @@ export default function AdminReportsPage() {
                     <th className="px-6 py-3">Verified</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-[var(--border)]">
                   {(agentData?.results ?? []).map((a: {
                     id: number; name: string; phone: string; primary_city: string;
                     total_leads: number; closed_leads: number; closed_deals: number;
                     rating: number; is_verified: boolean;
                   }) => (
-                    <tr key={a.id} className="hover:bg-gray-50">
+                    <tr key={a.id} className="hover:bg-[var(--bg-muted)]">
                       <td className="px-6 py-3">
-                        <p className="font-medium text-gray-900">{a.name}</p>
-                        <p className="text-xs text-gray-400 font-mono">{a.phone}</p>
+                        <p className="font-medium text-[var(--text-primary)]">{a.name}</p>
+                        <p className="text-xs text-[var(--text-muted)] font-mono">{a.phone}</p>
                       </td>
-                      <td className="px-6 py-3 text-gray-600">{a.primary_city || "—"}</td>
-                      <td className="px-6 py-3 font-medium text-gray-800">{a.total_leads}</td>
+                      <td className="px-6 py-3 text-[var(--text-muted)]">{a.primary_city || "—"}</td>
+                      <td className="px-6 py-3 font-medium text-[var(--text-primary)]">{a.total_leads}</td>
                       <td className="px-6 py-3 text-green-600">{a.closed_leads}</td>
                       <td className="px-6 py-3 text-blue-600">{a.closed_deals}</td>
-                      <td className="px-6 py-3 text-gray-600">{a.rating?.toFixed(1) ?? "—"}</td>
+                      <td className="px-6 py-3 text-[var(--text-muted)]">{a.rating?.toFixed(1) ?? "—"}</td>
                       <td className="px-6 py-3">
                         <Badge label={a.is_verified ? "Verified" : "Pending"} variant={a.is_verified ? "green" : "yellow"} />
                       </td>
@@ -392,7 +394,7 @@ export default function AdminReportsPage() {
                   ))}
                   {(agentData?.results ?? []).length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-6 py-10 text-center text-gray-400">No agents found</td>
+                      <td colSpan={7} className="px-6 py-10 text-center text-[var(--text-muted)]">No agents found</td>
                     </tr>
                   )}
                 </tbody>

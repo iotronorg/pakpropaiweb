@@ -18,7 +18,7 @@ function fmtAmount(amount: number, currency: string) {
 const STATUS_STYLES: Record<string, string> = {
   paid:          "bg-emerald-50 text-emerald-700",
   open:          "bg-amber-50 text-amber-700",
-  void:          "bg-gray-100 text-gray-500",
+  void:          "bg-[var(--bg-subtle)] text-[var(--text-muted)]",
   uncollectible: "bg-red-50 text-red-600",
 };
 
@@ -39,60 +39,61 @@ export default function InvoiceHistoryPage() {
     <div className="space-y-6 pb-10">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Invoice History</h1>
-          <p className="mt-1 text-sm text-gray-500">Past billing invoices for your organization</p>
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Invoice History</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">Past billing invoices for your organization</p>
         </div>
         <button
+          type="button"
           onClick={() => portalMutation.mutate()}
           disabled={portalMutation.isPending}
-          className="rounded-xl border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 cursor-pointer"
+          className="rounded-xl border border-[var(--border)] px-4 py-2 text-sm font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] disabled:opacity-50 cursor-pointer"
         >
           {portalMutation.isPending ? "Opening…" : "Manage Subscription"}
         </button>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-2 border-amber-500 border-t-transparent" />
           </div>
         ) : invoices.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center">
-            <p className="text-sm text-gray-500">No invoices yet.</p>
-            <p className="mt-1 text-xs text-gray-400">Invoices appear here after your first billing cycle.</p>
+            <p className="text-sm text-[var(--text-muted)]">No invoices yet.</p>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">Invoices appear here after your first billing cycle.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100">
+                <tr className="border-b border-[var(--border)]">
                   {["Invoice", "Date", "Amount", "Status", ""].map((h) => (
-                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <th key={h} className="px-5 py-3 text-start text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-[var(--border)]">
                 {invoices.map((inv, i) => (
                   <motion.tr
                     key={inv.id}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.04 }}
-                    className="hover:bg-gray-50/50 transition-colors"
+                    className="hover:bg-[var(--bg-muted)]/50 transition-colors"
                   >
-                    <td className="px-5 py-3 font-mono text-xs text-gray-500">
+                    <td className="px-5 py-3 font-mono text-xs text-[var(--text-muted)]">
                       {inv.number ?? inv.id.slice(-8).toUpperCase()}
                     </td>
-                    <td className="px-5 py-3 text-gray-600 whitespace-nowrap">
+                    <td className="px-5 py-3 text-[var(--text-muted)] whitespace-nowrap">
                       {fmtDate(inv.created)}
                     </td>
-                    <td className="px-5 py-3 font-semibold tabular-nums text-gray-800">
+                    <td className="px-5 py-3 font-semibold tabular-nums text-[var(--text-primary)]">
                       {fmtAmount(inv.amount_paid || inv.amount_due, inv.currency)}
                     </td>
                     <td className="px-5 py-3">
-                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold capitalize ${STATUS_STYLES[inv.status] ?? "bg-gray-100 text-gray-500"}`}>
+                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-semibold capitalize ${STATUS_STYLES[inv.status] ?? "bg-[var(--bg-subtle)] text-[var(--text-muted)]"}`}>
                         {inv.status}
                       </span>
                     </td>
@@ -106,7 +107,7 @@ export default function InvoiceHistoryPage() {
                         )}
                         {inv.invoice_pdf && (
                           <a href={inv.invoice_pdf} target="_blank" rel="noopener noreferrer"
-                            className="text-xs font-medium text-gray-500 hover:text-gray-700 whitespace-nowrap">
+                            className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-primary)] whitespace-nowrap">
                             PDF
                           </a>
                         )}

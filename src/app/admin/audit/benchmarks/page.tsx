@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getBenchmarks, createBenchmark, updateBenchmark, deleteBenchmark } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { formatCurrency } from "@/lib/utils";
 import { Plus, Pencil, Trash2, Check, X, ChevronDown } from "lucide-react";
 
 interface Benchmark {
@@ -23,10 +22,8 @@ interface Benchmark {
 
 type Draft = Omit<Benchmark, "id" | "updated_at">;
 
-const CITIES = ["all", "lahore", "islamabad", "karachi", "rawalpindi", "default"];
-
 const EMPTY_DRAFT: Draft = {
-  city: "lahore",
+  city: "",
   location_key: "",
   ppm_min: 1_000_000,
   ppm_max: 3_000_000,
@@ -39,13 +36,13 @@ const EMPTY_DRAFT: Draft = {
 
 function fmtBenchmarkPrice(n: number | null | undefined): string {
   if (n == null || isNaN(n)) return '—';
-  return formatCurrency(n);
+  return n.toLocaleString();
 }
 
 function approvedLabel(v: boolean | null) {
   if (v === true) return { text: "Yes", cls: "text-green-700 bg-green-50 border-green-200" };
   if (v === false) return { text: "No", cls: "text-red-700 bg-red-50 border-red-200" };
-  return { text: "Unknown", cls: "text-gray-500 bg-gray-50 border-gray-200" };
+  return { text: "Unknown", cls: "text-[var(--text-muted)] bg-[var(--bg-muted)] border-[var(--border)]" };
 }
 
 function parseApproved(val: string): boolean | null {
@@ -54,10 +51,8 @@ function parseApproved(val: string): boolean | null {
   return null;
 }
 
-// ── Shared input style ─────────────────────────────────────────────────────────
-const INPUT = "w-full rounded border border-gray-300 px-2 py-1 text-xs outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200";
+const INPUT = "w-full rounded border border-[var(--border-strong)] px-2 py-1 text-xs outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-200";
 
-// ── Row form (used for both edit-in-place and add-new) ────────────────────────
 function BenchmarkForm({
   draft,
   onChange,
@@ -81,7 +76,7 @@ function BenchmarkForm({
           className={INPUT}
           value={draft.city}
           onChange={(e) => onChange({ city: e.target.value.toLowerCase() })}
-          placeholder="e.g. lahore"
+          placeholder="e.g. dubai"
         />
       </td>
       {/* location_key */}
@@ -90,7 +85,7 @@ function BenchmarkForm({
           className={INPUT}
           value={draft.location_key}
           onChange={(e) => onChange({ location_key: e.target.value.toLowerCase() })}
-          placeholder="e.g. dha, default"
+          placeholder="e.g. downtown, default"
         />
       </td>
       {/* ppm_min */}
@@ -152,7 +147,7 @@ function BenchmarkForm({
             <option value="true">Yes</option>
             <option value="false">No</option>
           </select>
-          <ChevronDown size={10} className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <ChevronDown size={10} className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
         </div>
       </td>
       {/* is_active */}
@@ -161,10 +156,10 @@ function BenchmarkForm({
           type="button"
           onClick={() => onChange({ is_active: !draft.is_active })}
           className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-            draft.is_active ? "bg-blue-600" : "bg-gray-300"
+            draft.is_active ? "bg-blue-600" : "bg-[var(--bg-subtle)]"
           }`}
         >
-          <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+          <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-[var(--bg-surface)] shadow transition-transform ${
             draft.is_active ? "translate-x-4" : "translate-x-0.5"
           }`} />
         </button>
@@ -173,6 +168,7 @@ function BenchmarkForm({
       <td className="px-3 py-2">
         <div className="flex items-center gap-1.5">
           <button
+            type="button"
             onClick={onSave}
             disabled={saving}
             className="flex items-center gap-1 rounded bg-blue-600 px-2 py-1 text-xs font-medium text-white hover:bg-blue-700 disabled:opacity-50"
@@ -181,8 +177,9 @@ function BenchmarkForm({
             {saving ? "Saving…" : "Save"}
           </button>
           <button
+            type="button"
             onClick={onCancel}
-            className="flex items-center gap-1 rounded border border-gray-300 bg-white px-2 py-1 text-xs font-medium text-gray-600 hover:bg-gray-50"
+            className="flex items-center gap-1 rounded border border-[var(--border-strong)] bg-[var(--bg-surface)] px-2 py-1 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
           >
             <X size={11} />
             Cancel
@@ -193,7 +190,6 @@ function BenchmarkForm({
   );
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
 export default function BenchmarksPage() {
   const qc = useQueryClient();
 
@@ -259,13 +255,14 @@ export default function BenchmarksPage() {
       {/* Header */}
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Audit Benchmarks</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Price-per-marla ranges, yield, appreciation, and liquidity data used to score every
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Audit Benchmarks</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
+            Price-per-unit ranges, yield, appreciation, and liquidity data used to score every
             property audit report. Edit any row to update future audits instantly.
           </p>
         </div>
         <button
+          type="button"
           onClick={() => { setShowAdd(true); setEditingId(null); setNewDraft({ ...EMPTY_DRAFT }); }}
           className="flex items-center gap-1.5 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
         >
@@ -278,12 +275,13 @@ export default function BenchmarksPage() {
       <div className="mb-4 flex flex-wrap gap-2">
         {["all", ...uniqueCities].map((c) => (
           <button
+            type="button"
             key={c}
             onClick={() => setCityFilter(c)}
             className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
               cityFilter === c
                 ? "bg-blue-600 text-white"
-                : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+                : "bg-[var(--bg-surface)] border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
             }`}
           >
             {c === "all" ? "All Cities" : c}
@@ -299,10 +297,10 @@ export default function BenchmarksPage() {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-gray-100 text-start text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-[var(--border)] text-start text-[10px] font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 <th className="px-3 py-3">City</th>
                 <th className="px-3 py-3">Location Key</th>
                 <th className="px-3 py-3">PPM Min</th>
@@ -315,7 +313,7 @@ export default function BenchmarksPage() {
                 <th className="px-3 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-[var(--border)]">
               {/* Add-new row at top */}
               {showAdd && (
                 <BenchmarkForm
@@ -341,15 +339,15 @@ export default function BenchmarksPage() {
                 ) : (
                   <tr
                     key={b.id}
-                    className={`hover:bg-gray-50 transition-colors ${!b.is_active ? "opacity-50" : ""}`}
+                    className={`hover:bg-[var(--bg-muted)] transition-colors ${!b.is_active ? "opacity-50" : ""}`}
                   >
-                    <td className="px-3 py-2.5 font-medium text-gray-800 capitalize">{b.city}</td>
-                    <td className="px-3 py-2.5 font-mono text-gray-700">{b.location_key}</td>
-                    <td className="px-3 py-2.5 text-gray-600">{fmtBenchmarkPrice(b.ppm_min)}</td>
-                    <td className="px-3 py-2.5 text-gray-600">{fmtBenchmarkPrice(b.ppm_max)}</td>
+                    <td className="px-3 py-2.5 font-medium text-[var(--text-primary)] capitalize">{b.city}</td>
+                    <td className="px-3 py-2.5 font-mono text-[var(--text-muted)]">{b.location_key}</td>
+                    <td className="px-3 py-2.5 text-[var(--text-muted)]">{fmtBenchmarkPrice(b.ppm_min)}</td>
+                    <td className="px-3 py-2.5 text-[var(--text-muted)]">{fmtBenchmarkPrice(b.ppm_max)}</td>
                     <td className="px-3 py-2.5 text-blue-700 font-medium">{b.yield_pct}%</td>
                     <td className="px-3 py-2.5 text-green-700 font-medium">{b.appr_pct}%</td>
-                    <td className="px-3 py-2.5 text-gray-600">{b.liq_months} mo</td>
+                    <td className="px-3 py-2.5 text-[var(--text-muted)]">{b.liq_months} mo</td>
                     <td className="px-3 py-2.5">
                       {(() => {
                         const { text, cls } = approvedLabel(b.approved);
@@ -362,12 +360,13 @@ export default function BenchmarksPage() {
                     </td>
                     <td className="px-3 py-2.5">
                       <button
+                        type="button"
                         onClick={() => toggleActive(b)}
                         className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                          b.is_active ? "bg-blue-600" : "bg-gray-300"
+                          b.is_active ? "bg-blue-600" : "bg-[var(--bg-subtle)]"
                         }`}
                       >
-                        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+                        <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-[var(--bg-surface)] shadow transition-transform ${
                           b.is_active ? "translate-x-4" : "translate-x-0.5"
                         }`} />
                       </button>
@@ -376,6 +375,7 @@ export default function BenchmarksPage() {
                       {deleteConfirmId === b.id ? (
                         <div className="flex items-center gap-1">
                           <button
+                            type="button"
                             onClick={() => deleteMutation.mutate(b.id)}
                             disabled={deleteMutation.isPending}
                             className="rounded bg-red-600 px-2 py-1 text-[10px] font-medium text-white hover:bg-red-700 disabled:opacity-50"
@@ -383,8 +383,9 @@ export default function BenchmarksPage() {
                             {deleteMutation.isPending ? "…" : "Confirm"}
                           </button>
                           <button
+                            type="button"
                             onClick={() => setDeleteConfirmId(null)}
-                            className="rounded border border-gray-300 bg-white px-2 py-1 text-[10px] font-medium text-gray-600 hover:bg-gray-50"
+                            className="rounded border border-[var(--border-strong)] bg-[var(--bg-surface)] px-2 py-1 text-[10px] font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
                           >
                             Cancel
                           </button>
@@ -392,6 +393,7 @@ export default function BenchmarksPage() {
                       ) : (
                         <div className="flex items-center gap-2">
                           <button
+                            type="button"
                             onClick={() => startEdit(b)}
                             className="text-blue-600 hover:text-blue-800 transition-colors"
                             title="Edit"
@@ -399,6 +401,7 @@ export default function BenchmarksPage() {
                             <Pencil size={13} />
                           </button>
                           <button
+                            type="button"
                             onClick={() => setDeleteConfirmId(b.id)}
                             className="text-red-400 hover:text-red-600 transition-colors"
                             title="Delete"
@@ -414,7 +417,7 @@ export default function BenchmarksPage() {
 
               {filtered.length === 0 && !showAdd && (
                 <tr>
-                  <td colSpan={10} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={10} className="px-6 py-12 text-center text-[var(--text-muted)]">
                     No benchmarks found
                     {cityFilter !== "all" && ` for "${cityFilter}"`}
                   </td>

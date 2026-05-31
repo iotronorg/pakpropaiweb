@@ -1,4 +1,5 @@
 "use client";
+import { X, Check } from "lucide-react";
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -198,8 +199,8 @@ export default function AgentsPage() {
       {/* Header */}
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Agents</h1>
-          <p className="mt-1 text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-[var(--text-primary)]">Agents</h1>
+          <p className="mt-1 text-sm text-[var(--text-muted)]">
             {isLoading ? "Loading…" : `${data?.count ?? agents.length} agent${(data?.count ?? agents.length) !== 1 ? "s" : ""}`}
             {" · "}create, verify, manage and assign agents to properties
           </p>
@@ -213,15 +214,18 @@ export default function AgentsPage() {
       </div>
 
       {/* Tabs */}
-      <div className="mb-5 flex gap-1 border-b border-gray-200">
+      <div role="tablist" aria-label="Agent views" className="mb-5 flex gap-1 border-b border-[var(--border)]">
         {(["all", "pending"] as const).map((t) => (
           <button
             key={t}
+            type="button"
+            role="tab"
+            aria-selected={tab === t}
             onClick={() => setTab(t)}
             className={`px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px ${
               tab === t
                 ? "border-blue-600 text-blue-600"
-                : "border-transparent text-gray-500 hover:text-gray-700"
+                : "border-transparent text-[var(--text-muted)] hover:text-[var(--text-primary)]"
             }`}
           >
             {t === "all" ? "All Agents" : (
@@ -244,15 +248,15 @@ export default function AgentsPage() {
           {pendingLoading ? (
             <LoadingSpinner />
           ) : pendingAgents.length === 0 ? (
-            <div className="rounded-xl border border-gray-200 bg-white px-6 py-16 text-center text-gray-400">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] px-6 py-16 text-center text-[var(--text-muted)]">
               <p className="font-medium">No pending applications</p>
               <p className="text-sm mt-1">New agent registrations will appear here for review.</p>
             </div>
           ) : (
-            <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
+                  <tr className="border-b border-[var(--border)] text-start text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                     <th className="px-5 py-3">Name</th>
                     <th className="px-5 py-3">Phone</th>
                     <th className="px-5 py-3">Type</th>
@@ -263,30 +267,30 @@ export default function AgentsPage() {
                     <th className="px-5 py-3">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-[var(--border)]">
                   {pendingAgents.map((a) => (
                     <tr key={a.id} className="hover:bg-amber-50/40">
                       <td className="px-5 py-3">
-                        <p className="font-medium text-gray-900">{a.name}</p>
-                        {a.email && <p className="text-xs text-gray-400">{a.email}</p>}
+                        <p className="font-medium text-[var(--text-primary)]">{a.name}</p>
+                        {a.email && <p className="text-xs text-[var(--text-muted)]">{a.email}</p>}
                       </td>
-                      <td className="px-5 py-3 font-mono text-gray-700">{a.phone}</td>
-                      <td className="px-5 py-3 text-gray-500 text-xs capitalize">
+                      <td className="px-5 py-3 font-mono text-[var(--text-muted)]">{a.phone}</td>
+                      <td className="px-5 py-3 text-[var(--text-muted)] text-xs capitalize">
                         {AGENT_TYPES.find((t) => t.value === a.agent_type)?.label ?? a.agent_type}
                       </td>
-                      <td className="px-5 py-3 text-gray-500 text-xs">
-                        {a.parent_organization_name ?? <span className="text-gray-300">Independent</span>}
+                      <td className="px-5 py-3 text-[var(--text-muted)] text-xs">
+                        {a.parent_organization_name ?? <span className="text-[var(--text-faint)]">Independent</span>}
                       </td>
-                      <td className="px-5 py-3 text-gray-600">{a.primary_city || "—"}</td>
-                      <td className="px-5 py-3 text-gray-400 text-xs">
+                      <td className="px-5 py-3 text-[var(--text-muted)]">{a.primary_city || "—"}</td>
+                      <td className="px-5 py-3 text-[var(--text-muted)] text-xs">
                         {a.specializations?.slice(0, 2).map((s) => SPEC_LABEL[s] ?? s).join(", ") || "—"}
                       </td>
-                      <td className="px-5 py-3 text-gray-400 text-xs">{formatDate(a.joined_at)}</td>
+                      <td className="px-5 py-3 text-[var(--text-muted)] text-xs">{formatDate(a.joined_at)}</td>
                       <td className="px-5 py-3">
                         <div className="flex items-center gap-1.5">
                           <button
                             onClick={() => setDetailAgent(a)}
-                            className="text-xs px-2.5 py-1 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 font-medium"
+                            className="text-xs px-2.5 py-1 rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)] font-medium"
                           >
                             View
                           </button>
@@ -314,25 +318,29 @@ export default function AgentsPage() {
 
           {/* Reject modal */}
           {rejectId !== null && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-              <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-1">Reject Application</h3>
-                <p className="text-sm text-gray-500 mb-4">This reason will be sent to the agent via notification.</p>
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={() => setRejectId(null)}>
+              <div role="dialog" aria-modal="true" aria-labelledby="reject-agent-title" onClick={(e) => e.stopPropagation()} className="bg-[var(--bg-surface)] rounded-2xl shadow-xl w-full max-w-md p-6">
+                <h3 id="reject-agent-title" className="text-lg font-bold text-[var(--text-primary)] mb-1">Reject Application</h3>
+                <p className="text-sm text-[var(--text-muted)] mb-4">This reason will be sent to the agent via notification.</p>
+                <label htmlFor="reject-reason" className="sr-only">Rejection reason</label>
                 <textarea
+                  id="reject-reason"
                   rows={3}
                   value={rejectReason}
                   onChange={(e) => setRejectReason(e.target.value)}
-                  placeholder="e.g. Incomplete license details. Please reapply with valid REAP registration number."
-                  className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
+                  placeholder="e.g. Incomplete license details. Please reapply with a valid registration number."
+                  className="w-full rounded-lg border border-[var(--border)] px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
                 />
                 <div className="mt-4 flex justify-end gap-3">
                   <button
+                    type="button"
                     onClick={() => setRejectId(null)}
-                    className="rounded-lg border border-gray-200 px-4 py-2 text-sm text-gray-500 hover:bg-gray-50"
+                    className="rounded-lg border border-[var(--border)] px-4 py-2 text-sm text-[var(--text-muted)] hover:bg-[var(--bg-muted)]"
                   >
                     Cancel
                   </button>
                   <button
+                    type="button"
                     onClick={() => rejectId && rejectMutation.mutate({ id: rejectId, reason: rejectReason })}
                     disabled={!rejectReason.trim() || rejectMutation.isPending}
                     className="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
@@ -357,10 +365,10 @@ export default function AgentsPage() {
       {isLoading ? (
         <LoadingSpinner />
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white overflow-x-auto">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-100 text-start text-xs font-semibold uppercase tracking-wider text-gray-400">
+              <tr className="border-b border-[var(--border)] text-start text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                 <th className="px-5 py-3">ID</th>
                 <th className="px-5 py-3">Name</th>
                 <th className="px-5 py-3">Phone</th>
@@ -372,23 +380,23 @@ export default function AgentsPage() {
                 <th className="px-5 py-3">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-50">
+            <tbody className="divide-y divide-[var(--border)]">
               {agents.map((a) => (
-                <tr key={a.id} className="hover:bg-gray-50">
+                <tr key={a.id} className="hover:bg-[var(--bg-muted)]">
 
                   {/* ID — prominent with copy button */}
                   <td className="px-5 py-3">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-mono font-bold text-gray-900 bg-gray-100 rounded px-1.5 py-0.5 text-xs">
+                      <span className="font-mono font-bold text-[var(--text-primary)] bg-[var(--bg-subtle)] rounded px-1.5 py-0.5 text-xs">
                         #{a.id}
                       </span>
                       <button
                         onClick={() => copyId(a.id)}
                         title="Copy ID"
-                        className="text-gray-300 hover:text-blue-500 transition-colors"
+                        className="text-[var(--text-faint)] hover:text-blue-500 transition-colors"
                       >
                         {copiedId === a.id ? (
-                          <span className="text-xs text-green-500 font-medium">✓</span>
+                          <Check size={12} className="text-green-500" aria-hidden="true" />
                         ) : (
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -400,15 +408,15 @@ export default function AgentsPage() {
                   </td>
 
                   <td className="px-5 py-3">
-                    <div className="font-medium text-gray-800">{a.name}</div>
-                    {a.company_name && <div className="text-xs text-gray-400">{a.company_name}</div>}
+                    <div className="font-medium text-[var(--text-primary)]">{a.name}</div>
+                    {a.company_name && <div className="text-xs text-[var(--text-muted)]">{a.company_name}</div>}
                   </td>
-                  <td className="px-5 py-3 font-mono text-gray-700">{a.phone}</td>
-                  <td className="px-5 py-3 text-gray-500 capitalize text-xs">
+                  <td className="px-5 py-3 font-mono text-[var(--text-muted)]">{a.phone}</td>
+                  <td className="px-5 py-3 text-[var(--text-muted)] capitalize text-xs">
                     {AGENT_TYPES.find((t) => t.value === a.agent_type)?.label ?? a.agent_type}
                   </td>
-                  <td className="px-5 py-3 text-gray-500 max-w-[140px] truncate text-xs">
-                    {a.cities?.join(", ") || <span className="text-gray-300">—</span>}
+                  <td className="px-5 py-3 text-[var(--text-muted)] max-w-[140px] truncate text-xs">
+                    {a.cities?.join(", ") || <span className="text-[var(--text-faint)]">—</span>}
                   </td>
                   <td className="px-5 py-3">
                     <Badge label={a.is_verified ? "Verified" : "Unverified"} variant={a.is_verified ? "green" : "gray"} />
@@ -423,13 +431,13 @@ export default function AgentsPage() {
                     <div className="flex items-center gap-1.5 flex-wrap">
                       <button
                         onClick={() => setDetailAgent(a)}
-                        className="text-xs px-2.5 py-1 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50 font-medium"
+                        className="text-xs px-2.5 py-1 rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--bg-muted)] font-medium"
                       >
                         View
                       </button>
                       <button
                         onClick={() => openEdit(a)}
-                        className="text-xs px-2.5 py-1 rounded-md border border-gray-200 text-blue-600 hover:bg-blue-50 font-medium"
+                        className="text-xs px-2.5 py-1 rounded-md border border-[var(--border)] text-blue-600 hover:bg-blue-50 font-medium"
                       >
                         Edit
                       </button>
@@ -467,7 +475,7 @@ export default function AgentsPage() {
               ))}
               {agents.length === 0 && (
                 <tr>
-                  <td colSpan={9} className="px-5 py-12 text-center text-gray-400">
+                  <td colSpan={9} className="px-5 py-12 text-center text-[var(--text-muted)]">
                     No agents yet. Click <strong>+ Add Agent</strong> to create one.
                   </td>
                 </tr>
@@ -522,16 +530,16 @@ export default function AgentsPage() {
         <Modal title={`Agent Details — #${detailAgent.id}`} onClose={() => setDetailAgent(null)}>
           <div className="space-y-2 max-h-[70vh] overflow-y-auto pe-1">
             {/* ID callout */}
-            <div className="flex items-center justify-between rounded-lg bg-gray-50 border border-gray-200 px-4 py-3 mb-3">
+            <div className="flex items-center justify-between rounded-lg bg-[var(--bg-muted)] border border-[var(--border)] px-4 py-3 mb-3">
               <div>
-                <p className="text-xs text-gray-400 uppercase font-semibold tracking-wider mb-0.5">Agent ID</p>
-                <p className="font-mono text-2xl font-bold text-gray-900">#{detailAgent.id}</p>
+                <p className="text-xs text-[var(--text-muted)] uppercase font-semibold tracking-wider mb-0.5">Agent ID</p>
+                <p className="font-mono text-2xl font-bold text-[var(--text-primary)]">#{detailAgent.id}</p>
               </div>
               <button
                 onClick={() => copyId(detailAgent.id)}
-                className="text-xs px-3 py-1.5 rounded-md border border-gray-200 text-gray-500 hover:bg-gray-100 font-medium"
+                className="text-xs px-3 py-1.5 rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--bg-subtle)] font-medium"
               >
-                {copiedId === detailAgent.id ? "✓ Copied" : "Copy ID"}
+                {copiedId === detailAgent.id ? "Copied!" : "Copy ID"}
               </button>
             </div>
             <DetailRow label="Name"         value={detailAgent.name} />
@@ -571,14 +579,14 @@ export default function AgentsPage() {
       {/* ── Delete Confirm ────────────────────────────────────────────────────── */}
       {deleteId && (
         <Modal title="Delete Agent" onClose={() => setDeleteId(null)}>
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-[var(--text-muted)] mb-2">
             Are you sure you want to permanently delete agent <strong>#{deleteId}</strong>?
           </p>
           <p className="text-xs text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2 mb-6">
             This will unlink their leads and assigned properties. This cannot be undone.
           </p>
           <div className="flex justify-end gap-3">
-            <button onClick={() => setDeleteId(null)} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
+            <button onClick={() => setDeleteId(null)} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
               Cancel
             </button>
             <button
@@ -667,9 +675,9 @@ function AgentFormBody({
           </Field>
         </div>
         <div className="grid grid-cols-2 gap-3">
-          <Field label="License / REAP Number">
+          <Field label="License / Registration Number">
             <input type="text" value={form.license_number} onChange={set("license_number")}
-              placeholder="e.g. REAP-12345" className={inputCls} />
+              placeholder="e.g. REA-2024-12345" className={inputCls} />
           </Field>
           <Field label="Years of Experience">
             <input type="number" min="0" value={form.years_experience} onChange={set("years_experience")}
@@ -686,16 +694,16 @@ function AgentFormBody({
       <Section label="Geographic Coverage">
         <Field label="Primary City">
           <input type="text" value={form.primary_city} onChange={set("primary_city")}
-            placeholder="e.g. Lahore" className={inputCls} />
+            placeholder="e.g. Dubai, London, New York" className={inputCls} />
         </Field>
         <Field label="All Cities Covered">
           <input type="text" value={form.cities} onChange={set("cities")}
-            placeholder="Lahore, Islamabad, Rawalpindi (comma-separated)" className={inputCls} />
-          <p className="text-xs text-gray-400 mt-1">Comma-separated list of cities this agent covers.</p>
+            placeholder="Dubai, Abu Dhabi, Sharjah (comma-separated)" className={inputCls} />
+          <p className="text-xs text-[var(--text-muted)] mt-1">Comma-separated list of cities this agent covers.</p>
         </Field>
-        <Field label="Specific Areas / Societies">
+        <Field label="Specific Areas / Districts">
           <input type="text" value={form.areas} onChange={set("areas")}
-            placeholder="DHA Phase 5, Bahria Town, F-7 (comma-separated)" className={inputCls} />
+            placeholder="Downtown, Marina, JBR (comma-separated)" className={inputCls} />
         </Field>
       </Section>
 
@@ -703,12 +711,12 @@ function AgentFormBody({
       <Section label="Specializations">
         <div className="grid grid-cols-2 gap-2">
           {SPECIALIZATION_OPTIONS.map((s) => (
-            <label key={s.value} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+            <label key={s.value} className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={form.specializations.includes(s.value)}
                 onChange={() => toggleSpec(s.value)}
-                className="rounded border-gray-300 accent-blue-600"
+                className="rounded border-[var(--border-strong)] accent-blue-600"
               />
               {s.label}
             </label>
@@ -724,12 +732,12 @@ function AgentFormBody({
             { key: "is_active"   as const, label: "Active",   color: "accent-blue-600"  },
             { key: "is_featured" as const, label: "Featured", color: "accent-yellow-500"},
           ].map(({ key, label, color }) => (
-            <label key={key} className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer select-none">
+            <label key={key} className="flex items-center gap-2 text-sm text-[var(--text-muted)] cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={form[key]}
                 onChange={(e) => onChange({ ...form, [key]: e.target.checked })}
-                className={`rounded border-gray-300 ${color}`}
+                className={`rounded border-[var(--border-strong)] ${color}`}
               />
               {label}
             </label>
@@ -741,8 +749,8 @@ function AgentFormBody({
         <p className="rounded-lg bg-red-50 border border-red-200 px-3 py-2 text-sm text-red-700">{error}</p>
       )}
 
-      <div className="flex justify-end gap-3 pt-2 border-t border-gray-100">
-        <button onClick={onCancel} className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700">
+      <div className="flex justify-end gap-3 pt-2 border-t border-[var(--border)]">
+        <button onClick={onCancel} className="px-4 py-2 text-sm text-[var(--text-muted)] hover:text-[var(--text-muted)]">
           Cancel
         </button>
         <button
@@ -760,12 +768,13 @@ function AgentFormBody({
 // ── Shared sub-components ─────────────────────────────────────────────────────
 
 function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+  const titleId = `modal-title-${title.replace(/\s+/g, "-").toLowerCase()}`;
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-      <div className="w-full max-w-2xl rounded-xl bg-white shadow-xl">
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h3 className="font-semibold text-gray-900">{title}</h3>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-lg leading-none">×</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+      <div role="dialog" aria-modal="true" aria-labelledby={titleId} onClick={(e) => e.stopPropagation()} className="w-full max-w-2xl rounded-xl bg-[var(--bg-surface)] shadow-xl">
+        <div className="flex items-center justify-between border-b border-[var(--border)] px-6 py-4">
+          <h3 id={titleId} className="font-semibold text-[var(--text-primary)]">{title}</h3>
+          <button type="button" onClick={onClose} aria-label="Close" className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-muted)] hover:text-[var(--text-primary)] transition-colors"><X size={16} aria-hidden="true" /></button>
         </div>
         <div className="px-6 py-5">{children}</div>
       </div>
@@ -776,7 +785,7 @@ function Modal({ title, onClose, children }: { title: string; onClose: () => voi
 function Section({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">{label}</p>
+      <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)] mb-3">{label}</p>
       <div className="space-y-3">{children}</div>
     </div>
   );
@@ -785,7 +794,7 @@ function Section({ label, children }: { label: string; children: React.ReactNode
 function Field({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
+      <label className="block text-sm font-medium text-[var(--text-muted)] mb-1">
         {label}{required && <span className="text-red-500 ms-0.5">*</span>}
       </label>
       {children}
@@ -799,10 +808,10 @@ function DetailRow({
   label: string; value?: string | null; mono?: boolean; children?: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between py-1.5 border-b border-gray-50 last:border-0">
-      <span className="text-sm text-gray-500 w-32 flex-shrink-0">{label}</span>
+    <div className="flex items-start justify-between py-1.5 border-b border-[var(--border-subtle)] last:border-0">
+      <span className="text-sm text-[var(--text-muted)] w-32 flex-shrink-0">{label}</span>
       {children ?? (
-        <span className={`text-sm text-right ${mono ? "font-mono" : ""} ${!value ? "text-gray-300" : "text-gray-800"}`}>
+        <span className={`text-sm text-right ${mono ? "font-mono" : ""} ${!value ? "text-[var(--text-faint)]" : "text-[var(--text-primary)]"}`}>
           {value || "—"}
         </span>
       )}
@@ -810,4 +819,4 @@ function DetailRow({
   );
 }
 
-const inputCls = "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500";
+const inputCls = "w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500";

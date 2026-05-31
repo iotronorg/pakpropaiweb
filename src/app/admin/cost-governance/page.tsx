@@ -1,4 +1,5 @@
 "use client";
+import { Check } from "lucide-react";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -18,7 +19,7 @@ const stagger = {
 };
 
 function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse rounded-lg bg-gray-100 ${className}`} />;
+  return <div className={`animate-pulse rounded-lg bg-[var(--bg-subtle)] ${className}`} />;
 }
 
 function KpiCard({
@@ -46,11 +47,11 @@ function KpiCard({
       variants={stagger}
       initial="hidden"
       animate="show"
-      className={`rounded-xl border border-gray-200 bg-white p-5 border-l-4 ${accent ? accentClasses[accent] ?? "" : ""}`}
+      className={`rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 border-l-4 ${accent ? accentClasses[accent] ?? "" : ""}`}
     >
-      <p className="text-sm text-gray-500">{label}</p>
-      <p className="mt-1 text-2xl font-bold text-gray-900 tabular-nums">{value}</p>
-      {sub && <p className="mt-0.5 text-xs text-gray-400">{sub}</p>}
+      <p className="text-sm text-[var(--text-muted)]">{label}</p>
+      <p className="mt-1 text-2xl font-bold text-[var(--text-primary)] tabular-nums">{value}</p>
+      {sub && <p className="mt-0.5 text-xs text-[var(--text-muted)]">{sub}</p>}
     </motion.div>
   );
 }
@@ -63,7 +64,7 @@ function StateBadge({ state }: { state: string }) {
     hard_limit: "bg-red-100 text-red-700",
   };
   return (
-    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${map[state] ?? "bg-gray-100 text-gray-600"}`}>
+    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${map[state] ?? "bg-[var(--bg-subtle)] text-[var(--text-muted)]"}`}>
       {state.replace("_", " ")}
     </span>
   );
@@ -74,11 +75,11 @@ function OrgSpendBar({ label, value, max }: { label: string; value: number; max:
   const pct = max > 0 ? Math.max((value / max) * 100, value > 0 ? 1 : 0) : 0;
   return (
     <div className="flex items-center gap-3">
-      <span className="text-xs text-gray-500 w-36 shrink-0 truncate">{label}</span>
-      <div className="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden">
+      <span className="text-xs text-[var(--text-muted)] w-36 shrink-0 truncate">{label}</span>
+      <div className="flex-1 bg-[var(--bg-subtle)] rounded-full h-4 overflow-hidden">
         <div className="h-full bg-violet-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-xs font-semibold text-gray-700 w-20 shrink-0 text-right tabular-nums">
+      <span className="text-xs font-semibold text-[var(--text-muted)] w-20 shrink-0 text-right tabular-nums">
         {value.toLocaleString()}
       </span>
     </div>
@@ -110,21 +111,22 @@ function BudgetLimitPanel() {
     <div className="space-y-3">
       {PLAN_KEYS.map((plan) => (
         <div key={plan.key} className="flex items-center gap-4">
-          <label className="text-sm font-medium text-gray-700 w-32 shrink-0">{plan.label}</label>
+          <label className="text-sm font-medium text-[var(--text-muted)] w-32 shrink-0">{plan.label}</label>
           <input
             type="number"
             value={values[plan.key]}
             onChange={(e) => setValues((v) => ({ ...v, [plan.key]: e.target.value }))}
-            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="rounded-lg border border-[var(--border-strong)] px-3 py-1.5 text-sm w-40 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
-          <span className="text-xs text-gray-400">tokens / 24h</span>
+          <span className="text-xs text-[var(--text-muted)]">tokens / 24h</span>
         </div>
       ))}
       <button
+        type="button"
         onClick={handleSave}
         className="mt-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors"
       >
-        {saved ? "Saved ✓" : "Save limits"}
+        {saved ? <><Check size={13} aria-hidden="true" /> Saved</> : "Save limits"}
       </button>
     </div>
   );
@@ -150,7 +152,7 @@ export default function CostGovernancePage() {
     <div className="space-y-8 p-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <h1 className="text-2xl font-bold text-gray-900">Cost Governance</h1>
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Cost Governance</h1>
         <AnimatePresence>
           {!isLoading && (
             <motion.span
@@ -209,7 +211,7 @@ export default function CostGovernancePage() {
           variants={stagger}
           initial="hidden"
           animate="show"
-          className="text-lg font-semibold text-gray-800"
+          className="text-lg font-semibold text-[var(--text-primary)]"
         >
           Per-Org Token Spend (24h)
         </motion.h2>
@@ -218,12 +220,12 @@ export default function CostGovernancePage() {
           variants={stagger}
           initial="hidden"
           animate="show"
-          className="rounded-xl border border-gray-200 bg-white p-5 space-y-3"
+          className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 space-y-3"
         >
           {isLoading ? (
             <Skeleton className="h-32 w-full" />
           ) : totalTokens === 0 ? (
-            <p className="text-sm text-gray-400 py-6 text-center">No token data yet</p>
+            <p className="text-sm text-[var(--text-muted)] py-6 text-center">No token data yet</p>
           ) : (
             /* In production, this data would come from a per-org aggregation endpoint */
             <OrgSpendBar label="Platform total" value={totalTokens} max={totalTokens} />
@@ -238,7 +240,7 @@ export default function CostGovernancePage() {
           variants={stagger}
           initial="hidden"
           animate="show"
-          className="text-lg font-semibold text-gray-800"
+          className="text-lg font-semibold text-[var(--text-primary)]"
         >
           Plan Token Limits
         </motion.h2>
@@ -247,7 +249,7 @@ export default function CostGovernancePage() {
           variants={stagger}
           initial="hidden"
           animate="show"
-          className="rounded-xl border border-gray-200 bg-white p-5"
+          className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5"
         >
           <BudgetLimitPanel />
         </motion.div>
@@ -260,19 +262,19 @@ export default function CostGovernancePage() {
           variants={stagger}
           initial="hidden"
           animate="show"
-          className="rounded-xl border border-gray-200 bg-white overflow-hidden"
+          className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] overflow-hidden"
         >
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-[var(--bg-muted)] border-b border-[var(--border)]">
               <tr>
                 {["Metric", "Value"].map((h) => (
-                  <th key={h} className="px-5 py-3 text-start text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  <th key={h} className="px-5 py-3 text-start text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">
                     {h}
                   </th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-[var(--border)]">
               {[
                 { label: "Total LLM calls", value: stats.total_calls.toLocaleString() },
                 { label: "Cache hits", value: stats.cache_hits.toLocaleString() },
@@ -282,9 +284,9 @@ export default function CostGovernancePage() {
                 { label: "Est. cost", value: fmtUsd(estCost) },
                 { label: "Est. savings (cache)", value: fmtUsd(estSavings) },
               ].map(({ label, value }) => (
-                <tr key={label} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-5 py-3 text-gray-600">{label}</td>
-                  <td className="px-5 py-3 font-semibold text-gray-900 tabular-nums">{value}</td>
+                <tr key={label} className="hover:bg-[var(--bg-muted)] transition-colors">
+                  <td className="px-5 py-3 text-[var(--text-muted)]">{label}</td>
+                  <td className="px-5 py-3 font-semibold text-[var(--text-primary)] tabular-nums">{value}</td>
                 </tr>
               ))}
             </tbody>

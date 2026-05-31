@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { CheckCircle2 } from "lucide-react";
 import { getOrgConfig, updateOrgConfig, resetOrgConfigKey, getBillingUsage, getOrgPaymentSettings, updateOrgPaymentSettings, getBillingPortal, getMyOrganization, updateMyOrganization, getOrgMembers, inviteOrgMember, removeOrgMember } from "@/lib/api";
 import { NotificationPreferencesPanel } from "@/components/notifications/NotificationPreferencesPanel";
 import { PasswordChangeCard } from "@/components/settings/PasswordChangeCard";
@@ -23,7 +24,7 @@ const PLAN_LABELS: Record<string, string> = {
 };
 
 const PLAN_COLORS: Record<string, string> = {
-  trial: 'bg-gray-100 text-gray-600',
+  trial: 'bg-[var(--bg-subtle)] text-[var(--text-muted)]',
   basic: 'bg-blue-100 text-blue-700',
   professional: 'bg-violet-100 text-violet-700',
   enterprise: 'bg-amber-100 text-amber-700',
@@ -38,12 +39,12 @@ function UsageMeter({ label, dim }: { label: string; dim: BillingDimension }) {
   return (
     <div className="space-y-1.5">
       <div className="flex items-center justify-between text-xs">
-        <span className="font-medium text-gray-700">{label}</span>
-        <span className="text-gray-400 tabular-nums">
+        <span className="font-medium text-[var(--text-muted)]">{label}</span>
+        <span className="text-[var(--text-muted)] tabular-nums">
           {isUnlimited ? `${dim.used.toLocaleString()} / ∞` : `${dim.used.toLocaleString()} / ${dim.limit!.toLocaleString()}`}
         </span>
       </div>
-      <div className="h-2 w-full rounded-full bg-gray-100 overflow-hidden">
+      <div className="h-2 w-full rounded-full bg-[var(--bg-subtle)] overflow-hidden">
         <div
           className={`h-full rounded-full transition-all duration-500 ${barColor}`}
           style={{ width: `${isUnlimited ? 20 : pct}%` }}
@@ -79,9 +80,9 @@ function SensitiveInput({ value, onChange, placeholder }: { value: string; onCha
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-gray-300 px-3 py-2 pe-14 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 pe-14 text-sm font-mono outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
       />
-      <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 hover:text-gray-600">
+      <button type="button" onClick={() => setShow((s) => !s)} className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)] hover:text-[var(--text-muted)]">
         {show ? "Hide" : "Show"}
       </button>
     </div>
@@ -110,9 +111,9 @@ function OrgTokenBudgetPanel() {
   const state = budget?.state ?? "ok";
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 space-y-4">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)] p-5 space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-800">AI Usage</h2>
+        <h2 className="text-sm font-semibold text-[var(--text-primary)]">AI Usage</h2>
         {!isLoading && budget && (
           <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${stateBadge[state] ?? stateBadge.ok}`}>
             {state.replace("_", " ")}
@@ -121,21 +122,21 @@ function OrgTokenBudgetPanel() {
       </div>
 
       {isLoading ? (
-        <div className="animate-pulse rounded-lg bg-gray-100 h-10" />
+        <div className="animate-pulse rounded-lg bg-[var(--bg-subtle)] h-10" />
       ) : budget ? (
         <>
           <div>
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
+            <div className="flex justify-between text-xs text-[var(--text-muted)] mb-1">
               <span>{used.toLocaleString()} tokens used</span>
               <span>{limit.toLocaleString()} limit / 24h</span>
             </div>
-            <div className="w-full bg-gray-100 rounded-full h-3">
+            <div className="w-full bg-[var(--bg-subtle)] rounded-full h-3">
               <div
                 className={`h-3 rounded-full transition-all ${stateColors[state] ?? stateColors.ok}`}
                 style={{ width: `${pct}%` }}
               />
             </div>
-            <p className="mt-1 text-xs text-gray-400">{budget.percent.toFixed(1)}% of daily budget consumed</p>
+            <p className="mt-1 text-xs text-[var(--text-muted)]">{budget.percent.toFixed(1)}% of daily budget consumed</p>
           </div>
           {state !== "ok" && (
             <p className="text-xs text-amber-700 bg-amber-50 rounded-lg px-3 py-2">
@@ -146,7 +147,7 @@ function OrgTokenBudgetPanel() {
           )}
         </>
       ) : (
-        <p className="text-xs text-gray-400">No budget data available.</p>
+        <p className="text-xs text-[var(--text-muted)]">No budget data available.</p>
       )}
     </div>
   );
@@ -287,19 +288,19 @@ export default function OrgSettingsPage() {
   return (
     <div className="max-w-2xl space-y-8 pb-10">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-sm text-gray-500">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)]">Settings</h1>
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Organization profile preferences and AI feature flags
         </p>
       </div>
 
       {/* Plan & usage */}
       {billingData && (
-        <div className="rounded-xl border border-gray-200 bg-white">
-          <div className="border-b border-gray-100 px-6 py-4 flex items-center justify-between">
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+          <div className="border-b border-[var(--border)] px-6 py-4 flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-semibold text-gray-800">Plan &amp; Usage</h2>
-              <p className="text-xs text-gray-400 mt-0.5">Current billing period consumption</p>
+              <h2 className="text-sm font-semibold text-[var(--text-primary)]">Plan &amp; Usage</h2>
+              <p className="text-xs text-[var(--text-muted)] mt-0.5">Current billing period consumption</p>
             </div>
             <div className="flex items-center gap-3">
               <span className={`text-xs font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide ${PLAN_COLORS[billingData.plan] ?? PLAN_COLORS.trial}`}>
@@ -317,14 +318,14 @@ export default function OrgSettingsPage() {
                 <button
                   onClick={() => portalMutation.mutate()}
                   disabled={portalMutation.isPending}
-                  className="rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                  className="rounded-lg border border-[var(--border)] px-3 py-1.5 text-xs font-medium text-[var(--text-muted)] hover:bg-[var(--bg-muted)] disabled:opacity-50 transition-colors"
                 >
                   {portalMutation.isPending ? "Opening…" : "Manage Subscription"}
                 </button>
               )}
               <a
                 href="/organization/billing/invoices"
-                className="text-xs font-medium text-gray-500 hover:text-gray-700 underline underline-offset-2"
+                className="text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text-muted)] underline underline-offset-2"
               >
                 Invoices
               </a>
@@ -355,14 +356,14 @@ export default function OrgSettingsPage() {
       )}
 
       {/* Feature flags */}
-      <div className="rounded-xl border border-gray-200 bg-white">
-        <div className="border-b border-gray-100 px-6 py-4">
-          <h2 className="text-sm font-semibold text-gray-800">AI Feature Flags</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+        <div className="border-b border-[var(--border)] px-6 py-4">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">AI Feature Flags</h2>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Override platform defaults for your organization. Greyed-out keys use the platform default.
           </p>
         </div>
-        <div className="divide-y divide-gray-50">
+        <div className="divide-y divide-[var(--border)]">
           {Object.entries(FEATURE_LABELS).map(([key, { label, desc }]) => {
             const isEnabled  = features[key] === "true";
             const isOverride = overrides.includes(key);
@@ -371,21 +372,21 @@ export default function OrgSettingsPage() {
               <div key={key} className="flex items-center justify-between px-6 py-4">
                 <div className="flex-1 min-w-0 pe-4">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium text-gray-900">{label}</p>
+                    <p className="text-sm font-medium text-[var(--text-primary)]">{label}</p>
                     {isOverride && (
                       <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 uppercase tracking-wide">
                         Override
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-400 mt-0.5">{desc}</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">{desc}</p>
                 </div>
                 <div className="flex items-center gap-2 shrink-0">
                   {isOverride && (
                     <button
                       onClick={() => resetMutation.mutate(key)}
                       disabled={resetMutation.isPending}
-                      className="text-xs text-gray-400 hover:text-gray-600 hover:underline transition-colors"
+                      className="text-xs text-[var(--text-muted)] hover:text-[var(--text-muted)] hover:underline transition-colors"
                     >
                       Reset
                     </button>
@@ -398,7 +399,7 @@ export default function OrgSettingsPage() {
                     }`}
                   >
                     <span
-                      className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform duration-200 mt-0.5 ${
+                      className={`inline-block h-4 w-4 transform rounded-full bg-[var(--bg-surface)] shadow-sm transition-transform duration-200 mt-0.5 ${
                         isEnabled ? "translate-x-4" : "translate-x-0.5"
                       }`}
                     />
@@ -411,10 +412,10 @@ export default function OrgSettingsPage() {
       </div>
 
       {/* AI Response Language */}
-      <div className="rounded-xl border border-gray-200 bg-white">
-        <div className="border-b border-gray-100 px-6 py-4">
-          <h2 className="text-sm font-semibold text-gray-800">AI Response Language</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+        <div className="border-b border-[var(--border)] px-6 py-4">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">AI Response Language</h2>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Default language for AI replies to your clients via WhatsApp.
           </p>
         </div>
@@ -434,18 +435,18 @@ export default function OrgSettingsPage() {
                 className={`rounded-lg border px-3 py-2.5 text-sm font-medium text-start transition-colors ${
                   orgLang === value
                     ? "border-blue-500 bg-blue-50 text-blue-700"
-                    : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                    : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-muted)]"
                 }`}
               >
                 {label}
               </button>
             ))}
           </div>
-          <p className="mt-3 text-xs text-gray-400">
+          <p className="mt-3 text-xs text-[var(--text-muted)]">
             The AI will switch to the client&apos;s language if they write in English, regardless of this setting.
           </p>
           <div className="flex items-center justify-end gap-3 mt-4">
-            {langSaved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
+            {langSaved && <span className="text-sm text-green-600 font-medium flex items-center gap-1"><CheckCircle2 size={13} aria-hidden="true" />Saved</span>}
             <button
               onClick={() => orgLangMutation.mutate(orgLang)}
               disabled={orgLangMutation.isPending || orgLang === (orgProfile?.language ?? "en")}
@@ -458,10 +459,10 @@ export default function OrgSettingsPage() {
       </div>
 
       {/* Dashboard Language */}
-      <div className="rounded-xl border border-gray-200 bg-white">
-        <div className="border-b border-gray-100 px-6 py-4">
-          <h2 className="text-sm font-semibold text-gray-800">Dashboard Language</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+        <div className="border-b border-[var(--border)] px-6 py-4">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">Dashboard Language</h2>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Language used for the dashboard interface (menus, labels, headings).
           </p>
         </div>
@@ -474,7 +475,7 @@ export default function OrgSettingsPage() {
                 className={`rounded-lg border px-3 py-2.5 text-sm font-medium text-start transition-colors ${
                   dashLocale === loc
                     ? "border-blue-500 bg-blue-50 text-blue-700"
-                    : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                    : "border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-muted)]"
                 }`}
               >
                 {LOCALE_LABELS[loc]}
@@ -494,10 +495,10 @@ export default function OrgSettingsPage() {
       </div>
 
       {/* Area Measurement System */}
-      <div className="rounded-xl border border-gray-200 bg-white">
-        <div className="border-b border-gray-100 px-6 py-4">
-          <h2 className="text-sm font-semibold text-gray-800">Area Measurement System</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+        <div className="border-b border-[var(--border)] px-6 py-4">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">Area Measurement System</h2>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             How property sizes are displayed to agents and in listings.
           </p>
         </div>
@@ -514,19 +515,19 @@ export default function OrgSettingsPage() {
                 className={`rounded-lg border-2 p-3 text-start transition-all ${
                   measurementSystem === value
                     ? "border-blue-500 bg-blue-50"
-                    : "border-gray-200 bg-white hover:border-gray-300"
+                    : "border-[var(--border)] bg-[var(--bg-surface)] hover:border-[var(--border-strong)]"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-0.5">
-                  <div className={`h-3.5 w-3.5 rounded-full border-2 shrink-0 ${measurementSystem === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
-                  <span className="text-sm font-semibold text-gray-900">{label}</span>
+                  <div className={`h-3.5 w-3.5 rounded-full border-2 shrink-0 ${measurementSystem === value ? "border-blue-500 bg-blue-500" : "border-[var(--border-strong)]"}`} />
+                  <span className="text-sm font-semibold text-[var(--text-primary)]">{label}</span>
                 </div>
-                <p className="text-xs text-gray-500 ms-5">{desc}</p>
+                <p className="text-xs text-[var(--text-muted)] ms-5">{desc}</p>
               </button>
             ))}
           </div>
           <div className="flex items-center justify-end gap-3 mt-4">
-            {msSaved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
+            {msSaved && <span className="text-sm text-green-600 font-medium flex items-center gap-1"><CheckCircle2 size={13} aria-hidden="true" />Saved</span>}
             <button
               onClick={() => msMutation.mutate(measurementSystem)}
               disabled={msMutation.isPending || measurementSystem === (orgProfile?.measurement_system ?? "pk_traditional")}
@@ -539,10 +540,10 @@ export default function OrgSettingsPage() {
       </div>
 
       {/* Deal-lock payment gateway */}
-      <div className="rounded-xl border border-gray-200 bg-white">
-        <div className="border-b border-gray-100 px-6 py-4">
-          <h2 className="text-sm font-semibold text-gray-800">Deal-Lock Payment Gateway</h2>
-          <p className="text-xs text-gray-400 mt-0.5">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--bg-surface)]">
+        <div className="border-b border-[var(--border)] px-6 py-4">
+          <h2 className="text-sm font-semibold text-[var(--text-primary)]">Deal-Lock Payment Gateway</h2>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             Configure how clients pay the token deposit when locking a deal. Overrides the platform default.
           </p>
         </div>
@@ -559,14 +560,14 @@ export default function OrgSettingsPage() {
                 type="button"
                 onClick={() => setPsGateway(value)}
                 className={`rounded-lg border-2 p-3 text-start transition-all ${
-                  psGateway === value ? "border-blue-500 bg-blue-50" : "border-gray-200 bg-white hover:border-gray-300"
+                  psGateway === value ? "border-blue-500 bg-blue-50" : "border-[var(--border)] bg-[var(--bg-surface)] hover:border-[var(--border-strong)]"
                 }`}
               >
                 <div className="flex items-center gap-2 mb-0.5">
-                  <div className={`h-3.5 w-3.5 rounded-full border-2 shrink-0 ${psGateway === value ? "border-blue-500 bg-blue-500" : "border-gray-300"}`} />
-                  <span className="text-sm font-semibold text-gray-900">{label}</span>
+                  <div className={`h-3.5 w-3.5 rounded-full border-2 shrink-0 ${psGateway === value ? "border-blue-500 bg-blue-500" : "border-[var(--border-strong)]"}`} />
+                  <span className="text-sm font-semibold text-[var(--text-primary)]">{label}</span>
                 </div>
-                <p className="text-xs text-gray-500 ms-5">{desc}</p>
+                <p className="text-xs text-[var(--text-muted)] ms-5">{desc}</p>
               </button>
             ))}
           </div>
@@ -576,19 +577,19 @@ export default function OrgSettingsPage() {
             <div className="rounded-lg border border-blue-100 bg-blue-50 p-4 space-y-3">
               <p className="text-xs font-semibold text-blue-700 uppercase tracking-wide">Safepay Credentials</p>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Merchant Key</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Merchant Key</label>
                 <SensitiveInput value={psVals.safepay_merchant_key ?? ""} onChange={(v) => setPsVals((p) => ({ ...p, safepay_merchant_key: v }))} placeholder="sk_live_…" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Secret Key</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Secret Key</label>
                 <SensitiveInput value={psVals.safepay_secret_key ?? ""} onChange={(v) => setPsVals((p) => ({ ...p, safepay_secret_key: v }))} placeholder="sk_…" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Environment</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Environment</label>
                 <select
                   value={psVals.safepay_environment ?? "sandbox"}
                   onChange={(e) => setPsVals((p) => ({ ...p, safepay_environment: e.target.value }))}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500"
                 >
                   <option value="sandbox">Sandbox (testing)</option>
                   <option value="production">Production (live)</option>
@@ -602,19 +603,19 @@ export default function OrgSettingsPage() {
             <div className="rounded-lg border border-purple-100 bg-purple-50 p-4 space-y-3">
               <p className="text-xs font-semibold text-purple-700 uppercase tracking-wide">bSecure Credentials</p>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Client ID</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Client ID</label>
                 <SensitiveInput value={psVals.bsecure_client_id ?? ""} onChange={(v) => setPsVals((p) => ({ ...p, bsecure_client_id: v }))} placeholder="bs_…" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Client Secret</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Client Secret</label>
                 <SensitiveInput value={psVals.bsecure_client_secret ?? ""} onChange={(v) => setPsVals((p) => ({ ...p, bsecure_client_secret: v }))} placeholder="bs_secret_…" />
               </div>
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Environment</label>
+                <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">Environment</label>
                 <select
                   value={psVals.bsecure_environment ?? "sandbox"}
                   onChange={(e) => setPsVals((p) => ({ ...p, bsecure_environment: e.target.value }))}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-blue-500"
+                  className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm outline-none focus:border-blue-500"
                 >
                   <option value="sandbox">Sandbox (testing)</option>
                   <option value="production">Production (live)</option>
@@ -625,8 +626,8 @@ export default function OrgSettingsPage() {
 
           {/* Manual payment details */}
           {psGateway === "manual" && (
-            <div className="rounded-lg border border-gray-100 bg-gray-50 p-4 space-y-3">
-              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Manual Payment Details</p>
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--bg-muted)] p-4 space-y-3">
+              <p className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wide">Manual Payment Details</p>
               {[
                 { key: "jazzcash_number",    label: "JazzCash Number",    placeholder: "03xx-xxxxxxx" },
                 { key: "easypaisa_number",   label: "Easypaisa Number",   placeholder: "03xx-xxxxxxx" },
@@ -634,21 +635,21 @@ export default function OrgSettingsPage() {
                 { key: "bank_account_name",   label: "Account Name",      placeholder: "Company Ltd." },
               ].map(({ key, label, placeholder }) => (
                 <div key={key}>
-                  <label className="block text-xs font-medium text-gray-700 mb-1">{label}</label>
+                  <label className="block text-xs font-medium text-[var(--text-muted)] mb-1">{label}</label>
                   <input
                     type="text"
                     value={psVals[key] ?? ""}
                     onChange={(e) => setPsVals((p) => ({ ...p, [key]: e.target.value }))}
                     placeholder={placeholder}
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-mono outline-none focus:border-blue-500"
+                    className="w-full rounded-lg border border-[var(--border-strong)] px-3 py-2 text-sm font-mono outline-none focus:border-blue-500"
                   />
                 </div>
               ))}
             </div>
           )}
         </div>
-        <div className="flex items-center justify-end gap-3 border-t border-gray-100 px-6 py-4">
-          {psSaved && <span className="text-sm text-green-600 font-medium">Saved ✓</span>}
+        <div className="flex items-center justify-end gap-3 border-t border-[var(--border)] px-6 py-4">
+          {psSaved && <span className="text-sm text-green-600 font-medium flex items-center gap-1"><CheckCircle2 size={13} aria-hidden="true" />Saved</span>}
           <button
             onClick={() => paymentSettingsMutation.mutate({ gateway: psGateway, ...psVals })}
             disabled={paymentSettingsMutation.isPending}
@@ -666,9 +667,9 @@ export default function OrgSettingsPage() {
       <PasswordChangeCard />
 
       {/* Team Members */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+      <div className="bg-[var(--bg-surface)] rounded-xl shadow-sm border border-[var(--border)] p-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Team Members</h2>
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">Team Members</h2>
           <button onClick={() => setShowInvite(true)}
             className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700">
             + Invite Member
@@ -676,10 +677,10 @@ export default function OrgSettingsPage() {
         </div>
         <div className="space-y-3">
           {members.map((m) => (
-            <div key={m.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+            <div key={m.id} className="flex items-center justify-between p-3 bg-[var(--bg-muted)] rounded-lg">
               <div>
-                <p className="font-medium text-gray-900">{m.user_name || m.user_phone}</p>
-                <p className="text-sm text-gray-500">{m.user_phone} · {m.role.replace(/_/g, ' ')}</p>
+                <p className="font-medium text-[var(--text-primary)]">{m.user_name || m.user_phone}</p>
+                <p className="text-sm text-[var(--text-muted)]">{m.user_phone} · {m.role.replace(/_/g, ' ')}</p>
               </div>
               {m.role !== 'owner' && (
                 <button onClick={() => removeOrgMember(m.id).then(() => qc.invalidateQueries({ queryKey: ['org-members'] }))}
@@ -687,16 +688,16 @@ export default function OrgSettingsPage() {
               )}
             </div>
           ))}
-          {members.length === 0 && <p className="text-gray-400 text-sm">No team members yet.</p>}
+          {members.length === 0 && <p className="text-[var(--text-muted)] text-sm">No team members yet.</p>}
         </div>
         {showInvite && (
           <div className="mt-4 p-4 border border-blue-200 rounded-lg bg-blue-50">
             <h3 className="font-medium mb-3">Invite Team Member</h3>
             <div className="space-y-3">
               <input value={invitePhone} onChange={(e) => setInvitePhone(e.target.value)}
-                placeholder="+971501234567" className="w-full border rounded-lg px-3 py-2 text-sm" />
+                placeholder="+971501234567" className="w-full border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500" />
               <select value={inviteRole} onChange={(e) => setInviteRole(e.target.value as OrgMembership['role'])}
-                className="w-full border rounded-lg px-3 py-2 text-sm">
+                className="w-full border border-[var(--border-strong)] bg-[var(--bg-surface)] text-[var(--text-primary)] rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="org_admin">Organization Admin</option>
                 <option value="team_manager">Team Manager</option>
                 <option value="sales_manager">Sales Manager</option>
@@ -711,7 +712,7 @@ export default function OrgSettingsPage() {
                   className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg disabled:opacity-50">
                   {inviteMutation.isPending ? 'Inviting…' : 'Send Invite'}
                 </button>
-                <button onClick={() => setShowInvite(false)} className="px-4 py-2 text-sm text-gray-600">Cancel</button>
+                <button onClick={() => setShowInvite(false)} className="px-4 py-2 text-sm text-[var(--text-muted)]">Cancel</button>
               </div>
             </div>
           </div>

@@ -76,24 +76,24 @@ export default function WhatsAppProfilePage() {
     setHours((h) => ({ ...h, [day]: { ...h[day], [field]: val } }));
 
   if (isLoading) {
-    return <div className="p-8 text-gray-500 text-sm">Loading…</div>;
+    return <div className="p-8 text-[var(--text-muted)] text-sm">Loading…</div>;
   }
 
   return (
     <div className="max-w-2xl mx-auto p-6 space-y-8">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">WhatsApp Business Profile</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-xl font-semibold text-[var(--text-primary)]">WhatsApp Business Profile</h1>
+        <p className="text-sm text-[var(--text-muted)] mt-1">
           Configure how your organisation appears in Meta&apos;s Business Directory.
         </p>
       </div>
 
       {/* Directory Keywords */}
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">
           Directory Keywords
         </h2>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           Keywords Meta uses to surface your number in Business Directory searches.
         </p>
         <div className="flex gap-2">
@@ -107,11 +107,12 @@ export default function WhatsAppProfilePage() {
               }
             }}
             placeholder="Type keyword and press Enter"
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm"
+            className="flex-1 border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm"
           />
           <button
+            type="button"
             onClick={addKeyword}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm hover:bg-gray-200"
+            className="px-4 py-2 bg-[var(--bg-subtle)] text-[var(--text-muted)] rounded-lg text-sm hover:bg-[var(--bg-subtle)]"
           >
             Add
           </button>
@@ -124,6 +125,7 @@ export default function WhatsAppProfilePage() {
             >
               {kw}
               <button
+                type="button"
                 onClick={() => setKeywords((p) => p.filter((k) => k !== kw))}
                 className="ms-1 text-blue-400 hover:text-blue-700"
               >
@@ -136,21 +138,22 @@ export default function WhatsAppProfilePage() {
 
       {/* Category Tags */}
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">
           Business Category
         </h2>
-        <p className="text-xs text-gray-500">Meta WABA vertical — select all that apply.</p>
+        <p className="text-xs text-[var(--text-muted)]">Meta WABA vertical — select all that apply.</p>
         <div className="flex flex-wrap gap-2">
           {META_VERTICALS.map((v) => (
             <button
               key={v}
+              type="button"
               onClick={() =>
                 setTags((p) => (p.includes(v) ? p.filter((t) => t !== v) : [...p, v]))
               }
               className={`px-3 py-1 rounded-full text-xs border transition-colors ${
                 tags.includes(v)
                   ? "bg-indigo-600 text-white border-indigo-600"
-                  : "bg-white text-gray-600 border-gray-300 hover:border-indigo-400"
+                  : "bg-[var(--bg-surface)] text-[var(--text-muted)] border-[var(--border-strong)] hover:border-indigo-400"
               }`}
             >
               {v.replace(/_/g, " ")}
@@ -161,55 +164,56 @@ export default function WhatsAppProfilePage() {
 
       {/* Localized Greeting */}
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">
           Localized Greeting
         </h2>
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-[var(--text-muted)]">
           Shown to users who discover you via directory. Max 256 characters.
         </p>
         <textarea
           value={greeting}
           onChange={(e) => setGreeting(e.target.value.slice(0, 256))}
           rows={3}
-          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none"
+          className="w-full border border-[var(--border-strong)] rounded-lg px-3 py-2 text-sm resize-none"
           placeholder="Welcome! We help you find your perfect property…"
         />
-        <p className="text-xs text-gray-400 text-right">{greeting.length}/256</p>
+        <p className="text-xs text-[var(--text-muted)] text-right">{greeting.length}/256</p>
       </section>
 
       {/* Support Hours */}
       <section className="space-y-2">
-        <h2 className="text-sm font-semibold text-gray-700 uppercase tracking-wide">
+        <h2 className="text-sm font-semibold text-[var(--text-muted)] uppercase tracking-wide">
           Support Hours
         </h2>
-        <div className="border border-gray-200 rounded-lg divide-y divide-gray-100">
+        <div className="border border-[var(--border)] rounded-lg divide-y divide-[var(--border)]">
           {DAYS.map((day) => {
             const h = hours[day] ?? { open: "09:00", close: "18:00", closed: false };
             return (
               <div key={day} className="flex items-center gap-4 px-4 py-3">
-                <span className="w-24 text-sm text-gray-700">{DAY_LABELS[day]}</span>
+                <span className="w-24 text-sm text-[var(--text-muted)]">{DAY_LABELS[day]}</span>
                 {h.closed ? (
-                  <span className="text-xs text-gray-400 flex-1">Closed</span>
+                  <span className="text-xs text-[var(--text-muted)] flex-1">Closed</span>
                 ) : (
                   <div className="flex items-center gap-2 flex-1 text-sm">
                     <input
                       type="time"
                       value={h.open}
                       onChange={(e) => setTime(day, "open", e.target.value)}
-                      className="border border-gray-300 rounded px-2 py-1 text-xs"
+                      className="border border-[var(--border-strong)] rounded px-2 py-1 text-xs"
                     />
-                    <span className="text-gray-400">to</span>
+                    <span className="text-[var(--text-muted)]">to</span>
                     <input
                       type="time"
                       value={h.close}
                       onChange={(e) => setTime(day, "close", e.target.value)}
-                      className="border border-gray-300 rounded px-2 py-1 text-xs"
+                      className="border border-[var(--border-strong)] rounded px-2 py-1 text-xs"
                     />
                   </div>
                 )}
                 <button
+                  type="button"
                   onClick={() => toggleDay(day)}
-                  className="text-xs text-gray-400 hover:text-gray-600"
+                  className="text-xs text-[var(--text-muted)] hover:text-[var(--text-muted)]"
                 >
                   {h.closed ? "Open" : "Close"}
                 </button>
@@ -220,16 +224,17 @@ export default function WhatsAppProfilePage() {
       </section>
 
       {/* Sync Status */}
-      <section className="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+      <section className="bg-[var(--bg-muted)] border border-[var(--border)] rounded-lg p-4 flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-700">Meta Sync Status</p>
-          <p className="text-xs text-gray-500 mt-0.5">
+          <p className="text-sm font-medium text-[var(--text-muted)]">Meta Sync Status</p>
+          <p className="text-xs text-[var(--text-muted)] mt-0.5">
             {data?.meta_profile_synced_at
               ? `Last synced: ${new Date(data.meta_profile_synced_at).toLocaleString()}`
               : "Not yet synced to Meta"}
           </p>
         </div>
         <button
+          type="button"
           onClick={() => syncMutation.mutate()}
           disabled={syncMutation.isPending}
           className="px-4 py-2 text-sm bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
@@ -255,6 +260,7 @@ export default function WhatsAppProfilePage() {
           <p className="text-xs text-red-600 self-center">Save failed.</p>
         )}
         <button
+          type="button"
           onClick={() => saveMutation.mutate()}
           disabled={saveMutation.isPending}
           className="px-6 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 disabled:opacity-50"

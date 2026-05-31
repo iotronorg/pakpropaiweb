@@ -21,17 +21,17 @@ function SubmitLeadModal({ listing, onClose }: { listing: SyndicationListing; on
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md space-y-4">
-        <h3 className="text-lg font-semibold">Submit Client Lead</h3>
-        <p className="text-sm text-gray-500">{listing.property_title} — {listing.commission_type === 'percentage' ? `Earn ${listing.commission_value}%` : `Earn ${listing.commission_currency} ${Number(listing.commission_value).toLocaleString()}`}</p>
+      <div className="bg-[var(--bg-surface)] rounded-xl shadow-xl p-6 w-full max-w-md space-y-4">
+        <h3 className="text-lg font-semibold text-[var(--text-primary)]">Submit Client Lead</h3>
+        <p className="text-sm text-[var(--text-muted)]">{listing.property_title} — {listing.commission_type === 'percentage' ? `Earn ${listing.commission_value}%` : `Earn ${listing.commission_currency} ${Number(listing.commission_value).toLocaleString()}`}</p>
         <input placeholder="Lead ID (UUID)" value={leadId} onChange={e => setLeadId(e.target.value)}
-          className="border rounded px-3 py-2 text-sm w-full" />
+          className="border border-[var(--border)] rounded px-3 py-2 text-sm w-full bg-[var(--bg-surface)] text-[var(--text-primary)]" />
         <textarea placeholder="Notes (optional)" value={notes} onChange={e => setNotes(e.target.value)}
-          className="border rounded px-3 py-2 text-sm w-full h-20 resize-none" />
+          className="border border-[var(--border)] rounded px-3 py-2 text-sm w-full h-20 resize-none bg-[var(--bg-surface)] text-[var(--text-primary)]" />
         {error && <p className="text-red-500 text-xs">{error}</p>}
         <div className="flex justify-end gap-3">
-          <button onClick={onClose} className="text-sm text-gray-500 hover:underline">Cancel</button>
-          <button onClick={() => submit.mutate()} disabled={!leadId}
+          <button type="button" onClick={onClose} className="text-sm text-[var(--text-muted)] hover:underline">Cancel</button>
+          <button type="button" onClick={() => submit.mutate()} disabled={!leadId}
             className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-40">
             Submit Lead
           </button>
@@ -48,39 +48,39 @@ export default function BrowseMarketplacePage() {
 
   return (
     <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">Syndicated Inventory</h1>
+      <h1 className="text-2xl font-bold text-[var(--text-primary)]">Syndicated Inventory</h1>
 
-      {isLoading && <p className="text-gray-400 text-sm">Loading listings…</p>}
+      {isLoading && <p className="text-[var(--text-muted)] text-sm">Loading listings…</p>}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {listings.map((l, i) => (
           <motion.div key={l.id} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-            className="bg-white border rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow space-y-3">
+            className="bg-[var(--bg-surface)] border border-[var(--border)] rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow space-y-3">
             <div className="flex items-start justify-between">
-              <h3 className="font-semibold text-gray-900 text-sm leading-snug">{l.property_title}</h3>
-              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{l.developer_org_name}</span>
+              <h3 className="font-semibold text-[var(--text-primary)] text-sm leading-snug">{l.property_title}</h3>
+              <span className="text-xs bg-[var(--bg-subtle)] text-[var(--text-muted)] px-2 py-0.5 rounded-full">{l.developer_org_name}</span>
             </div>
             <p className="text-xs text-blue-600 font-medium">
               {l.commission_type === 'percentage' ? `Earn ${l.commission_value}%` : `Earn ${l.commission_currency} ${Number(l.commission_value).toLocaleString()}`}
             </p>
-            {l.description && <p className="text-xs text-gray-500 line-clamp-2">{l.description}</p>}
-            <button onClick={() => setSelected(l)}
+            {l.description && <p className="text-xs text-[var(--text-muted)] line-clamp-2">{l.description}</p>}
+            <button type="button" onClick={() => setSelected(l)}
               className="w-full text-sm bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
               Submit Client Lead
             </button>
           </motion.div>
         ))}
         {!isLoading && listings.length === 0 && (
-          <p className="col-span-full text-center text-gray-400 py-12">No syndicated listings available.</p>
+          <p className="col-span-full text-center text-[var(--text-muted)] py-12">No syndicated listings available.</p>
         )}
       </div>
 
       {mySubmissions.length > 0 && (
         <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-gray-800">My Submissions</h2>
-          <div className="border rounded-lg overflow-hidden">
+          <h2 className="text-lg font-semibold text-[var(--text-primary)]">My Submissions</h2>
+          <div className="border border-[var(--border)] rounded-lg overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
+              <thead className="bg-[var(--bg-muted)] text-[var(--text-muted)] uppercase text-xs">
                 <tr>
                   <th className="px-4 py-3 text-start">Listing</th>
                   <th className="px-4 py-3 text-start">Lead</th>
@@ -88,12 +88,12 @@ export default function BrowseMarketplacePage() {
                   <th className="px-4 py-3 text-start">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y">
+              <tbody className="divide-y divide-[var(--border)]">
                 {mySubmissions.map((s) => (
                   <tr key={s.id}>
-                    <td className="px-4 py-3">{s.listing_title}</td>
-                    <td className="px-4 py-3">{s.lead_name}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 text-[var(--text-primary)]">{s.listing_title}</td>
+                    <td className="px-4 py-3 text-[var(--text-primary)]">{s.lead_name}</td>
+                    <td className="px-4 py-3 text-[var(--text-primary)]">
                       {s.commission_calculated ? `${s.commission_currency} ${Number(s.commission_calculated).toLocaleString()}` : '—'}
                     </td>
                     <td className="px-4 py-3">
